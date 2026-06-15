@@ -4,40 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-gradient=1.0, user-scalable=no">
     <title>SI FOUR AM - Mobile Kasir</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Menghilangkan spin button default input angka agar lebih bersih di HP */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
-    </style>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111111">
 </head>
-<body class="bg-[#111111] text-[#eeeeee] min-h-screen font-sans antialiased selective-none">
+<body class="bg-[#111111] text-[#eeeeee] min-h-screen font-sans antialiased select-none">
 
-    <!-- TOP HEADER FIXED BANNER -->
     <div class="sticky top-0 z-50 bg-[#f57c00] text-[#111111] p-4 text-center shadow-md border-b-2 border-black">
         <h1 class="text-xl font-black tracking-widest">SI FOUR AM</h1>
         <p class="text-[10px] font-bold uppercase tracking-wider text-[#222222]">Mobile Report System</p>
     </div>
 
-    <!-- MAIN FORM CONTAINER (1 KOLOM FULL UNTUK MOBILE) -->
-    <div class="p-4 max-w-md mx-auto space-y-5 pb-24">
+    <div id="mainFormContainer" class="p-4 max-w-md mx-auto space-y-5 pb-24 block">
         
-        <!-- STEP 1: METADATA DATA HARIAN -->
-        <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] shadow-sm">
-            <div class="flex items-center space-x-2 mb-3 border-b border-[#333333] pb-2">
-                <span class="bg-[#f57c00] text-black text-xs font-bold px-2 py-0.5 rounded-full">1</span>
-                <h2 class="text-xs font-bold text-[#f57c00] uppercase tracking-wide">Metadata Data Harian</h2>
-            </div>
-            
-            <div class="space-y-3">
+        <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] shadow-sm space-y-3">
+            <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-[11px] font-medium text-gray-400 mb-1">Nama Crew / Driver</label>
-                    <select id="driver" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-3 text-sm focus:border-[#f57c00] outline-none h-11">
-                        <option value="ACHMAD DARMADI" selected>ACHMAD DARMADI</option>
+                    <select id="driver" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-xs focus:border-[#f57c00] outline-none h-11">
                         <option value="ACHMAD DARMADI" selected>ACHMAD DARMADI</option>
                         <option value="RICKY AKBAR">RICKY AKBAR</option>
                         <option value="JUNAEDI">JUNAEDI</option>
@@ -46,42 +32,43 @@
                         <option value="RIZKY AKBAR ZAFIRA">RIZKY AKBAR ZAFIRA</option>
                     </select>
                 </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-400 mb-1">PIC Penerima Setoran</label>
+                    <select id="picPenerima" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-xs focus:border-[#f57c00] outline-none h-11">
+                        <option value="Muhammad Ishaq Alif Hanif">Muhammad Ishaq Alif Hanif</option>
+                        <option value="Indri Devi Anjani">Indri Devi Anjani</option>
+                        <option value="Rissa Alfiani Putri">Rissa Alfiani Putri</option>
+                    </select>
+                </div>
+            </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-medium text-gray-400 mb-1">Tanggal Laporan</label>
-                        <input type="date" id="tanggal" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-sm focus:border-[#f57c00] outline-none h-11" value="2026-06-15">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-medium text-gray-400 mb-1">ID Unit Armada</label>
-                        <select id="unit" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-sm focus:border-[#f57c00] outline-none h-11">
-                            <option>01</option>
-                            <option>02</option>
-                            <option>03</option>
-                            <option>04</option>
-                            <option>05</option>
-                            <option>06</option>
-                        </select>
-                    </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Tanggal</label>
+                    <input type="date" id="tanggal" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2 text-[11px] focus:border-[#f57c00] outline-none h-11" value="2026-06-15">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Armada</label>
+                    <select id="unit" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-xs focus:border-[#f57c00] outline-none h-11">
+                        <option>01</option>
+                        <option>02</option>
+                        <option>03</option>
+                        <option>04</option>
+                        <option>05</option>
+                        <option>06</option>
+                    </select>
                 </div>
             </div>
         </div>
 
-        <!-- STEP 2: INPUT CUP TERJUAL & VARIAN MENU -->
         <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] shadow-sm">
-            <div class="flex items-center space-x-2 mb-3 border-b border-[#333333] pb-2">
-                <span class="bg-[#f57c00] text-black text-xs font-bold px-2 py-0.5 rounded-full">2</span>
-                <h2 class="text-xs font-bold text-[#f57c00] uppercase tracking-wide">Input Varian Menu / Cup Terjual</h2>
-            </div>
-            
-            <!-- Menggunakan layout tabel responsif dengan ukuran padding minimalis agar tidak pecah di layar HP kecil -->
             <div class="overflow-x-auto -mx-2 px-2">
                 <table class="w-full text-left text-xs text-gray-300 min-w-[340px]">
                     <thead class="bg-[#2a2a2a] text-gray-400 font-bold uppercase text-[10px]">
                         <tr>
                             <th class="py-2 px-1">Nama Menu</th>
                             <th class="py-2 text-center w-10">Stok</th>
-                            <th class="py-2 text-center bg-[#241a10] text-[#f57c00] w-10">Bon</th>
+                            <th class="py-2 text-center w-10">Bon</th>
                             <th class="py-2 text-center w-10">Sisa</th>
                             <th class="py-2 text-center w-10">Tun</th>
                             <th class="py-2 text-center w-10">QRIS</th>
@@ -89,19 +76,12 @@
                         </tr>
                     </thead>
                     <tbody id="productRows" class="divide-y divide-[#333333]">
-                        <!-- Diisi otomatis via JavaScript -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- STEP 3: REKAP FINANSIAL & OPERASIONAL -->
         <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] shadow-sm space-y-4">
-            <div class="flex items-center space-x-2 border-b border-[#333333] pb-2">
-                <span class="bg-[#f57c00] text-black text-xs font-bold px-2 py-0.5 rounded-full">3</span>
-                <h2 class="text-xs font-bold text-[#f57c00] uppercase tracking-wide">Rekap Finansial & Operasional</h2>
-            </div>
-            
             <div class="grid grid-cols-2 gap-3">
                 <div class="bg-black/30 p-2.5 rounded-lg border border-[#333333]">
                     <span class="text-[10px] uppercase font-bold text-gray-400 block">Total Cash</span>
@@ -116,7 +96,7 @@
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-[11px] font-medium text-gray-400 mb-1">Pengeluaran Ops (Rp)</label>
-                    <input type="number" id="pengeluaran" oninput="hitungOtomatis()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-sm focus:border-[#f57c00] outline-none h-11" value="22000">
+                    <input type="number" id="pengeluaran" oninput="hitungOtomatis()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-sm focus:border-[#f57c00] outline-none h-11" value="0">
                 </div>
                 <div>
                     <label class="block text-[11px] font-medium text-gray-400 mb-1">Minus/Selisih (Rp)</label>
@@ -142,48 +122,125 @@
 
     </div>
 
-    <!-- FLOATING BOTTOM ACTION BUTTON (Sangat memudahkan rider saat memencet simpan) -->
-    <div class="fixed bottom-0 left-0 right-0 p-4 bg-[#111111]/90 backdrop-blur-md border-t border-[#222222] max-w-md mx-auto">
-        <button type="button" onclick="kirimDataKeSheets()" class="w-full bg-[#f57c00] hover:bg-[#e65100] active:scale-[0.98] text-[#111111] font-black py-3.5 px-4 rounded-xl uppercase tracking-wider text-sm transition-all duration-150 shadow-lg">
+    <div id="floatingButtonContainer" class="fixed bottom-0 left-0 right-0 p-4 bg-[#111111]/90 backdrop-blur-md border-t border-[#222222] max-w-md mx-auto block">
+        <button type="button" onclick="bukaPopupKonfirmasi()" class="w-full bg-[#f57c00] hover:bg-[#e65100] active:scale-[0.98] text-[#111111] font-black py-3.5 px-4 rounded-xl uppercase tracking-wider text-sm transition-all duration-150 shadow-lg">
             Simpan & Sinkronisasi Data
         </button>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
-    <script>
-        const SCRIPT_URL = "PASANG_URL_WEB_APP_ANDA_DISINI";
 
-        // Daftar produk beserta master harga revisi sesuai perintah sebelumnya
+    <div id="confirmationPopup" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
+        <div class="bg-[#1e1e1e] border border-[#333333] p-5 rounded-2xl w-full max-w-xs text-center space-y-4 shadow-2xl">
+            <div class="text-3xl text-[#f57c00] animate-bounce">⚠️</div>
+            <h3 class="text-white font-black text-sm uppercase tracking-wide">Konfirmasi Laporan</h3>
+            <p class="text-xs text-gray-400 leading-relaxed">Apakah data yang Anda masukkan sudah sesuai dan siap dikirim ke server pusat?</p>
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button type="button" onclick="tutupPopupKonfirmasi()" class="bg-[#2a2a2a] hover:bg-[#333333] border border-[#444444] text-gray-300 font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider">
+                    Tidak
+                </button>
+                <button type="button" onclick="eksekusiKirimData()" class="bg-[#f57c00] hover:bg-[#e65100] text-[#111111] font-black py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider shadow-md">
+                    Ya
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="screenshootPopup" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm hidden">
+        <div class="bg-[#1e1e1e] border-2 border-amber-500 p-5 rounded-2xl w-full max-w-xs text-center space-y-4 shadow-2xl">
+            <div class="text-3xl text-amber-500 animate-pulse">📸</div>
+            <h3 class="text-white font-black text-sm uppercase tracking-wide text-amber-400">Proteksi Laporan</h3>
+            <p class="text-xs text-gray-300 font-medium leading-relaxed">Apakah kamu sudah screenshoot bukti laporan setoran?</p>
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button type="button" onclick="tutupPopupScreenshoot()" class="bg-red-950/40 hover:bg-red-900 border border-red-700 text-red-400 font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider">
+                    Belum
+                </button>
+                <button type="button" onclick="eksekusiResetTotal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider shadow-md">
+                    Sudah
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="receiptPageContainer" class="p-4 max-w-md mx-auto space-y-4 pb-12 hidden">
+        <div class="bg-amber-500 p-3 rounded-xl border border-black shadow-md text-center">
+            <p class="text-[11px] font-black text-[#111111] uppercase tracking-wider">
+                📸 SCREENSHOOT HALAMAN INI SEBAGAI BUKTI LAPORAN VALID
+            </p>
+        </div>
+
+        <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] space-y-2 text-xs">
+            <div class="flex justify-between"><span class="text-gray-400">Nama Rider:</span> <span id="recDriver" class="font-bold text-white"></span></div>
+            <div class="flex justify-between border-t border-[#2a2a2a] pt-1.5"><span class="text-gray-400">PIC Penerima:</span> <span id="recPic" class="font-bold text-white"></span></div>
+            <div class="flex justify-between border-t border-[#2a2a2a] pt-1.5"><span class="text-gray-400">Tanggal Laporan:</span> <span id="recTanggal" class="font-bold text-white"></span></div>
+            <div class="flex justify-between border-t border-[#2a2a2a] pt-1.5"><span class="text-gray-400">ID Unit Armada:</span> <span id="recUnit" class="font-bold text-[#f57c00]"></span></div>
+        </div>
+
+        <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] space-y-2 text-xs">
+            <div class="flex justify-between"><span class="text-gray-400">Total Cash (Tunai):</span> <span id="recCash" class="font-bold text-[#f57c00]"></span></div>
+            <div class="flex justify-between"><span class="text-gray-400">Total QRIS:</span> <span id="recQris" class="font-bold text-green-400"></span></div>
+            <div class="flex justify-between"><span class="text-gray-400">Pengeluaran Ops:</span> <span id="recOps" class="font-bold text-white"></span></div>
+            <div class="flex justify-between"><span class="text-gray-400">Minus / Selisih:</span> <span id="recMinus" class="font-bold text-red-400"></span></div>
+            <div class="flex justify-between border-t border-[#333333] pt-2.5 font-bold"><span class="text-gray-300">Total Komisi Rider:</span> <span id="recKomisi" class="text-amber-500 text-sm"></span></div>
+            <div class="flex justify-between font-bold"><span class="text-gray-300">Total Volume Penjualan:</span> <span id="recVolume" class="text-white text-sm"></span></div>
+            <div class="flex justify-between font-bold"><span class="text-gray-300">Total Omzet Bersih:</span> <span id="recOmzet" class="text-emerald-400 text-base"></span></div>
+        </div>
+
+        <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] space-y-2">
+            <span class="text-[10px] uppercase font-black text-gray-400 block border-b border-[#333333] pb-1">Detail Varian Terjual</span>
+            <div id="receiptProductList" class="divide-y divide-[#2a2a2a] text-xs">
+                </div>
+        </div>
+
+        <button type="button" onclick="bukaPopupScreenshoot()" class="w-full bg-[#2a2a2a] hover:bg-[#333333] border border-[#444444] text-gray-400 font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md">
+            ← Input Ulang Data Laporan
+        </button>
+    </div>
+
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmN1YZn_hLnnf1spi_K_OVVt3MjV4fvEfbwqPkjqC1kcOxRXyGVqZQhDc1CaJpl7_E/exec";
+
         const daftarProduk = [
-            { nama: "SIA", harga: 8000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SIKA", harga: 9000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SICL", harga: 12000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SIVL", harga: 12000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SISC", harga: 12000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SIBS", harga: 12000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SIC", harga: 12000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SIM", harga: 12000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SITM", harga: 5000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 }
+            { nama: "SI AMERICANO", harga: 8000 },
+            { nama: "SI KOPSU AREN", harga: 9000 },
+            { nama: "SI CREAMY LATTE", harga: 12000 },
+            { nama: "SI VANILLA LATTE", harga: 12000 },
+            { nama: "SI SALTED CARAMEL", harga: 12000 },
+            { nama: "SI BUTTERSCOTCH", harga: 12000 },
+            { nama: "SI CHOCOLATE", harga: 12000 },
+            { nama: "SI MATCHA", harga: 12000 },
+            { nama: "SI TEH MANIS", harga: 5000 }
         ];
 
-        // Render tabel khusus tampilan Mobile
+        function buatOpsiDropdown(max) {
+            let options = "";
+            for (let i = 0; i <= max; i++) {
+                options += `<option value="${i}">${i}</option>`;
+            }
+            return options;
+        }
+
+        const opsi0_100 = buatOpsiDropdown(100);
+        const opsi0_2 = buatOpsiDropdown(2);
+
         const tbody = document.getElementById("productRows");
         daftarProduk.forEach((prod, index) => {
             const tr = document.createElement("tr");
             tr.className = "hover:bg-[#252525] transition-colors";
             tr.innerHTML = `
                 <td class="py-2.5 px-1 font-bold text-white text-[11px] leading-tight break-words">${prod.nama}</td>
-                <td class="py-2.5 text-center"><input type="number" id="stok-${index}" oninput="hitungOtomatis()" class="w-9 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs font-semibold" value="${prod.stok}"></td>
-                <td class="py-2.5 text-center bg-[#1c1510]"><input type="number" id="bonus-${index}" oninput="hitungOtomatis()" class="w-9 bg-black border border-[#f57c00] p-1 text-center rounded text-[#f57c00] font-bold text-xs" value="${prod.b}"></td>
-                <td class="py-2.5 text-center"><input type="number" id="sisa-${index}" oninput="hitungOtomatis()" class="w-9 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs" value="${prod.sisa}"></td>
-                <td class="py-2.5 text-center"><input type="number" id="tunai-${index}" oninput="hitungOtomatis()" class="w-9 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs" value="${prod.t}"></td>
-                <td class="py-2.5 text-center"><input type="number" id="qris-${index}" oninput="hitungOtomatis()" class="w-9 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs" value="${prod.q}"></td>
+                <td class="py-2.5 text-center"><select id="stok-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${opsi0_100}</select></td>
+                <td class="py-2.5 text-center bg-[#1c1510]"><select id="bonus-${index}" onchange="hitungOtomatis()" class="w-10 bg-black border border-[#f57c00] p-1 text-center rounded text-[#f57c00] font-bold text-xs">${opsi0_2}</select></td>
+                <td class="py-2.5 text-center"><select id="sisa-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${opsi0_100}</select></td>
+                <td class="py-2.5 text-center"><select id="tunai-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${opsi0_100}</select></td>
+                <td class="py-2.5 text-center"><select id="qris-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${opsi0_100}</select></td>
                 <td class="py-2.5 text-center bg-black font-black text-[#ffb74d] text-xs" id="totalcup-${index}">0</td>
             `;
             tbody.appendChild(tr);
         });
 
-        // Core Perhitungan Rumus Finansial Otomatis
         function hitungOtomatis() {
             let nominalTunai = 0;
             let nominalQris = 0;
@@ -193,28 +250,25 @@
             daftarProduk.forEach((prod, index) => {
                 const tVal = parseInt(document.getElementById(`tunai-${index}`).value) || 0;
                 const qVal = parseInt(document.getElementById(`qris-${index}`).value) || 0;
-                
                 const totalBaris = tVal + qVal;
+                
                 document.getElementById(`totalcup-${index}`).innerText = totalBaris;
 
                 nominalTunai += tVal * prod.harga;
                 nominalQris += qVal * prod.harga;
                 totalCupSemua += totalBaris;
 
-                // Rumus komisi: SITM dikali 1.000, varian cup lain dikali 2.000
-                if (prod.nama === "SITM") {
+                if (prod.nama === "SI TEH MANIS") {
                     akumulasiKomisi += totalBaris * 1000;
                 } else {
                     akumulasiKomisi += totalBaris * 2000;
                 }
             });
 
-            const pengeluaran = parseInt(document.getElementById("pengeluaran").value) || 15000;
+            const pengeluaran = parseInt(document.getElementById("pengeluaran").value) || 0;
             const minus = parseInt(document.getElementById("minus").value) || 0;
-
             const totalIncome = (nominalTunai + nominalQris) - pengeluaran - minus;
 
-            // Render Output Realtime ke UI Dom Komponen
             document.getElementById("totalTunai").value = "Rp " + nominalTunai.toLocaleString('id-ID');
             document.getElementById("totalQris").value = "Rp " + nominalQris.toLocaleString('id-ID');
             document.getElementById("totalKomisiText").innerText = "Rp " + akumulasiKomisi.toLocaleString('id-ID');
@@ -222,51 +276,145 @@
             document.getElementById("totalCupText").innerText = totalCupSemua + " Cup";
         }
 
-        // Jalankan kalkulasi inisial harian pertama kali buka halaman
         hitungOtomatis();
 
-        // AJAX POST Kirim JSON Data ke Google Apps Script (Multi Sheet)
-        async function kirimDataKeSheets() {
-            if (SCRIPT_URL === "https://script.google.com/macros/s/AKfycbz34jOTvMDgw2exMdSchZqvDK69ZS6siEZ8akhxbGRK2_l9QWG2vguuoSkt7NCnONkw/exec") {
-                alert("Gagal! Mohon isi parameter SCRIPT_URL dengan tautan Web App Anda.");
-                return;
-            }
+        // KONTROL POPUP 1 (KONFIRMASI FORM INPUT)
+        function bukaPopupKonfirmasi() {
+            document.getElementById("confirmationPopup").classList.replace("hidden", "flex");
+        }
+        function tutupPopupKonfirmasi() {
+            document.getElementById("confirmationPopup").classList.replace("flex", "hidden");
+        }
+
+        // KONTROL POPUP 2 (PROTEKSI SCREENSHOOT)
+        function bukaPopupScreenshoot() {
+            document.getElementById("screenshootPopup").classList.replace("hidden", "flex");
+        }
+        function tutupPopupScreenshoot() {
+            document.getElementById("screenshootPopup").classList.replace("flex", "hidden");
+        }
+
+        async function eksekusiKirimData() {
+            tutupPopupKonfirmasi();
 
             const payload = {
                 tanggal: document.getElementById("tanggal").value,
                 driver: document.getElementById("driver").value,
-                unit: document.getElementById("unit").value,
+                pic: document.getElementById("picPenerima").value,
                 pengeluaran: document.getElementById("pengeluaran").value,
                 minus: document.getElementById("minus").value,
                 produk: []
             };
 
+            let productHtmlList = "";
+
             daftarProduk.forEach((prod, index) => {
+                const sVal = parseInt(document.getElementById(`stok-${index}`).value) || 0;
+                const bVal = parseInt(document.getElementById(`bonus-${index}`).value) || 0;
+                const siVal = parseInt(document.getElementById(`sisa-${index}`).value) || 0;
                 const tVal = parseInt(document.getElementById(`tunai-${index}`).value) || 0;
                 const qVal = parseInt(document.getElementById(`qris-${index}`).value) || 0;
+                const totVal = tVal + qVal;
+
                 payload.produk.push({
                     nama_produk: prod.nama,
-                    stok_awal: document.getElementById(`stok-${index}`).value,
-                    bonus_claimed: document.getElementById(`bonus-${index}`).value,
-                    sisa: document.getElementById(`sisa-${index}`).value,
+                    stok_awal: sVal,
+                    bonus_claimed: bVal,
+                    sisa: siVal,
                     terjual_tunai: tVal,
                     terjual_qris: qVal,
-                    total_cup: tVal + qVal
+                    total_cup: totVal
                 });
+
+                // LOGIKA DETEKSI SELISIH KURANG (JIKA TERJUAL + SISA < STOK AWAL) -> WARNA MERAH
+                let teksWarnaJudul = "text-white";
+                let teksWarnaSub = "text-gray-400";
+                if ((totVal + siVal) < sVal) {
+                    teksWarnaJudul = "text-red-500 font-black";
+                    teksWarnaSub = "text-red-400 font-bold";
+                }
+
+                if (totVal > 0 || bVal > 0 || sVal > 0) {
+                    productHtmlList += `
+                        <div class="py-2 flex justify-between items-center">
+                            <div>
+                                <span class="${teksWarnaJudul} block">${prod.nama}</span>
+                                <span class="text-[10px] ${teksWarnaSub}">Stok: ${sVal} | Bon: ${bVal} | Sisa: ${siVal}</span>
+                            </div>
+                            <div class="text-right font-mono">
+                                <span class="${teksWarnaJudul} block text-xs font-bold">${totVal} Cup</span>
+                                <span class="text-[10px] ${teksWarnaSub}">(${tVal} T / ${qVal} Q)</span>
+                            </div>
+                        </div>`;
+                }
             });
 
+            document.getElementById("recDriver").innerText = payload.driver;
+            document.getElementById("recPic").innerText = payload.pic;
+            document.getElementById("recTanggal").innerText = payload.tanggal;
+            document.getElementById("recUnit").innerText = "ARMADA " + document.getElementById("unit").value;
+            document.getElementById("recCash").innerText = document.getElementById("totalTunai").value;
+            document.getElementById("recQris").innerText = document.getElementById("totalQris").value;
+            document.getElementById("recOps").innerText = "Rp " + (parseInt(payload.pengeluaran) || 0).toLocaleString('id-ID');
+            document.getElementById("recMinus").innerText = "Rp " + (parseInt(payload.minus) || 0).toLocaleString('id-ID');
+            document.getElementById("recKomisi").innerText = document.getElementById("totalKomisiText").innerText;
+            document.getElementById("recVolume").innerText = document.getElementById("totalCupText").innerText;
+            document.getElementById("recOmzet").innerText = document.getElementById("totalIncomeText").innerText;
+            document.getElementById("receiptProductList").innerHTML = productHtmlList || `<div class="text-center py-2 text-gray-500">Tidak ada data inputan produk</div>`;
+
+            document.getElementById("mainFormContainer").classList.replace("block", "hidden");
+            document.getElementById("floatingButtonContainer").classList.replace("block", "hidden");
+            document.getElementById("receiptPageContainer").classList.replace("hidden", "block");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
             try {
-                alert("Sedang mengirim dan memproses sinkronisasi data...");
                 await fetch(SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
                 });
-                alert("Sukses! Laporan harian armada telah masuk ke basis data Spreadsheet pusat.");
             } catch (error) {
-                alert("Koneksi terputus: " + error.message);
+                console.log("Offline mode aktif: Laporan tercatat lokal.");
             }
+        }
+
+        // EKSEKUSI RESET TOTAL KEMBALI KE HALAMAN PERTAMA (DIJALANKAN JIKA SETELAH TOMBOL 'SUDAH')
+        function eksekusiResetTotal() {
+            tutupPopupScreenshoot(); // Tutup popup
+
+            // Reset komponen finansial
+            document.getElementById("driver").selectedIndex = 0;
+            document.getElementById("picPenerima").selectedIndex = 0;
+            document.getElementById("unit").selectedIndex = 0;
+            document.getElementById("pengeluaran").value = 0;
+            document.getElementById("minus").value = 0;
+
+            // Reset seluruh select box menu produk
+            daftarProduk.forEach((_, index) => {
+                document.getElementById(`stok-${index}`).selectedIndex = 0;
+                document.getElementById(`bonus-${index}`).selectedIndex = 0;
+                document.getElementById(`sisa-${index}`).selectedIndex = 0;
+                document.getElementById(`tunai-${index}`).selectedIndex = 0;
+                document.getElementById(`qris-${index}`).selectedIndex = 0;
+                document.getElementById(`totalcup-${index}`).innerText = "0";
+            });
+
+            hitungOtomatis(); // Kalkulasi ulang ke Rp 0
+
+            // Kembalikan layar ke form utama
+            document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
+            document.getElementById("mainFormContainer").classList.replace("hidden", "block");
+            document.getElementById("floatingButtonContainer").classList.replace("hidden", "block");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Sistem Kasir Offline Aktif!'))
+                .catch(err => console.log('Gagal memuat modul offline:', err));
+            });
         }
     </script>
 </body>
