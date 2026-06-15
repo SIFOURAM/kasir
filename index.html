@@ -35,29 +35,16 @@
                 <div>
                     <label class="block text-[11px] font-medium text-gray-400 mb-1">PIC Penerima Setoran</label>
                     <select id="picPenerima" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-xs focus:border-[#f57c00] outline-none h-11">
-                        <option value="Muhammad Ishaq Alif Hanif">Muhammad Ishaq Alif Hanif</option>
-                        <option value="Indri Devi Anjani">Indri Devi Anjani</option>
-                        <option value="Rissa Alfiani Putri">Rissa Alfiani Putri</option>
+                        <option value="OWNER 1">OWNER 1</option>
+                        <option value="OWNER 2">OWNER 2</option>
+                        <option value="ADMIN PUSAT">ADMIN PUSAT</option>
                     </select>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Tanggal</label>
-                    <input type="date" id="tanggal" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2 text-[11px] focus:border-[#f57c00] outline-none h-11" value="2026-06-15">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Armada</label>
-                    <select id="unit" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-xs focus:border-[#f57c00] outline-none h-11">
-                        <option>01</option>
-                        <option>02</option>
-                        <option>03</option>
-                        <option>04</option>
-                        <option>05</option>
-                        <option>06</option>
-                    </select>
-                </div>
+            <div>
+                <label class="block text-[11px] font-medium text-gray-400 mb-1">Tanggal</label>
+                <input type="date" id="tanggal" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-xs focus:border-[#f57c00] outline-none h-11" value="2026-06-15">
             </div>
         </div>
 
@@ -174,7 +161,6 @@
             <div class="flex justify-between"><span class="text-gray-400">Nama Rider:</span> <span id="recDriver" class="font-bold text-white"></span></div>
             <div class="flex justify-between border-t border-[#2a2a2a] pt-1.5"><span class="text-gray-400">PIC Penerima:</span> <span id="recPic" class="font-bold text-white"></span></div>
             <div class="flex justify-between border-t border-[#2a2a2a] pt-1.5"><span class="text-gray-400">Tanggal Laporan:</span> <span id="recTanggal" class="font-bold text-white"></span></div>
-            <div class="flex justify-between border-t border-[#2a2a2a] pt-1.5"><span class="text-gray-400">ID Unit Armada:</span> <span id="recUnit" class="font-bold text-[#f57c00]"></span></div>
         </div>
 
         <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] space-y-2 text-xs">
@@ -278,7 +264,6 @@
 
         hitungOtomatis();
 
-        // KONTROL POPUP 1 (KONFIRMASI FORM INPUT)
         function bukaPopupKonfirmasi() {
             document.getElementById("confirmationPopup").classList.replace("hidden", "flex");
         }
@@ -286,7 +271,6 @@
             document.getElementById("confirmationPopup").classList.replace("flex", "hidden");
         }
 
-        // KONTROL POPUP 2 (PROTEKSI SCREENSHOOT)
         function bukaPopupScreenshoot() {
             document.getElementById("screenshootPopup").classList.replace("hidden", "flex");
         }
@@ -326,7 +310,6 @@
                     total_cup: totVal
                 });
 
-                // LOGIKA DETEKSI SELISIH KURANG (JIKA TERJUAL + SISA < STOK AWAL) -> WARNA MERAH
                 let teksWarnaJudul = "text-white";
                 let teksWarnaSub = "text-gray-400";
                 if ((totVal + siVal) < sVal) {
@@ -352,7 +335,6 @@
             document.getElementById("recDriver").innerText = payload.driver;
             document.getElementById("recPic").innerText = payload.pic;
             document.getElementById("recTanggal").innerText = payload.tanggal;
-            document.getElementById("recUnit").innerText = "ARMADA " + document.getElementById("unit").value;
             document.getElementById("recCash").innerText = document.getElementById("totalTunai").value;
             document.getElementById("recQris").innerText = document.getElementById("totalQris").value;
             document.getElementById("recOps").innerText = "Rp " + (parseInt(payload.pengeluaran) || 0).toLocaleString('id-ID');
@@ -379,18 +361,14 @@
             }
         }
 
-        // EKSEKUSI RESET TOTAL KEMBALI KE HALAMAN PERTAMA (DIJALANKAN JIKA SETELAH TOMBOL 'SUDAH')
         function eksekusiResetTotal() {
-            tutupPopupScreenshoot(); // Tutup popup
+            tutupPopupScreenshoot();
 
-            // Reset komponen finansial
             document.getElementById("driver").selectedIndex = 0;
             document.getElementById("picPenerima").selectedIndex = 0;
-            document.getElementById("unit").selectedIndex = 0;
             document.getElementById("pengeluaran").value = 0;
             document.getElementById("minus").value = 0;
 
-            // Reset seluruh select box menu produk
             daftarProduk.forEach((_, index) => {
                 document.getElementById(`stok-${index}`).selectedIndex = 0;
                 document.getElementById(`bonus-${index}`).selectedIndex = 0;
@@ -400,9 +378,8 @@
                 document.getElementById(`totalcup-${index}`).innerText = "0";
             });
 
-            hitungOtomatis(); // Kalkulasi ulang ke Rp 0
+            hitungOtomatis();
 
-            // Kembalikan layar ke form utama
             document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
             document.getElementById("mainFormContainer").classList.replace("hidden", "block");
             document.getElementById("floatingButtonContainer").classList.replace("hidden", "block");
