@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-gradient=1.0, user-scalable=no">
     <title>SI FOUR AM - Mobile Kasir</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,7 +13,7 @@
 </head>
 <body class="bg-[#111111] text-[#eeeeee] min-h-screen font-sans antialiased select-none">
 
-    <div class="sticky top-0 z-50 bg-[#f57c00] text-[#111111] p-4 text-center shadow-md border-b-2 border-black">
+    <div id="topHeaderBanner" class="sticky top-0 z-50 bg-[#f57c00] text-[#111111] p-4 text-center shadow-md border-b-2 border-black block">
         <h1 class="text-xl font-black tracking-widest">SI FOUR AM</h1>
         <p class="text-[10px] font-bold uppercase tracking-wider text-[#222222]">Mobile Report System</p>
     </div>
@@ -151,9 +152,15 @@
 
 
     <div id="receiptPageContainer" class="p-4 max-w-md mx-auto space-y-4 pb-12 hidden">
-        <div class="bg-amber-500 p-3 rounded-xl border border-black shadow-md text-center">
-            <p class="text-[11px] font-black text-[#111111] uppercase tracking-wider">
-                📸 SCREENSHOOT HALAMAN INI SEBAGAI BUKTI LAPORAN VALID
+        
+        <div class="text-center py-2 border-b-2 border-dashed border-[#333333]">
+            <h2 class="text-2xl font-black tracking-widest text-[#f57c00]">SI FOUR AM</h2>
+            <p class="text-[9px] uppercase tracking-widest text-gray-400">Official Mobile Receipt Proof</p>
+        </div>
+
+        <div class="bg-emerald-950/40 border border-emerald-500 p-3 rounded-xl text-center">
+            <p class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+                ✅ DATA BERHASIL DISINKRONISASI KE SERVER PUSAT
             </p>
         </div>
 
@@ -174,14 +181,20 @@
         </div>
 
         <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] space-y-2">
-            <span class="text-[10px] uppercase font-black text-gray-400 block border-b border-[#333333] pb-1">Detail Varian Terjual</span>
+            <span class="text-[10px] uppercase font-black text-gray-400 block border-b border-[#333333] pb-1">Detail Varian Terjual & Status Stok</span>
             <div id="receiptProductList" class="divide-y divide-[#2a2a2a] text-xs">
                 </div>
         </div>
 
-        <button type="button" onclick="bukaPopupScreenshoot()" class="w-full bg-[#2a2a2a] hover:bg-[#333333] border border-[#444444] text-gray-400 font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md">
-            ← Input Ulang Data Laporan
-        </button>
+        <div id="receiptActionButtons" class="space-y-3 pt-2">
+            <button type="button" onclick="ambilAutoScreenshoot()" class="w-full bg-[#f57c00] hover:bg-[#e65100] text-[#111111] font-black py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2">
+                📷 Ambil Screenshoot Laporan (Simpan Gambar)
+            </button>
+            
+            <button type="button" onclick="bukaPopupScreenshoot()" class="w-full bg-[#2a2a2a] hover:bg-[#333333] border border-[#444444] text-gray-400 font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider transition-all shadow-sm">
+                ← Input Ulang Data Laporan
+            </button>
+        </div>
     </div>
 
 
@@ -310,23 +323,37 @@
                     total_cup: totVal
                 });
 
-                let teksWarnaJudul = "text-white";
-                let teksWarnaSub = "text-gray-400";
-                if ((totVal + siVal) < sVal) {
-                    teksWarnaJudul = "text-red-500 font-black";
-                    teksWarnaSub = "text-red-400 font-bold";
+                // PERHITUNGAN VALIDASI SELISIH STOK (Total Terjual + Sisa - Stok Awal)
+                let selisihStok = (totVal + siVal) - sVal;
+                let teksWarna = "text-white";
+                let badgeSelisih = "";
+
+                if (selisihStok < 0) {
+                    // JIKA HASILNYA MINUS (KURANG STOK) -> KELAS WARNA MERAH
+                    teksWarna = "text-red-500 font-black";
+                    badgeSelisih = `<span class="bg-red-950 text-red-400 px-1.5 py-0.5 rounded font-bold ml-1 text-[10px]">Selisih: ${selisihStok} Cup</span>`;
+                } else if (selisihStok > 0) {
+                    // JIKA HASILNYA PLUS (KELEBIHAN STOK) -> KELAS WARNA HIJAU
+                    teksWarna = "text-green-500 font-black";
+                    badgeSelisih = `<span class="bg-green-950 text-green-400 px-1.5 py-0.5 rounded font-bold ml-1 text-[10px]">Selisih: +${selisihStok} Cup</span>`;
+                } else {
+                    // JIKA PAS (0)
+                    badgeSelisih = `<span class="text-gray-500 font-normal ml-1 text-[10px]">(Pas)</span>`;
                 }
 
-                if (totVal > 0 || bVal > 0 || sVal > 0) {
+                if (totVal > 0 || bVal > 0 || sVal > 0 || siVal > 0) {
                     productHtmlList += `
                         <div class="py-2 flex justify-between items-center">
                             <div>
-                                <span class="${teksWarnaJudul} block">${prod.nama}</span>
-                                <span class="text-[10px] ${teksWarnaSub}">Stok: ${sVal} | Bon: ${bVal} | Sisa: ${siVal}</span>
+                                <div class="flex items-center">
+                                    <span class="${teksWarna} block text-xs">${prod.nama}</span>
+                                    ${badgeSelisih}
+                                </div>
+                                <span class="text-[10px] text-gray-400 block mt-0.5">Stok: ${sVal} | Bon: ${bVal} | Sisa: ${siVal}</span>
                             </div>
                             <div class="text-right font-mono">
-                                <span class="${teksWarnaJudul} block text-xs font-bold">${totVal} Cup</span>
-                                <span class="text-[10px] ${teksWarnaSub}">(${tVal} T / ${qVal} Q)</span>
+                                <span class="${teksWarna} block text-xs font-bold">${totVal} Cup</span>
+                                <span class="text-[10px] text-gray-500">(${tVal} T / ${qVal} Q)</span>
                             </div>
                         </div>`;
                 }
@@ -342,8 +369,10 @@
             document.getElementById("recKomisi").innerText = document.getElementById("totalKomisiText").innerText;
             document.getElementById("recVolume").innerText = document.getElementById("totalCupText").innerText;
             document.getElementById("recOmzet").innerText = document.getElementById("totalIncomeText").innerText;
-            document.getElementById("receiptProductList").innerHTML = productHtmlList || `<div class="text-center py-2 text-gray-500">Tidak ada data inputan produk</div>`;
+            document.getElementById("receiptProductList").innerHTML = productHtmlList || `<div class="text-center py-2 text-gray-500">Tidak ada rincian data produk</div>`;
 
+            // KHUSUS HALAMAN STRUK: Sembunyikan Header Banner Utama & Tampilkan Layar Rekap
+            document.getElementById("topHeaderBanner").classList.replace("block", "hidden");
             document.getElementById("mainFormContainer").classList.replace("block", "hidden");
             document.getElementById("floatingButtonContainer").classList.replace("block", "hidden");
             document.getElementById("receiptPageContainer").classList.replace("hidden", "block");
@@ -357,8 +386,39 @@
                     body: JSON.stringify(payload)
                 });
             } catch (error) {
-                console.log("Offline mode aktif: Laporan tercatat lokal.");
+                console.log("Offline mode.");
             }
+        }
+
+        // FUNGSI UTAMA AUTO SCREENSHOOT LAYAR HP SECARA DIGITAL
+        function ambilAutoScreenshoot() {
+            const areaTombol = document.getElementById("receiptActionButtons");
+            
+            // 1. Sembunyikan tombol aksi agar tidak ikut terfoto di dalam struk
+            areaTombol.style.display = "none";
+
+            // Ambil data metadata untuk penamaan file hasil download
+            const namaRider = document.getElementById("recDriver").innerText.replace(/\s+/g, '_');
+            const tglLap = document.getElementById("recTanggal").value || "Laporan";
+
+            // 2. Eksekusi render seluruh halaman rekap menjadi file gambar .png
+            html2canvas(document.getElementById("receiptPageContainer"), {
+                backgroundColor: "#111111",
+                scale: 2, // Meningkatkan resolusi kualitas gambar agar tidak pecah saat diperbesar
+                useCORS: true
+            }).then(canvas => {
+                // Buat link download otomatis di sistem browser HP
+                const link = document.createElement("a");
+                link.download = `Laporan_${namaRider}_${tglLap}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+
+                // 3. Kembalikan/Munculkan kembali tombol aksi setelah screenshoot selesai diambil
+                areaTombol.style.display = "block";
+            }).catch(err => {
+                console.error("Gagal mengambil gambar:", err);
+                areaTombol.style.display = "block";
+            });
         }
 
         function eksekusiResetTotal() {
@@ -380,6 +440,8 @@
 
             hitungOtomatis();
 
+            // Munculkan kembali Header Banner Utama saat kembali ke halaman input kasir
+            document.getElementById("topHeaderBanner").classList.replace("hidden", "block");
             document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
             document.getElementById("mainFormContainer").classList.replace("hidden", "block");
             document.getElementById("floatingButtonContainer").classList.replace("hidden", "block");
@@ -388,9 +450,7 @@
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('Sistem Kasir Offline Aktif!'))
-                .catch(err => console.log('Gagal memuat modul offline:', err));
+                navigator.serviceWorker.register('./sw.js').catch(err => {});
             });
         }
     </script>
