@@ -85,10 +85,10 @@
                     <label class="block text-[11px] font-medium text-gray-400 mb-1">Pengeluaran Ops (Rp)</label>
                     <input type="number" id="pengeluaran" oninput="hitungOtomatis()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-sm focus:border-[#f57c00] outline-none h-11" value="0">
                 </div>
-                <div>
-                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Minus/Selisih (Rp)</label>
-                    <input type="number" id="minus" oninput="hitungOtomatis()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-sm focus:border-[#f57c00] outline-none h-11" value="0">
-                </div>
+<div>
+    <label class="block text-[11px] font-medium text-gray-400 mb-1">Minus/Selisih Stok (Rp)</label>
+    <input type="text" id="minus" readonly class="w-full bg-black/40 border border-red-900/50 text-red-400 rounded-lg p-2.5 text-sm font-bold outline-none h-11" value="Rp 0">
+</div>
             </div>
 
             <div class="bg-[#181818] p-3 rounded-xl border border-[#2b2b2b] space-y-2">
@@ -191,41 +191,50 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmN1YZn_hLnnf1spi_K_OVVt3MjV4fvEfbwqPkjqC1kcOxRXyGVqZQhDc1CaJpl7_E/exec";
 
         const daftarProduk = [
-            { nama: "SI AMERICANO", harga: 8000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SI KOPSU AREN", harga: 9000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SI CREAMY LATTE", harga: 12000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SI VANILLA LATTE", harga: 12000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SI SALTED CARAMEL", harga: 12000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SI BUTTERSCOTCH", harga: 12000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SI CHOCOLATE", harga: 12000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SI MATCHA", harga: 12000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 },
-            { nama: "SI TEH MANIS", harga: 5000, stok: 0, b: 0, sisa: 0, t: 0, q: 0 }
+            { nama: "SI AMERICANO", harga: 8000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 },
+            { nama: "SI KOPSU AREN", harga: 9000, stok: 15, b: 0, sisa: 0, t: 0, q: 0 },
+            { nama: "SI CREAMY LATTE", harga: 12000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 },
+            { nama: "SI VANILLA LATTE", harga: 12000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 },
+            { nama: "SI SALTED CARAMEL", harga: 12000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 },
+            { nama: "SI BUTTERSCOTCH", harga: 12000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 },
+            { nama: "SI CHOCOLATE", harga: 12000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 },
+            { nama: "SI MATCHA", harga: 12000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 },
+            { nama: "SI TEH MANIS", harga: 5000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 }
         ];
 
-        function buatOpsiMaksimal(max, nilaiTerpilih) {
-            let options = "";
-            for (let i = 0; i <= max; i++) {
-                options += `<option value="${i}" ${i === nilaiTerpilih ? 'selected' : ''}>${i}</option>`;
-            }
-            return options;
-        }
+// 1. Fungsi pembuat opsi tetap dipertahankan
+function buatOpsiMaksimal(max, nilaiTerpilih) {
+    let options = "";
+    for (let i = 0; i <= max; i++) {
+        options += `<option value="${i}" ${i === nilaiTerpilih ? 'selected' : ''}>${i}</option>`;
+    }
+    return options;
+}
 
-        // Render Baris Tabel Input Utama
-        const tbody = document.getElementById("productRows");
-        daftarProduk.forEach((prod, index) => {
-            const tr = document.createElement("tr");
-            tr.className = "hover:bg-[#252525] transition-colors";
-            tr.innerHTML = `
-                <td class="py-2.5 px-1 font-bold text-white text-[11px] leading-tight break-words">${prod.nama}</td>
-                <td class="py-2.5 text-center"><select id="stok-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(100, prod.stok)}</select></td>
-                <td class="py-2.5 text-center bg-[#1c1510]"><select id="bonus-${index}" onchange="hitungOtomatis()" class="w-10 bg-black border border-[#f57c00] p-1 text-center rounded text-[#f57c00] font-bold text-xs">${buatOpsiMaksimal(2, prod.b)}</select></td>
-                <td class="py-2.5 text-center"><select id="sisa-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(100, prod.sisa)}</select></td>
-                <td class="py-2.5 text-center"><select id="tunai-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(100, prod.t)}</select></td>
-                <td class="py-2.5 text-center"><select id="qris-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(100, prod.q)}</select></td>
-                <td class="py-2.5 text-center bg-black font-black text-[#ffb74d] text-xs" id="totalcup-${index}">0</td>
-            `;
-            tbody.appendChild(tr);
-        });
+// Render Baris Tabel Input Utama dengan Batas Dropdown Dinamis & Warna Bonus Baru
+const tbody = document.getElementById("productRows");
+daftarProduk.forEach((prod, index) => {
+    // Tentukan batas maksimal dropdown
+    let maxDropdown = 20; 
+    if (prod.nama === "SI KOPSU AREN") {
+        maxDropdown = 50;
+    }
+
+    const tr = document.createElement("tr");
+    tr.className = "hover:bg-[#252525] transition-colors";
+    tr.innerHTML = `
+        <td class="py-2.5 px-1 font-bold text-white text-[11px] leading-tight break-words">${prod.nama}</td>
+        <td class="py-2.5 text-center"><select id="stok-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(maxDropdown, prod.stok)}</select></td>
+        
+        <td class="py-2.5 text-center bg-[#1c1c1c]"><select id="bonus-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#666666] p-1 text-center rounded text-white font-bold text-xs">${buatOpsiMaksimal(2, prod.b)}</select></td>
+        
+        <td class="py-2.5 text-center"><select id="sisa-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(maxDropdown, prod.sisa)}</select></td>
+        <td class="py-2.5 text-center"><select id="tunai-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(maxDropdown, prod.t)}</select></td>
+        <td class="py-2.5 text-center"><select id="qris-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(maxDropdown, prod.q)}</select></td>
+        <td class="py-2.5 text-center bg-black font-black text-[#ffb74d] text-xs" id="totalcup-${index}">0</td>
+    `;
+    tbody.appendChild(tr);
+});
 
         // FUNGSI BARU: Menyimpan data sementara agar saat REFRESH, data tidak hilang
         function simpanStateKeStorage() {
@@ -272,44 +281,71 @@
             }
         }
 
-        function hitungOtomatis() {
-            let nominalTunai = 0;
-            let nominalQris = 0;
-            let totalCupSemua = 0;
-            let akumulasiKomisi = 0;
+function hitungOtomatis() {
+    let totalOmzetDariStok = 0;
+    let totalCupSemua = 0;
+    let akumulasiKomisi = 0;
+    let nominalTunai = 0; 
+    let nominalQris = 0;
+    let totalRupiahMinusStok = 0; // Menampung total kerugian cup yang hilang
 
-            daftarProduk.forEach((prod, index) => {
-                const tVal = parseInt(document.getElementById(`tunai-${index}`).value) || 0;
-                const qVal = parseInt(document.getElementById(`qris-${index}`).value) || 0;
-                const totalBaris = tVal + qVal;
-                
-                document.getElementById(`totalcup-${index}`).innerText = totalBaris;
+    daftarProduk.forEach((prod, index) => {
+        // Ambil data fisik logistik
+        const sVal = parseInt(document.getElementById(`stok-${index}`).value) || 0;
+        const bVal = parseInt(document.getElementById(`bonus-${index}`).value) || 0; // Bonus rider tetap diambil untuk hitung komisi/omzet bersih pusat jika diperlukan
+        const siVal = parseInt(document.getElementById(`sisa-${index}`).value) || 0;
+        
+        // Ambil data laporan penjualan dari driver
+        const tVal = parseInt(document.getElementById(`tunai-${index}`).value) || 0;
+        const qVal = parseInt(document.getElementById(`qris-${index}`).value) || 0;
 
-                nominalTunai += tVal * prod.harga;
-                nominalQris += qVal * prod.harga;
-                totalCupSemua += totalBaris;
+        // 1. Hitung berapa cup yang seharusnya terjual secara murni fisik (Tanpa mengurangi/menambah bonus)
+        const cupSeharusnyaTerjual = sVal - siVal;
+        
+        // 2. Hitung berapa cup yang dilaporkan oleh driver di kolom tunai & qris
+        const cupDilaporkanDriver = tVal + qVal;
 
-                if (prod.nama === "SI TEH MANIS") {
-                    akumulasiKomisi += totalBaris * 1000;
-                } else {
-                    akumulasiKomisi += totalBaris * 2000;
-                }
-            });
-
-            const pengeluaran = parseInt(document.getElementById("pengeluaran").value) || 0;
-            const minus = parseInt(document.getElementById("minus").value) || 0;
-            const totalIncome = (nominalTunai + nominalQris) - pengeluaran - minus;
-
-            document.getElementById("totalTunai").value = "Rp " + nominalTunai.toLocaleString('id-ID');
-            document.getElementById("totalQris").value = "Rp " + nominalQris.toLocaleString('id-ID');
-            document.getElementById("totalKomisiText").innerText = "Rp " + akumulasiKomisi.toLocaleString('id-ID');
-            document.getElementById("totalIncomeText").innerText = "Rp " + totalIncome.toLocaleString('id-ID');
-            document.getElementById("totalCupText").innerText = totalCupSemua + " Cup";
-
-            // Setiap ada perubahan ketikan/hitungan langsung auto-save state
-            simpanStateKeStorage();
+        // RUMUS OTOMATIS MINUS: Jika cup dilaporkan < cup seharusnya terjual, hitung ruginya
+        if (cupDilaporkanDriver < cupSeharusnyaTerjual) {
+            const selisihCupMinus = cupSeharusnyaTerjual - cupDilaporkanDriver;
+            totalRupiahMinusStok += selisihCupMinus * prod.harga;
         }
 
+        // Tampilkan total cup terjual di kolom "Tot" tabel berdasarkan input driver
+        document.getElementById(`totalcup-${index}`).innerText = cupDilaporkanDriver;
+
+        // Akumulasi kasir untuk display box bawah
+        nominalTunai += tVal * prod.harga;
+        nominalQris += qVal * prod.harga;
+        totalCupSemua += cupDilaporkanDriver;
+
+        // Komisi Rider tetap dihitung berdasarkan cup yang benar-benar berhasil dilaporkan/dijual
+        if (prod.nama === "SI TEH MANIS") {
+            akumulasiKomisi += cupDilaporkanDriver * 1000;
+        } else {
+            akumulasiKomisi += cupDilaporkanDriver * 2000;
+        }
+    });
+
+    const pengeluaran = parseInt(document.getElementById("pengeluaran").value) || 0;
+    
+    // Total Omzet Kotor dari uang yang dilaporkan driver
+    const totalOmzetDilaporkan = nominalTunai + nominalQris;
+
+    // RUMUS FINAL OMZET BERSIH: Total Uang Diterima - Pengeluaran - Otomatis Minus Rupiah Kerugian Cup
+    const totalIncome = totalOmzetDilaporkan - pengeluaran - totalRupiahMinusStok;
+
+    // Update Angka ke Tampilan Aplikasi (UI HP)
+    document.getElementById("totalTunai").value = "Rp " + nominalTunai.toLocaleString('id-ID');
+    document.getElementById("totalQris").value = "Rp " + nominalQris.toLocaleString('id-ID');
+    document.getElementById("minus").value = "Rp " + totalRupiahMinusStok.toLocaleString('id-ID'); // Set otomatis ke kolom minus
+    document.getElementById("totalKomisiText").innerText = "Rp " + akumulasiKomisi.toLocaleString('id-ID');
+    document.getElementById("totalIncomeText").innerText = "Rp " + totalIncome.toLocaleString('id-ID');
+    document.getElementById("totalCupText").innerText = totalCupSemua + " Cup";
+
+    // Simpan data state agar saat di-refresh tidak hilang
+    simpanStateKeStorage();
+}
         // Jalankan pemuatan data storage saat pertama kali web dibuka/refresh
         muatStateDariStorage();
         hitungOtomatis();
