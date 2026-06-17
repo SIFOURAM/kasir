@@ -10,16 +10,30 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111111">
+
+    <style>
+        /* Efek Kelap-Kelip untuk Kriteria PopUp Minus */
+        @keyframes blink-border {
+            0%, 100% { border-color: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.7); }
+            50% { border-color: #7f1d1d; box-shadow: 0 0 2px rgba(0, 0, 0, 0); }
+        }
+        .popup-danger-blink {
+            animation: blink-border 1s infinite ease-in-out;
+        }
+    </style>
 </head>
 <body class="bg-[#111111] text-[#eeeeee] min-h-screen font-sans antialiased select-none">
 
+    <!-- Header Banner -->
     <div id="topHeaderBanner" class="sticky top-0 z-50 bg-[#f57c00] text-[#111111] p-4 text-center shadow-md border-b-2 border-black block">
         <h1 class="text-xl font-black tracking-widest">SI FOUR AM</h1>
         <p class="text-[10px] font-bold uppercase tracking-wider text-[#222222]">Official Mobile Report System</p>
     </div>
 
+    <!-- Main Form Content -->
     <div id="mainFormContainer" class="p-4 max-w-md mx-auto space-y-5 pb-24 block">
         
+        <!-- Metadata Section -->
         <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] shadow-sm">
             <div class="grid grid-cols-12 gap-2">
                 <div class="col-span-5">
@@ -47,11 +61,12 @@
                 </div>
                 <div class="col-span-3">
                     <label class="block text-[10px] font-medium text-gray-400 mb-1">Tanggal</label>
-                    <input type="date" id="tanggal" onchange="simpanStateKeStorage()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-1.5 py-1 text-[10px] focus:border-[#f57c00] outline-none h-10" value="2026-06-16">
+                    <input type="date" id="tanggal" onchange="simpanStateKeStorage()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-1.5 py-1 text-[10px] focus:border-[#f57c00] outline-none h-10">
                 </div>
             </div>
         </div>
 
+        <!-- Product Table Section -->
         <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] shadow-sm">
             <div class="overflow-x-auto -mx-2 px-2">
                 <table class="w-full text-left text-xs text-gray-300 min-w-[340px]">
@@ -72,6 +87,7 @@
             </div>
         </div>
 
+        <!-- Financial Summary Section -->
         <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] shadow-sm space-y-4">
             <div class="grid grid-cols-2 gap-3">
                 <div class="bg-black/30 p-2.5 rounded-lg border border-[#333333]">
@@ -112,12 +128,14 @@
         </div>
     </div>
 
+    <!-- Bottom Action Anchor -->
     <div id="floatingButtonContainer" class="fixed bottom-0 left-0 right-0 p-4 bg-[#111111]/90 backdrop-blur-md border-t border-[#222222] max-w-md mx-auto block">
         <button type="button" onclick="bukaPopupKonfirmasiSimpan()" class="w-full bg-[#f57c00] hover:bg-[#e65100] active:scale-[0.98] text-[#111111] font-black py-3.5 px-4 rounded-xl uppercase tracking-wider text-sm transition-all duration-150 shadow-lg">
             Simpan & Sinkronisasi Data
         </button>
     </div>
 
+    <!-- Receipt / Invoice Section -->
     <div id="receiptPageContainer" class="w-full min-h-screen bg-[#111111] p-4 text-center hidden">
         <div class="max-w-md mx-auto space-y-4">
             
@@ -158,7 +176,7 @@
                 <button type="button" onclick="unduhDanBagikanLaporan()" class="w-full bg-[#f57c00] hover:bg-[#e65100] text-[#111111] font-black py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2">
                     📥 Unduh Struk & Bagikan ke WhatsApp
                 </button>
-                <button type="button" onclick="bukaPopupInputUlang()" class="w-full bg-[#2a2a2a] hover:bg-[#333333] border border-[#444444] text-gray-400 font-bold py-2 px-4 rounded-xl text-xs uppercase tracking-wider">
+                <button type="button" onclick="kembaliKeHalamanInputTanpaReset()" class="w-full bg-[#2a2a2a] hover:bg-[#333333] border border-[#444444] text-gray-400 font-bold py-2 px-4 rounded-xl text-xs uppercase tracking-wider">
                     ← Input Ulang Data Laporan
                 </button>
             </div>
@@ -166,9 +184,10 @@
         </div>
     </div>
 
+    <!-- Modal Popup Konfirmasi Simpan Dinamis -->
     <div id="popupSimpan" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 hidden">
-        <div class="bg-[#1e1e1e] border border-[#333333] w-full max-w-xs rounded-2xl p-5 text-center space-y-4 shadow-xl">
-            <p class="text-sm font-bold text-white">Apakah data laporan yang Anda masukkan sudah sesuai?</p>
+        <div id="popupSimpanBox" class="bg-[#1e1e1e] border border-[#333333] w-full max-w-xs rounded-2xl p-5 text-center space-y-4 shadow-xl transition-all">
+            <p id="popupSimpanMessage" class="text-sm font-bold text-white">Apakah data laporan yang Anda masukkan sudah sesuai?</p>
             <div class="grid grid-cols-2 gap-3 pt-2">
                 <button type="button" onclick="tutupPopupSimpan(false)" class="bg-[#2a2a2a] hover:bg-[#333333] text-gray-400 font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider">Tidak</button>
                 <button type="button" onclick="tutupPopupSimpan(true)" class="bg-[#f57c00] hover:bg-[#e65100] text-[#111111] font-black py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider">Ya</button>
@@ -176,18 +195,20 @@
         </div>
     </div>
 
-    <div id="popupInputUlang" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 hidden">
-        <div class="bg-[#1e1e1e] border border-[#333333] w-full max-w-xs rounded-2xl p-5 text-center space-y-3 shadow-xl">
-            <p class="text-sm font-bold text-white">Apakah kamu sudah screenshoot bukti laporan setoran?</p>
-            <div class="flex flex-col gap-2.5 pt-2">
-                <div class="grid grid-cols-2 gap-2">
-                    <button type="button" onclick="tutupPopupInputUlang('belum')" class="bg-red-950 border border-red-800 text-red-400 font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider">Belum</button>
-                    <button type="button" onclick="tutupPopupInputUlang('sudah')" class="bg-emerald-500 hover:bg-emerald-600 text-black font-black py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider">Sudah</button>
-                </div>
-                <button type="button" onclick="tutupPopupInputUlang('revisi')" class="w-full bg-[#2a2a2a] hover:bg-[#333333] border border-[#f57c00] text-[#f57c00] font-black py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider">
-                    🛠️ Revisi Data Sebelumnya
-                </button>
+    <!-- Modal Popup Sukses Kirim WA (Bisa Klik Dimana Saja Untuk Reset) -->
+    <div id="popupKirimSukses" onclick="bukaPencetDimanaSajaMeresetWeb()" class="fixed inset-0 z-[120] flex items-center justify-center bg-black/85 px-4 hidden">
+        <div class="bg-[#1e1e1e] border-2 border-emerald-500 w-full max-w-xs rounded-2xl p-6 text-center space-y-4 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="mx-auto w-16 h-16 bg-emerald-950/80 border border-emerald-500 text-emerald-400 text-3xl flex items-center justify-center rounded-full font-black animate-bounce shadow">
+                ✓
             </div>
+            <div class="space-y-1">
+                <h3 class="text-base font-black text-white tracking-wide uppercase">Report Data Berhasil Dikirim</h3>
+                <p class="text-xs text-gray-400">Sistem otomatis menyelaraskan stock log harian.</p>
+            </div>
+            <button type="button" onclick="bukaPencetDimanaSajaMeresetWeb()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-black py-3 px-4 rounded-xl text-xs uppercase tracking-widest shadow-md">
+                Kirim Kembali
+            </button>
+            <p class="text-[9px] text-gray-500 italic pt-1">Klik tombol diatas atau pencet di mana saja untuk mereset inputan kasir</p>
         </div>
     </div>
 
@@ -206,6 +227,17 @@
             { nama: "SI TEH MANIS", harga: 5000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 }
         ];
 
+        // Otomatis Atur Kolom Tanggal ke Hari Ini Secara Realtime
+        function setTanggalHariIniOtomatis() {
+            const hariIni = new Date();
+            const yyyy = hariIni.getFullYear();
+            let mm = hariIni.getMonth() + 1;
+            let dd = hariIni.getDate();
+            if (dd < 10) dd = '0' + dd;
+            if (mm < 10) mm = '0' + mm;
+            document.getElementById('tanggal').value = yyyy + '-' + mm + '-' + dd;
+        }
+
         function buatOpsiMaksimal(max, nilaiTerpilih) {
             let options = "";
             for (let i = 0; i <= max; i++) {
@@ -214,6 +246,7 @@
             return options;
         }
 
+        // Render Dropdown Tabel Menu
         const tbody = document.getElementById("productRows");
         daftarProduk.forEach((prod, index) => {
             let maxDropdown = 20; 
@@ -295,9 +328,12 @@
                     if(document.getElementById(`tunai-${index}`)) document.getElementById(`tunai-${index}`).value = prod.tunai;
                     if(document.getElementById(`qris-${index}`)) document.getElementById(`qris-${index}`).value = prod.qris;
                 });
+            } else {
+                setTanggalHariIniOtomatis();
             }
         }
 
+        // Mempertahankan Warna Dropdown Selama Isinya Lebih Dari 0
         function updateWarnaDropdown(element) {
             if (parseInt(element.value) > 0) {
                 element.classList.remove("text-white");
@@ -308,12 +344,14 @@
             }
         }
 
+        let globalRupiahMinusStok = 0; // Variabel kontrol pengecekan kriteria popup
+
         function hitungOtomatis() {
             let totalCupSemua = 0;
             let akumulasiKomisi = 0;
             let nominalTunai = 0; 
             let nominalQris = 0;
-            let totalRupiahMinusStok = 0;
+            totalRupiahMinusStok = 0;
 
             daftarProduk.forEach((prod, index) => {
                 const sVal = parseInt(document.getElementById(`stok-${index}`).value) || 0;
@@ -343,6 +381,7 @@
                 }
             });
 
+            globalRupiahMinusStok = totalRupiahMinusStok;
             const pengeluaran = parseInt(document.getElementById("pengeluaran").value) || 0;
             const totalOmzetDilaporkan = nominalTunai + nominalQris;
             const totalIncome = totalOmzetDilaporkan - pengeluaran - totalRupiahMinusStok;
@@ -357,19 +396,38 @@
             simpanStateKeStorage();
         }
 
-        // Interseptor sinkronisasi pemuatan warna saat web pertama kali di-load
-        const fungsiMuatLama = muatStateDariStorage;
-        muatStateDariStorage = function() {
-            if (typeof fungsiMuatLama === 'function') fungsiMuatLama();
-            document.querySelectorAll("#productRows select").forEach(select => {
-                updateWarnaDropdown(select);
-            });
-        }
-
-        muatStateDariStorage();
-        hitungOtomatis();
-
+        // Pengecekan Validasi Rider & PIC sebelum melangkah ke Halaman Selanjutnya
         function bukaPopupKonfirmasiSimpan() {
+            const driverValue = document.getElementById("driver").value;
+            const picValue = document.getElementById("picPenerima").value;
+
+            if (driverValue === "") {
+                alert("Gagal memproses! Kolom nama crew masih di pilihan -- Pilih Rider --");
+                return;
+            }
+            if (picValue === "") {
+                alert("Gagal memproses! Kolom PIC penerima masih di pilihan -- Pilih PIC --");
+                return;
+            }
+
+            const pBox = document.getElementById("popupSimpanBox");
+            const pTxt = document.getElementById("popupSimpanMessage");
+
+            // Reset kelas bawaan popup terlebih dahulu
+            pBox.classList.remove("popup-danger-blink", "border-red-500", "border-[#333333]");
+            pTxt.classList.remove("text-red-500", "text-white");
+
+            // Kriteria 1 & 2 Penyesuaian Pesan Otomatis berdasarkan status minus keuangan
+            if (globalRupiahMinusStok > 0) {
+                pTxt.innerText = "⚠️ Alert data ! Ada selisih data, apakah data sudah benar?";
+                pTxt.classList.add("text-red-500");
+                pBox.classList.add("popup-danger-blink", "border-red-500");
+            } else {
+                pTxt.innerText = "Data benar tidak ada minus, lanjutkan";
+                pTxt.classList.add("text-white");
+                pBox.classList.add("border-[#333333]");
+            }
+
             document.getElementById("popupSimpan").classList.replace("hidden", "flex");
         }
 
@@ -469,21 +527,7 @@
             }
         }
 
-        function bukaPopupInputUlang() {
-            document.getElementById("popupInputUlang").classList.replace("hidden", "flex");
-        }
-
-        function tutupPopupInputUlang(aksi) {
-            document.getElementById("popupInputUlang").classList.replace("flex", "hidden");
-            
-            if (aksi === 'sudah') {
-                sessionStorage.removeItem("sifouram_pos_state");
-                eksekusiResetFormKembaliKeAwal();
-            } else if (aksi === 'revisi') {
-                kembaliKeHalamanInputTanpaReset();
-            }
-        }
-
+        // Langsung Kembali ke Halaman Input Tanpa Memunculkan Popup Apapun
         function kembaliKeHalamanInputTanpaReset() {
             document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
             document.getElementById("topHeaderBanner").classList.replace("hidden", "block");
@@ -492,6 +536,7 @@
             window.scrollTo({ top: 0, behavior: 'instant' });
         }
 
+        // Reset Fleksibel: Mengembalikan Data Namun Angka Dropdown Stok Awal Tetap Dipertahankan
         function eksekusiResetFormKembaliKeAwal() {
             document.getElementById("pengeluaran").value = "0";
             document.getElementById("minus").value = "Rp 0";
@@ -499,7 +544,7 @@
             document.getElementById("picPenerima").selectedIndex = 0;
             
             daftarProduk.forEach((_, index) => {
-                document.getElementById(`stok-${index}`).selectedIndex = 0;
+                // Nilai stok-[index] sengaja dilewati / tidak diubah ke index 0 agar jumlah stok sebelumnya bertahan
                 document.getElementById(`bonus-${index}`).selectedIndex = 0;
                 document.getElementById(`sisa-${index}`).selectedIndex = 0;
                 document.getElementById(`tunai-${index}`).selectedIndex = 0;
@@ -511,6 +556,7 @@
             });
             
             hitungOtomatis();
+            setTanggalHariIniOtomatis();
 
             document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
             document.getElementById("topHeaderBanner").classList.replace("hidden", "block");
@@ -531,8 +577,20 @@
             const ops = document.getElementById("recOps").innerText;
             const minus = document.getElementById("recMinus").innerText;
             const komisi = document.getElementById("recKomisi").innerText;
-            const volume = document.getElementById("recVolume").innerText;
+            const volumeStr = document.getElementById("recVolume").innerText;
             const omzet = document.getElementById("recOmzet").innerText;
+
+            // Ekstrak angka murni volume cup terjual untuk menentukan 3 kriteria motivasi footer
+            const angkaCupMurni = parseInt(volumeStr.replace(/[^0-9]/g, "")) || 0;
+            let teksMotivasiFooter = "";
+
+            if (angkaCupMurni <= 30) {
+                teksMotivasiFooter = "Tetap semangat! Setiap tetes kopi yang terjual adalah langkah awal menuju kesuksesan yang lebih besar. Besok kita berjuang lebih keras lagi, jangan pernah menyerah! 💪✨";
+            } else if (angkaCupMurni >= 31 && angkaCupMurni <= 49) {
+                teksMotivasiFooter = "Alhamdulillah, pencapaian yang luar biasa hari ini! Sedikit lagi menyentuh target utama. Mari evaluasi rute penjualan agar besok bisa melesat lebih tinggi lagi! 🚀📈";
+            } else {
+                teksMotivasiFooter = "🎉 Selamat! Target penjualan hari ini berhasil ditembus dengan sangat gemilang! Kerja kerasmu membuahkan hasil nyata, pertahankan konsistensi luar biasa ini dan jadilah yang terbaik! 🏆☕";
+            }
 
             html2canvas(document.getElementById("receiptPageContainer"), {
                 backgroundColor: "#111111",
@@ -545,7 +603,6 @@
                 const namaFileLaporan = `STRUK_${rider.replace(/\s+/g, '_')}_${tanggal}.png`;
                 const fileGambarObj = new File([blob], namaFileLaporan, { type: 'image/png' });
 
-                // FIX: Penambahan detail isi pesan teks lengkap untuk dibagikan ke WhatsApp
                 const teksWhatsApp = 
 `*LAPORAN SETORAN HARIAN SI FOUR AM* ☕
 -----------------------------------------
@@ -558,11 +615,12 @@
 📉 *Pengeluaran Ops:* ${ops}
 ⚠️ *Minus / Selisih:* ${minus}
 
-📊 *Total Penjualan:* ${volume}
+📊 *Total Penjualan:* ${volumeStr}
 💵 *Hak Komisi Rider:* ${komisi}
 🚀 *Omzet Bersih Pusat:* ${omzet}
 -----------------------------------------
-_File Struk Gambar berhasil terunduh otomatis ke galeri HP Driver._`;
+💡 *Pesan Motivasi:* 
+_${teksMotivasiFooter}_`;
 
                 if (navigator.canShare && navigator.canShare({ files: [fileGambarObj] })) {
                     try {
@@ -571,6 +629,8 @@ _File Struk Gambar berhasil terunduh otomatis ke galeri HP Driver._`;
                             title: 'Laporan Finansial SI FOUR AM',
                             text: teksWhatsApp
                         });
+                        // Munculkan popup checklist sukses setelah dipindahkan ke WhatsApp
+                        tampilkanPopupChecklistSukses();
                     } catch (err) {
                         alihkanKeWhatsAppManual(canvas, namaFileLaporan, teksWhatsApp);
                     }
@@ -589,10 +649,33 @@ _File Struk Gambar berhasil terunduh otomatis ke galeri HP Driver._`;
             tautanUnduhVirtual.href = canvas.toDataURL("image/png");
             tautanUnduhVirtual.click();
 
-            alert("Gambar struk laporan berhasil disimpan! Sistem beralih ke WhatsApp.");
+            tampilkanPopupChecklistSukses();
             const kirimUrlWhatsApp = `https://wa.me/6281283578212?text=${encodeURIComponent(teksWhatsApp)}`;
             window.open(kirimUrlWhatsApp, '_blank');
         }
+
+        function tampilkanPopupChecklistSukses() {
+            document.getElementById("popupKirimSukses").classList.replace("hidden", "flex");
+        }
+
+        // Fungsi Reset Ketika Menyentuh Di Mana Saja / Klik Tombol Kirim Kembali
+        function bukaPencetDimanaSajaMeresetWeb() {
+            document.getElementById("popupKirimSukses").classList.replace("flex", "hidden");
+            sessionStorage.removeItem("sifouram_pos_state");
+            eksekusiResetFormKembaliKeAwal();
+        }
+
+        // Interseptor sinkronisasi pemuatan warna saat web pertama kali di-load
+        let fungsiMuatLama = muatStateDariStorage;
+        muatStateDariStorage = function() {
+            if (typeof fungsiMuatLama === 'function') fungsiMuatLama();
+            document.querySelectorAll("#productRows select").forEach(select => {
+                updateWarnaDropdown(select);
+            });
+        }
+
+        muatStateDariStorage();
+        hitungOtomatis();
     </script>
 </body>
 </html>
