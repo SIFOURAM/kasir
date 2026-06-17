@@ -146,6 +146,7 @@
                 <div class="flex justify-between"><span class="text-gray-400">Nama Rider / Crew:</span> <span id="recDriver" class="font-bold text-white"></span></div>
                 <div class="flex justify-between border-t border-[#2a2a2a] pt-1"><span class="text-gray-400">PIC Penerima Setoran:</span> <span id="recPic" class="font-bold text-[#f57c00]"></span></div>
                 <div class="flex justify-between border-t border-[#2a2a2a] pt-1"><span class="text-gray-400">Tanggal Laporan:</span> <span id="recTanggal" class="font-bold text-white"></span></div>
+                <div class="flex justify-between border-t border-[#2a2a2a] pt-1"><span class="text-gray-400">Waktu Transaksi:</span> <span id="recWaktu" class="font-bold text-amber-500"></span></div>
             </div>
 
             <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] space-y-2 text-center mx-auto">
@@ -176,7 +177,6 @@
         </div>
     </div>
 
-    <!-- POPUP SIMPAN DINAMIS BERDASARKAN KRITERIA MINUS -->
     <div id="popupSimpan" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 hidden">
         <div id="boxPopupSimpan" class="bg-[#1e1e1e] border border-[#333333] w-full max-w-xs rounded-2xl p-5 text-center space-y-4 shadow-xl transition-all">
             <h3 id="alertHeaderPopup" class="text-base font-black tracking-wider hidden text-red-500">🚨 ALERT DATA !</h3>
@@ -188,7 +188,6 @@
         </div>
     </div>
 
-    <!-- POPUP LAPORAN BERHASIL DIKIRIM KE WHATSAPP (DENGAN RE-SEND & CLICK ANYWHERE TO RESET) -->
     <div id="popupReportSuksesWA" class="fixed inset-0 z-[150] flex items-center justify-center bg-black/80 px-4 hidden" onclick="pencetSembarangTempatUntukReset()">
         <div class="bg-[#1e1e1e] border border-emerald-500 w-full max-w-xs rounded-2xl p-6 text-center space-y-4 shadow-2xl relative" onclick="event.stopPropagation()">
             <div class="w-16 h-16 bg-emerald-500/20 border-2 border-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-md">
@@ -234,6 +233,7 @@
         let rupiahSisaMinusGlobal = 0;
         let totalCupSemuaTerjualGlobal = 0;
         let fileGambarStrukTerakhirCache = null;
+        let waktuRealtimeTerarsip = ""; // Variabel penampung waktu realtime
 
         function buatOpsiMaksimal(max, nilaiTerpilih) {
             let options = "";
@@ -328,7 +328,6 @@
         }
 
         function updateWarnaDropdown(element) {
-            // Mempertahankan pewarnaan warna orange terang jika value dropdown di luar angka 0
             if (parseInt(element.value) > 0) {
                 element.classList.remove("text-white");
                 element.classList.add("text-[#f57c00]", "font-black");
@@ -390,7 +389,6 @@
             simpanStateKeStorage();
         }
 
-        // Sinkronisasi inisialisasi warna dropdown saat halaman dimuat
         const fungsiMuatLama = muatStateDariStorage;
         muatStateDariStorage = function() {
             if (typeof fungsiMuatLama === 'function') fungsiMuatLama();
@@ -407,7 +405,6 @@
             const picVal = document.getElementById("picPenerima").value;
             const errorLabel = document.getElementById("errorValidasiPilihan");
 
-            // VALIDASI: Membatasi pergerakan ke halaman berikutnya jika input rider/pic kosong
             if (driverVal === "" || picVal === "") {
                 errorLabel.classList.remove("hidden");
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
@@ -420,16 +417,13 @@
             const alertHeader = document.getElementById("alertHeaderPopup");
             const teksPesan = document.getElementById("teksPesanPopupSimpan");
 
-            // KONDISIONAL POPUP SIMPAN BERDASARKAN STATUS MINUS LAPORAN STOK
             if (rupiahSisaMinusGlobal === 0) {
-                // Kriteria 1: Tidak ada data minus
                 boxPopup.classList.remove("animasi-flash-minus", "border-red-500");
                 boxPopup.classList.add("border-emerald-500");
                 alertHeader.classList.add("hidden");
                 teksPesan.innerText = "Data benar tidak ada minus, lanjutkan";
                 teksPesan.className = "text-sm font-bold text-emerald-400";
             } else {
-                // Kriteria 2: Terdeteksi selisih minus (Efek berkedip & Alert!)
                 boxPopup.classList.remove("border-emerald-500");
                 boxPopup.classList.add("animasi-flash-minus", "border-red-500");
                 alertHeader.classList.remove("hidden");
@@ -443,6 +437,16 @@
         function tutupPopupSimpan(lanjutKeStruk) {
             document.getElementById("popupSimpan").classList.replace("flex", "hidden");
             if (lanjutKeStruk) {
+                // Ambil Waktu Real-Time saat konfirmasi "Ya" ditekan
+                const skrg = new Date();
+                let jam = skrg.getHours();
+                let menit = skrg.getMinutes();
+                let detik = skrg.getSeconds();
+                if (jam < 10) jam = '0' + jam;
+                if (menit < 10) menit = '0' + menit;
+                if (detik < 10) detik = '0' + detik;
+                waktuRealtimeTerarsip = `${jam}:${menit}:${detik} WIB`;
+
                 prosesKirimDataKeSheets();
             }
         }
@@ -450,6 +454,7 @@
         async function prosesKirimDataKeSheets() {
             const payload = {
                 tanggal: document.getElementById("tanggal").value,
+                waktu: waktuRealtimeTerarsip,
                 driver: document.getElementById("driver").value,
                 pic_penerima: document.getElementById("picPenerima").value,
                 pengeluaran: document.getElementById("pengeluaran").value,
@@ -509,6 +514,7 @@
             document.getElementById("recDriver").innerText = payload.driver;
             document.getElementById("recPic").innerText = payload.pic_penerima;
             document.getElementById("recTanggal").innerText = payload.tanggal;
+            document.getElementById("recWaktu").innerText = waktuRealtimeTerarsip; // Cetak waktu di struk
             document.getElementById("recCash").innerText = document.getElementById("totalTunai").value;
             document.getElementById("recQris").innerText = document.getElementById("totalQris").value;
             document.getElementById("recOps").innerText = "Rp " + (parseInt(payload.pengeluaran) || 0).toLocaleString('id-ID');
@@ -536,7 +542,6 @@
             }
         }
 
-        // MODIFIKASI: Tombol input ulang langsung kembali ke halaman tanpa memicu popup konfirmasi
         function kembaliKeHalamanInputTanpaReset() {
             document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
             document.getElementById("topHeaderBanner").classList.replace("hidden", "block");
@@ -560,7 +565,6 @@
             const volume = document.getElementById("recVolume").innerText;
             const omzet = document.getElementById("recOmzet").innerText;
 
-            // EVALUASI DINAMIS TEKS MOTIVASI BERDASARKAN TOTAL PENJUALAN CUP
             let teksMotivasiFooter = "";
             if (totalCupSemuaTerjualGlobal >= 0 && totalCupSemuaTerjualGlobal <= 30) {
                 teksMotivasiFooter = "Jangan patah semangat! Setiap langkah kecil hari ini adalah pondasi sukses besar di hari esok. Tetap konsisten, kuasai rute, dan besok kita jemput rezeki lebih maksimal lagi! Semangat!";
@@ -581,12 +585,14 @@
                 const namaFileLaporan = `STRUK_${rider.replace(/\s+/g, '_')}_${tanggal}.png`;
                 fileGambarStrukTerakhirCache = new File([blob], namaFileLaporan, { type: 'image/png' });
 
+                // Teks WhatsApp bersih tanpa judul kriteria & menyertakan Waktu Realtime
                 const teksWhatsApp = 
-`*LAPORAN SETORAN HARIAN SI FOUR AM* ☕
+`*Report Setoran SI FOUR AM* ☕
 -----------------------------------------
-👤 *Nama Driver:* ${rider}
+👤 *Nama Rider:* ${rider}
 👥 *PIC Penerima:* ${pic}
 📅 *Tanggal Laporan:* ${tanggal}
+🕒 *Waktu Transaksi:* ${waktuRealtimeTerarsip}
 
 💰 *Total Cash / Tunai:* ${cash}
 📱 *Total QRIS:* ${qris}
@@ -634,17 +640,14 @@ _${teksMotivasiFooter}_`;
             document.getElementById("popupReportSuksesWA").classList.replace("hidden", "flex");
         }
 
-        // RESET DAN MEMPERTAHANKAN WARNA DROPDOWN SERTA DATA STOK AWAL
         function pencetSembarangTempatUntukReset() {
             document.getElementById("popupReportSuksesWA").classList.replace("flex", "hidden");
             
-            // Mengosongkan data transaksi harian, kecuali data stok awal
             document.getElementById("pengeluaran").value = "0";
             document.getElementById("minus").value = "Rp 0";
             document.getElementById("driver").selectedIndex = 0;
             document.getElementById("picPenerima").selectedIndex = 0;
             
-            // Loop reset mempertahankan nilai index stock awal, sisanya di-nol-kan
             daftarProduk.forEach((_, index) => {
                 document.getElementById(`bonus-${index}`).selectedIndex = 0;
                 document.getElementById(`sisa-${index}`).selectedIndex = 0;
@@ -652,7 +655,6 @@ _${teksMotivasiFooter}_`;
                 document.getElementById(`qris-${index}`).selectedIndex = 0;
             });
             
-            // Refresh pewarnaan dropdown agar tetap sinkron (orange jika > 0)
             document.querySelectorAll("#productRows select").forEach(select => {
                 updateWarnaDropdown(select);
             });
@@ -660,7 +662,6 @@ _${teksMotivasiFooter}_`;
             hitungOtomatis();
             sessionStorage.removeItem("sifouram_pos_state");
 
-            // Kembali ke layar utama aplikasi
             document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
             document.getElementById("topHeaderBanner").classList.replace("hidden", "block");
             document.getElementById("mainFormContainer").classList.replace("hidden", "block");
