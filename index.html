@@ -25,7 +25,8 @@
                 <div class="col-span-5">
                     <label class="block text-[10px] font-medium text-gray-400 mb-1">Nama Crew / Driver</label>
                     <select id="driver" onchange="simpanStateKeStorage()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] focus:border-[#f57c00] outline-none h-10">
-                        <option value="ACHMAD DARMADI" selected>ACHMAD DARMADI</option>
+                        <option value="">-- Pilih Rider --</option>
+                        <option value="ACHMAD DARMADI">ACHMAD DARMADI</option>
                         <option value="RICKY AKBAR">RICKY AKBAR</option>
                         <option value="JUNAEDI">JUNAEDI</option>
                         <option value="IRWAN SYAHPUTRA">IRWAN SYAHPUTRA</option>
@@ -36,9 +37,12 @@
                 <div class="col-span-4">
                     <label class="block text-[10px] font-medium text-gray-400 mb-1">PIC Penerima</label>
                     <select id="picPenerima" onchange="simpanStateKeStorage()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] focus:border-[#f57c00] outline-none h-10">
+                        <option value="">-- Pilih PIC --</option>
                         <option value="Muhammad Ishaq Alif Hanif">Muhammad Ishaq Alif Hanif</option>
                         <option value="Indri Devi Anjani">Indri Devi Anjani</option>
                         <option value="Rissa Alfiani Putri">Rissa Alfiani Putri</option>
+                        <option value="Muhammad Zulfikar">Muhammad Zulfikar</option>
+                        <option value="Sandita">Sandita</option>
                     </select>
                 </div>
                 <div class="col-span-3">
@@ -63,7 +67,7 @@
                         </tr>
                     </thead>
                     <tbody id="productRows" class="divide-y divide-[#333333]">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -85,10 +89,10 @@
                     <label class="block text-[11px] font-medium text-gray-400 mb-1">Pengeluaran Ops (Rp)</label>
                     <input type="number" id="pengeluaran" oninput="hitungOtomatis()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-sm focus:border-[#f57c00] outline-none h-11" value="0">
                 </div>
-<div>
-    <label class="block text-[11px] font-medium text-gray-400 mb-1">Minus/Selisih Stok (Rp)</label>
-    <input type="text" id="minus" readonly class="w-full bg-black/40 border border-red-900/50 text-red-400 rounded-lg p-2.5 text-sm font-bold outline-none h-11" value="Rp 0">
-</div>
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Minus/Selisih Stok (Rp)</label>
+                    <input type="text" id="minus" readonly class="w-full bg-black/40 border border-red-900/50 text-red-400 rounded-lg p-2.5 text-sm font-bold outline-none h-11" value="Rp 0">
+                </div>
             </div>
 
             <div class="bg-[#181818] p-3 rounded-xl border border-[#2b2b2b] space-y-2">
@@ -137,7 +141,7 @@
             <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] space-y-2 text-center mx-auto">
                 <span class="text-[10px] uppercase font-black text-gray-400 block border-b border-[#333333] pb-1 mx-auto max-w-xs">Detail Varian Terjual & Status Stok</span>
                 <div id="receiptProductList" class="divide-y divide-[#2a2a2a] text-xs max-w-xs mx-auto flex flex-col items-center justify-center">
-                    </div>
+                </div>
             </div>
 
             <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] space-y-2 text-xs text-left">
@@ -202,41 +206,55 @@
             { nama: "SI TEH MANIS", harga: 5000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 }
         ];
 
-// 1. Fungsi pembuat opsi tetap dipertahankan
-function buatOpsiMaksimal(max, nilaiTerpilih) {
-    let options = "";
-    for (let i = 0; i <= max; i++) {
-        options += `<option value="${i}" ${i === nilaiTerpilih ? 'selected' : ''}>${i}</option>`;
-    }
-    return options;
-}
+        function buatOpsiMaksimal(max, nilaiTerpilih) {
+            let options = "";
+            for (let i = 0; i <= max; i++) {
+                options += `<option value="${i}" ${i === nilaiTerpilih ? 'selected' : ''}>${i}</option>`;
+            }
+            return options;
+        }
 
-// Render Baris Tabel Input Utama dengan Batas Dropdown Dinamis & Warna Bonus Baru
-const tbody = document.getElementById("productRows");
-daftarProduk.forEach((prod, index) => {
-    // Tentukan batas maksimal dropdown
-    let maxDropdown = 20; 
-    if (prod.nama === "SI KOPSU AREN") {
-        maxDropdown = 50;
-    }
+        const tbody = document.getElementById("productRows");
+        daftarProduk.forEach((prod, index) => {
+            let maxDropdown = 20; 
+            if (prod.nama === "SI KOPSU AREN") {
+                maxDropdown = 50;
+            }
 
-    const tr = document.createElement("tr");
-    tr.className = "hover:bg-[#252525] transition-colors";
-    tr.innerHTML = `
-        <td class="py-2.5 px-1 font-bold text-white text-[11px] leading-tight break-words">${prod.nama}</td>
-        <td class="py-2.5 text-center"><select id="stok-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(maxDropdown, prod.stok)}</select></td>
-        
-        <td class="py-2.5 text-center bg-[#1c1c1c]"><select id="bonus-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#666666] p-1 text-center rounded text-white font-bold text-xs">${buatOpsiMaksimal(2, prod.b)}</select></td>
-        
-        <td class="py-2.5 text-center"><select id="sisa-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(maxDropdown, prod.sisa)}</select></td>
-        <td class="py-2.5 text-center"><select id="tunai-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(maxDropdown, prod.t)}</select></td>
-        <td class="py-2.5 text-center"><select id="qris-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(maxDropdown, prod.q)}</select></td>
-        <td class="py-2.5 text-center bg-black font-black text-[#ffb74d] text-xs" id="totalcup-${index}">0</td>
-    `;
-    tbody.appendChild(tr);
-});
+            const tr = document.createElement("tr");
+            tr.className = "hover:bg-[#252525] transition-colors";
+            tr.innerHTML = `
+                <td class="py-2.5 px-1 font-bold text-white text-[11px] leading-tight break-words">${prod.nama}</td>
+                <td class="py-2.5 text-center">
+                    <select id="stok-${index}" onchange="hitungOtomatis(); updateWarnaDropdown(this)" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">
+                        ${buatOpsiMaksimal(maxDropdown, prod.stok)}
+                    </select>
+                </td>
+                <td class="py-2.5 text-center bg-[#1c1c1c]">
+                    <select id="bonus-${index}" onchange="hitungOtomatis(); updateWarnaDropdown(this)" class="w-10 bg-[#2a2a2a] border border-[#666666] p-1 text-center rounded text-white font-bold text-xs">
+                        ${buatOpsiMaksimal(2, prod.b)}
+                    </select>
+                </td>
+                <td class="py-2.5 text-center">
+                    <select id="sisa-${index}" onchange="hitungOtomatis(); updateWarnaDropdown(this)" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">
+                        ${buatOpsiMaksimal(maxDropdown, prod.sisa)}
+                    </select>
+                </td>
+                <td class="py-2.5 text-center">
+                    <select id="tunai-${index}" onchange="hitungOtomatis(); updateWarnaDropdown(this)" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">
+                        ${buatOpsiMaksimal(maxDropdown, prod.t)}
+                    </select>
+                </td>
+                <td class="py-2.5 text-center">
+                    <select id="qris-${index}" onchange="hitungOtomatis(); updateWarnaDropdown(this)" class="w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs">
+                        ${buatOpsiMaksimal(maxDropdown, prod.q)}
+                    </select>
+                </td>
+                <td class="py-2.5 text-center bg-black font-black text-[#ffb74d] text-xs" id="totalcup-${index}">0</td>
+            `;
+            tbody.appendChild(tr);
+        });
 
-        // FUNGSI BARU: Menyimpan data sementara agar saat REFRESH, data tidak hilang
         function simpanStateKeStorage() {
             const state = {
                 driver: document.getElementById("driver").value,
@@ -260,7 +278,6 @@ daftarProduk.forEach((prod, index) => {
             sessionStorage.setItem("sifouram_pos_state", JSON.stringify(state));
         }
 
-        // FUNGSI BARU: Memuat data kembali dari Storage setelah direfresh
         function muatStateDariStorage() {
             const savedState = sessionStorage.getItem("sifouram_pos_state");
             if (savedState) {
@@ -281,78 +298,89 @@ daftarProduk.forEach((prod, index) => {
             }
         }
 
-function hitungOtomatis() {
-    let totalOmzetDariStok = 0;
-    let totalCupSemua = 0;
-    let akumulasiKomisi = 0;
-    let nominalTunai = 0; 
-    let nominalQris = 0;
-    let totalRupiahMinusStok = 0; // Menampung total kerugian cup yang hilang
-
-    daftarProduk.forEach((prod, index) => {
-        // Ambil data fisik logistik
-        const sVal = parseInt(document.getElementById(`stok-${index}`).value) || 0;
-        const bVal = parseInt(document.getElementById(`bonus-${index}`).value) || 0; // Bonus rider tetap diambil untuk hitung komisi/omzet bersih pusat jika diperlukan
-        const siVal = parseInt(document.getElementById(`sisa-${index}`).value) || 0;
-        
-        // Ambil data laporan penjualan dari driver
-        const tVal = parseInt(document.getElementById(`tunai-${index}`).value) || 0;
-        const qVal = parseInt(document.getElementById(`qris-${index}`).value) || 0;
-
-        // 1. Hitung berapa cup yang seharusnya terjual secara murni fisik (Tanpa mengurangi/menambah bonus)
-        const cupSeharusnyaTerjual = sVal - siVal;
-        
-        // 2. Hitung berapa cup yang dilaporkan oleh driver di kolom tunai & qris
-        const cupDilaporkanDriver = tVal + qVal;
-
-        // RUMUS OTOMATIS MINUS: Jika cup dilaporkan < cup seharusnya terjual, hitung ruginya
-        if (cupDilaporkanDriver < cupSeharusnyaTerjual) {
-            const selisihCupMinus = cupSeharusnyaTerjual - cupDilaporkanDriver;
-            totalRupiahMinusStok += selisihCupMinus * prod.harga;
+        function updateWarnaDropdown(element) {
+            if (parseInt(element.value) > 0) {
+                element.classList.remove("text-white");
+                element.classList.add("text-[#f57c00]", "font-black");
+            } else {
+                element.classList.remove("text-[#f57c00]", "font-black");
+                element.classList.add("text-white");
+            }
         }
 
-        // Tampilkan total cup terjual di kolom "Tot" tabel berdasarkan input driver
-        document.getElementById(`totalcup-${index}`).innerText = cupDilaporkanDriver;
+        function hitungOtomatis() {
+            let totalOmzetDariStok = 0;
+            let totalCupSemua = 0;
+            let akumulasiKomisi = 0;
+            let nominalTunai = 0; 
+            let nominalQris = 0;
+            let totalRupiahMinusStok = 0;
 
-        // Akumulasi kasir untuk display box bawah
-        nominalTunai += tVal * prod.harga;
-        nominalQris += qVal * prod.harga;
-        totalCupSemua += cupDilaporkanDriver;
+            daftarProduk.forEach((prod, index) => {
+                const sVal = parseInt(document.getElementById(`stok-${index}`).value) || 0;
+                const bVal = parseInt(document.getElementById(`bonus-${index}`).value) || 0; 
+                const siVal = parseInt(document.getElementById(`sisa-${index}`).value) || 0;
+                
+                const tVal = parseInt(document.getElementById(`tunai-${index}`).value) || 0;
+                const qVal = parseInt(document.getElementById(`qris-${index}`).value) || 0;
 
-        // Komisi Rider tetap dihitung berdasarkan cup yang benar-benar berhasil dilaporkan/dijual
-        if (prod.nama === "SI TEH MANIS") {
-            akumulasiKomisi += cupDilaporkanDriver * 1000;
-        } else {
-            akumulasiKomisi += cupDilaporkanDriver * 2000;
+                const cupSeharusnyaTerjual = sVal - siVal;
+                const cupDilaporkanDriver = tVal + qVal;
+
+                if (cupDilaporkanDriver < cupSeharusnyaTerjual) {
+                    const selisihCupMinus = cupSeharusnyaTerjual - cupDilaporkanDriver;
+                    totalRupiahMinusStok += selisihCupMinus * prod.harga;
+                }
+
+                document.getElementById(`totalcup-${index}`).innerText = cupDilaporkanDriver;
+
+                nominalTunai += tVal * prod.harga;
+                nominalQris += qVal * prod.harga;
+                totalCupSemua += cupDilaporkanDriver;
+
+                if (prod.nama === "SI TEH MANIS") {
+                    akumulasiKomisi += cupDilaporkanDriver * 1000;
+                } else {
+                    akumulasiKomisi += cupDilaporkanDriver * 2000;
+                }
+            });
+
+            const pengeluaran = parseInt(document.getElementById("pengeluaran").value) || 0;
+            const totalOmzetDilaporkan = nominalTunai + nominalQris;
+            const totalIncome = totalOmzetDilaporkan - pengeluaran - totalRupiahMinusStok;
+
+            document.getElementById("totalTunai").value = "Rp " + nominalTunai.toLocaleString('id-ID');
+            document.getElementById("totalQris").value = "Rp " + nominalQris.toLocaleString('id-ID');
+            document.getElementById("minus").value = "Rp " + totalRupiahMinusStok.toLocaleString('id-ID'); 
+            document.getElementById("totalKomisiText").innerText = "Rp " + akumulasiKomisi.toLocaleString('id-ID');
+            document.getElementById("totalIncomeText").innerText = "Rp " + totalIncome.toLocaleString('id-ID');
+            document.getElementById("totalCupText").innerText = totalCupSemua + " Cup";
+
+            simpanStateKeStorage();
         }
-    });
 
-    const pengeluaran = parseInt(document.getElementById("pengeluaran").value) || 0;
-    
-    // Total Omzet Kotor dari uang yang dilaporkan driver
-    const totalOmzetDilaporkan = nominalTunai + nominalQris;
+        // Sinkronisasi pemuatan warna saat inisialisasi awal / refresh browser
+        const fungsiMuatLama = muatStateDariStorage;
+        muatStateDariStorage = function() {
+            if (typeof fungsiMuatLama === 'function') fungsiMuatLama();
+            document.querySelectorAll("#productRows select").forEach(select => {
+                updateWarnaDropdown(select);
+            });
+        }
 
-    // RUMUS FINAL OMZET BERSIH: Total Uang Diterima - Pengeluaran - Otomatis Minus Rupiah Kerugian Cup
-    const totalIncome = totalOmzetDilaporkan - pengeluaran - totalRupiahMinusStok;
-
-    // Update Angka ke Tampilan Aplikasi (UI HP)
-    document.getElementById("totalTunai").value = "Rp " + nominalTunai.toLocaleString('id-ID');
-    document.getElementById("totalQris").value = "Rp " + nominalQris.toLocaleString('id-ID');
-    document.getElementById("minus").value = "Rp " + totalRupiahMinusStok.toLocaleString('id-ID'); // Set otomatis ke kolom minus
-    document.getElementById("totalKomisiText").innerText = "Rp " + akumulasiKomisi.toLocaleString('id-ID');
-    document.getElementById("totalIncomeText").innerText = "Rp " + totalIncome.toLocaleString('id-ID');
-    document.getElementById("totalCupText").innerText = totalCupSemua + " Cup";
-
-    // Simpan data state agar saat di-refresh tidak hilang
-    simpanStateKeStorage();
-}
-        // Jalankan pemuatan data storage saat pertama kali web dibuka/refresh
         muatStateDariStorage();
         hitungOtomatis();
 
         function bukaPopupKonfirmasiSimpan() {
             document.getElementById("popupSimpan").classList.replace("hidden", "flex");
         }
+
+        document.getElementById("driver").addEventListener("change", function() {
+            document.querySelectorAll("#productRows select").forEach(select => updateWarnaDropdown(select));
+        });
+        document.getElementById("picPenerima").addEventListener("change", function() {
+            document.querySelectorAll("#productRows select").forEach(select => updateWarnaDropdown(select));
+        });
 
         function tutupPopupSimpan(lanjutKeStruk) {
             document.getElementById("popupSimpan").classList.replace("flex", "hidden");
@@ -426,7 +454,7 @@ function hitungOtomatis() {
             document.getElementById("recCash").innerText = document.getElementById("totalTunai").value;
             document.getElementById("recQris").innerText = document.getElementById("totalQris").value;
             document.getElementById("recOps").innerText = "Rp " + (parseInt(payload.pengeluaran) || 0).toLocaleString('id-ID');
-            document.getElementById("recMinus").innerText = "Rp " + (parseInt(payload.minus) || 0).toLocaleString('id-ID');
+            document.getElementById("recMinus").innerText = document.getElementById("minus").value;
             document.getElementById("recKomisi").innerText = document.getElementById("totalKomisiText").innerText;
             document.getElementById("recVolume").innerText = document.getElementById("totalCupText").innerText;
             document.getElementById("recOmzet").innerText = document.getElementById("totalIncomeText").innerText;
@@ -454,22 +482,17 @@ function hitungOtomatis() {
             document.getElementById("popupInputUlang").classList.replace("hidden", "flex");
         }
 
-        // MODIFIKASI FUNGSI: Handler aksi popup input ulang (Belum, Sudah, Revisi)
         function tutupPopupInputUlang(aksi) {
             document.getElementById("popupInputUlang").classList.replace("flex", "hidden");
             
             if (aksi === 'sudah') {
-                // Hapus cache storage karena data benar-benar selesai disetorkan
                 sessionStorage.removeItem("sifouram_pos_state");
                 eksekusiResetFormKembaliKeAwal();
             } else if (aksi === 'revisi') {
-                // KEMBALI KE HALAMAN INPUT TANPA CLEAR DATA (Data utuh aman)
                 kembaliKeHalamanInputTanpaReset();
             }
-            // Jika aksi === 'belum', tidak melakukan apa-apa (tetap di halaman struk rekap)
         }
 
-        // FUNGSI BARU: Hanya menukar view halaman, membiarkan data pilihan select & input tetap ada
         function kembaliKeHalamanInputTanpaReset() {
             document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
             document.getElementById("topHeaderBanner").classList.replace("hidden", "block");
@@ -480,7 +503,9 @@ function hitungOtomatis() {
 
         function eksekusiResetFormKembaliKeAwal() {
             document.getElementById("pengeluaran").value = "0";
-            document.getElementById("minus").value = "0";
+            document.getElementById("minus").value = "Rp 0";
+            document.getElementById("driver").selectedIndex = 0;
+            document.getElementById("picPenerima").selectedIndex = 0;
             
             daftarProduk.forEach((_, index) => {
                 document.getElementById(`stok-${index}`).selectedIndex = 0;
@@ -489,6 +514,11 @@ function hitungOtomatis() {
                 document.getElementById(`tunai-${index}`).selectedIndex = 0;
                 document.getElementById(`qris-${index}`).selectedIndex = 0;
             });
+            
+            document.querySelectorAll("#productRows select").forEach(select => {
+                updateWarnaDropdown(select);
+            });
+            
             hitungOtomatis();
 
             document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
@@ -525,20 +555,20 @@ function hitungOtomatis() {
                 const fileGambarObj = new File([blob], namaFileLaporan, { type: 'image/png' });
 
                 const teksWhatsApp = 
-`*LAPORAN SETORAN HARIAN SI FOUR AM*
+`*LAPORAN SETORAN HARIAN SI FOUR AM* ☕
 -----------------------------------------
 👤 *Nama Driver:* ${rider}
 👥 *PIC Penerima:* ${pic}
 📅 *Tanggal Laporan:* ${tanggal}
 
-📊 *Total Penjualan:* ${volume}
-💵 *Hak Komisi Rider:* ${komisi}
-🚀 *Omzet Kotor Pusat:* ${omzet}
-
 💰 *Total Cash / Tunai:* ${cash}
 📱 *Total QRIS:* ${qris}
 📉 *Pengeluaran Ops:* ${ops}
 ⚠️ *Minus / Selisih:* ${minus}
+
+📊 *Total Penjualan:* ${volume}
+💵 *Hak Komisi Rider:* ${komisi}
+🚀 *Omzet Bersih Pusat:* ${omzet}
 -----------------------------------------
 _File Struk Gambar berhasil terunduh otomatis ke galeri HP Driver._`;
 
@@ -567,7 +597,7 @@ _File Struk Gambar berhasil terunduh otomatis ke galeri HP Driver._`;
             tautanUnduhVirtual.href = canvas.toDataURL("image/png");
             tautanUnduhVirtual.click();
 
-            alert("Gambar struk laporan berhasil disimpan! Sistem beralih ke WhatsApp.");
+            alert("Laporan telah berhasil dikirim ke WhatsApp.");
             const kirimUrlWhatsApp = `https://wa.me/6281283578212?text=${encodeURIComponent(teksWhatsApp)}`;
             window.open(kirimUrlWhatsApp, '_blank');
         }
