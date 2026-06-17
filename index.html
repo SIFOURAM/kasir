@@ -565,14 +565,18 @@
             const volume = document.getElementById("recVolume").innerText;
             const omzet = document.getElementById("recOmzet").innerText;
 
+            // Ekstrak angka murni volume cup terjual untuk menentukan 3 kriteria motivasi footer
+            const angkaCupMurni = parseInt(volumeStr.replace(/[^0-9]/g, "")) || 0;
             let teksMotivasiFooter = "";
-            if (totalCupSemuaTerjualGlobal >= 0 && totalCupSemuaTerjualGlobal <= 30) {
-                teksMotivasiFooter = "Jangan patah semangat! Setiap langkah kecil hari ini adalah pondasi sukses besar di hari esok. Tetap konsisten, kuasai rute, dan besok kita jemput rezeki lebih maksimal lagi! Semangat!";
-            } else if (totalCupSemuaTerjualGlobal >= 31 && totalCupSemuaTerjualGlobal <= 49) {
-                teksMotivasiFooter = "Alhamdulillah, pencapaian yang luar biasa hari ini! Sedikit lagi menyentuh target puncak. Pertahankan ritme kerja keras ini dan terus tingkatkan kualitas pelayanan di jalanan!";
+
+            if (angkaCupMurni <= 30) {
+                teksMotivasiFooter = "Tetap semangat! Setiap tetes kopi yang terjual adalah langkah awal menuju kesuksesan yang lebih besar. Besok kita berjuang lebih keras lagi, jangan pernah menyerah! 💪✨";
+            } else if (angkaCupMurni >= 31 && angkaCupMurni <= 49) {
+                teksMotivasiFooter = "Alhamdulillah, pencapaian yang luar biasa hari ini! Sedikit lagi menyentuh target utama. Mari evaluasi rute penjualan agar besok bisa melesat lebih tinggi lagi! 🚀📈";
             } else {
-                teksMotivasiFooter = "Selamat! Target penjualan hari ini berhasil ditembus dengan sangat sukses! Performa luar biasa yang wajib dipertahankan dan dijadikan standar baru. Masa depan cerah menanti Anda!";
+                teksMotivasiFooter = "🎉 Selamat! Target penjualan hari ini berhasil ditembus dengan sangat gemilang! Kerja kerasmu membuahkan hasil nyata, pertahankan konsistensi luar biasa ini dan jadilah yang terbaik! 🏆☕";
             }
+
 
             html2canvas(document.getElementById("receiptPageContainer"), {
                 backgroundColor: "#111111",
