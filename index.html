@@ -309,7 +309,6 @@
         }
 
         function hitungOtomatis() {
-            let totalOmzetDariStok = 0;
             let totalCupSemua = 0;
             let akumulasiKomisi = 0;
             let nominalTunai = 0; 
@@ -318,7 +317,6 @@
 
             daftarProduk.forEach((prod, index) => {
                 const sVal = parseInt(document.getElementById(`stok-${index}`).value) || 0;
-                const bVal = parseInt(document.getElementById(`bonus-${index}`).value) || 0; 
                 const siVal = parseInt(document.getElementById(`sisa-${index}`).value) || 0;
                 
                 const tVal = parseInt(document.getElementById(`tunai-${index}`).value) || 0;
@@ -359,7 +357,7 @@
             simpanStateKeStorage();
         }
 
-        // Sinkronisasi pemuatan warna saat inisialisasi awal / refresh browser
+        // Interseptor sinkronisasi pemuatan warna saat web pertama kali di-load
         const fungsiMuatLama = muatStateDariStorage;
         muatStateDariStorage = function() {
             if (typeof fungsiMuatLama === 'function') fungsiMuatLama();
@@ -374,13 +372,6 @@
         function bukaPopupKonfirmasiSimpan() {
             document.getElementById("popupSimpan").classList.replace("hidden", "flex");
         }
-
-        document.getElementById("driver").addEventListener("change", function() {
-            document.querySelectorAll("#productRows select").forEach(select => updateWarnaDropdown(select));
-        });
-        document.getElementById("picPenerima").addEventListener("change", function() {
-            document.querySelectorAll("#productRows select").forEach(select => updateWarnaDropdown(select));
-        });
 
         function tutupPopupSimpan(lanjutKeStruk) {
             document.getElementById("popupSimpan").classList.replace("flex", "hidden");
@@ -554,6 +545,7 @@
                 const namaFileLaporan = `STRUK_${rider.replace(/\s+/g, '_')}_${tanggal}.png`;
                 const fileGambarObj = new File([blob], namaFileLaporan, { type: 'image/png' });
 
+                // FIX: Penambahan detail isi pesan teks lengkap untuk dibagikan ke WhatsApp
                 const teksWhatsApp = 
 `*LAPORAN SETORAN HARIAN SI FOUR AM* ☕
 -----------------------------------------
@@ -597,7 +589,7 @@ _File Struk Gambar berhasil terunduh otomatis ke galeri HP Driver._`;
             tautanUnduhVirtual.href = canvas.toDataURL("image/png");
             tautanUnduhVirtual.click();
 
-            alert("Laporan telah berhasil dikirim ke WhatsApp.");
+            alert("Gambar struk laporan berhasil disimpan! Sistem beralih ke WhatsApp.");
             const kirimUrlWhatsApp = `https://wa.me/6281283578212?text=${encodeURIComponent(teksWhatsApp)}`;
             window.open(kirimUrlWhatsApp, '_blank');
         }
