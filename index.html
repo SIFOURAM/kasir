@@ -10,30 +10,25 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111111">
-
     <style>
-        /* Efek Kelap-Kelip untuk Kriteria PopUp Minus */
-        @keyframes blink-border {
-            0%, 100% { border-color: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.7); }
-            50% { border-color: #7f1d1d; box-shadow: 0 0 2px rgba(0, 0, 0, 0); }
+        @keyframes kelapKelip {
+            0%, 100% { background-color: rgba(30, 30, 30, 1); border-color: #ef4444; }
+            50% { background-color: rgba(220, 38, 38, 0.35); border-color: #f87171; }
         }
-        .popup-danger-blink {
-            animation: blink-border 1s infinite ease-in-out;
+        .animasi-flash-minus {
+            animation: kelapKelip 0.7s infinite border;
         }
     </style>
 </head>
 <body class="bg-[#111111] text-[#eeeeee] min-h-screen font-sans antialiased select-none">
 
-    <!-- Header Banner -->
     <div id="topHeaderBanner" class="sticky top-0 z-50 bg-[#f57c00] text-[#111111] p-4 text-center shadow-md border-b-2 border-black block">
         <h1 class="text-xl font-black tracking-widest">SI FOUR AM</h1>
         <p class="text-[10px] font-bold uppercase tracking-wider text-[#222222]">Official Mobile Report System</p>
     </div>
 
-    <!-- Main Form Content -->
     <div id="mainFormContainer" class="p-4 max-w-md mx-auto space-y-5 pb-24 block">
         
-        <!-- Metadata Section -->
         <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] shadow-sm">
             <div class="grid grid-cols-12 gap-2">
                 <div class="col-span-5">
@@ -66,7 +61,6 @@
             </div>
         </div>
 
-        <!-- Product Table Section -->
         <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] shadow-sm">
             <div class="overflow-x-auto -mx-2 px-2">
                 <table class="w-full text-left text-xs text-gray-300 min-w-[340px]">
@@ -87,7 +81,6 @@
             </div>
         </div>
 
-        <!-- Financial Summary Section -->
         <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] shadow-sm space-y-4">
             <div class="grid grid-cols-2 gap-3">
                 <div class="bg-black/30 p-2.5 rounded-lg border border-[#333333]">
@@ -128,14 +121,13 @@
         </div>
     </div>
 
-    <!-- Bottom Action Anchor -->
     <div id="floatingButtonContainer" class="fixed bottom-0 left-0 right-0 p-4 bg-[#111111]/90 backdrop-blur-md border-t border-[#222222] max-w-md mx-auto block">
+        <p id="errorValidasiPilihan" class="text-center text-xs text-red-400 font-bold mb-2 hidden">⚠️ Silakan pilih Nama Rider & PIC Penerima terlebih dahulu!</p>
         <button type="button" onclick="bukaPopupKonfirmasiSimpan()" class="w-full bg-[#f57c00] hover:bg-[#e65100] active:scale-[0.98] text-[#111111] font-black py-3.5 px-4 rounded-xl uppercase tracking-wider text-sm transition-all duration-150 shadow-lg">
             Simpan & Sinkronisasi Data
         </button>
     </div>
 
-    <!-- Receipt / Invoice Section -->
     <div id="receiptPageContainer" class="w-full min-h-screen bg-[#111111] p-4 text-center hidden">
         <div class="max-w-md mx-auto space-y-4">
             
@@ -184,10 +176,11 @@
         </div>
     </div>
 
-    <!-- Modal Popup Konfirmasi Simpan Dinamis -->
+    <!-- POPUP SIMPAN DINAMIS BERDASARKAN KRITERIA MINUS -->
     <div id="popupSimpan" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 hidden">
-        <div id="popupSimpanBox" class="bg-[#1e1e1e] border border-[#333333] w-full max-w-xs rounded-2xl p-5 text-center space-y-4 shadow-xl transition-all">
-            <p id="popupSimpanMessage" class="text-sm font-bold text-white">Apakah data laporan yang Anda masukkan sudah sesuai?</p>
+        <div id="boxPopupSimpan" class="bg-[#1e1e1e] border border-[#333333] w-full max-w-xs rounded-2xl p-5 text-center space-y-4 shadow-xl transition-all">
+            <h3 id="alertHeaderPopup" class="text-base font-black tracking-wider hidden text-red-500">🚨 ALERT DATA !</h3>
+            <p id="teksPesanPopupSimpan" class="text-sm font-bold text-white">Apakah data laporan yang Anda masukkan sudah sesuai?</p>
             <div class="grid grid-cols-2 gap-3 pt-2">
                 <button type="button" onclick="tutupPopupSimpan(false)" class="bg-[#2a2a2a] hover:bg-[#333333] text-gray-400 font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider">Tidak</button>
                 <button type="button" onclick="tutupPopupSimpan(true)" class="bg-[#f57c00] hover:bg-[#e65100] text-[#111111] font-black py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider">Ya</button>
@@ -195,25 +188,36 @@
         </div>
     </div>
 
-    <!-- Modal Popup Sukses Kirim WA (Bisa Klik Dimana Saja Untuk Reset) -->
-    <div id="popupKirimSukses" onclick="bukaPencetDimanaSajaMeresetWeb()" class="fixed inset-0 z-[120] flex items-center justify-center bg-black/85 px-4 hidden">
-        <div class="bg-[#1e1e1e] border-2 border-emerald-500 w-full max-w-xs rounded-2xl p-6 text-center space-y-4 shadow-2xl" onclick="event.stopPropagation()">
-            <div class="mx-auto w-16 h-16 bg-emerald-950/80 border border-emerald-500 text-emerald-400 text-3xl flex items-center justify-center rounded-full font-black animate-bounce shadow">
-                ✓
+    <!-- POPUP LAPORAN BERHASIL DIKIRIM KE WHATSAPP (DENGAN RE-SEND & CLICK ANYWHERE TO RESET) -->
+    <div id="popupReportSuksesWA" class="fixed inset-0 z-[150] flex items-center justify-center bg-black/80 px-4 hidden" onclick="pencetSembarangTempatUntukReset()">
+        <div class="bg-[#1e1e1e] border border-emerald-500 w-full max-w-xs rounded-2xl p-6 text-center space-y-4 shadow-2xl relative" onclick="event.stopPropagation()">
+            <div class="w-16 h-16 bg-emerald-500/20 border-2 border-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-md">
+                <span class="text-3xl text-emerald-400 font-black">✓</span>
             </div>
             <div class="space-y-1">
-                <h3 class="text-base font-black text-white tracking-wide uppercase">Report Data Berhasil Dikirim</h3>
-                <p class="text-xs text-gray-400">Sistem otomatis menyelaraskan stock log harian.</p>
+                <h4 class="text-base font-black text-white tracking-wide">REPORT DATA BERHASIL DIKIRIM</h4>
+                <p class="text-[11px] text-gray-400">Berkas struk dan rekap teks laporan harian sukses diteruskan ke WhatsApp PIC Pusat.</p>
             </div>
-            <button type="button" onclick="bukaPencetDimanaSajaMeresetWeb()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-black py-3 px-4 rounded-xl text-xs uppercase tracking-widest shadow-md">
-                Kirim Kembali
-            </button>
-            <p class="text-[9px] text-gray-500 italic pt-1">Klik tombol diatas atau pencet di mana saja untuk mereset inputan kasir</p>
+            <div class="pt-2">
+                <button type="button" onclick="unduhDanBagikanLaporan()" class="w-full bg-[#2a2a2a] border border-[#444444] text-[#ffb74d] hover:bg-[#333333] font-black py-3 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow">
+                    🔄 Kirim Kembali Laporan
+                </button>
+            </div>
+            <p class="text-[9px] text-gray-500 font-medium pt-1">💡 Ketuk di mana saja pada layar untuk menutup & reset inputan kasir</p>
         </div>
     </div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmN1YZn_hLnnf1spi_K_OVVt3MjV4fvEfbwqPkjqC1kcOxRXyGVqZQhDc1CaJpl7_E/exec";
+        
+        // PENGATURAN OTOMATIS TANGGAL HARI INI SECARA REAL-TIME
+        const tglHariIni = new Date();
+        const yyyy = tglHariIni.getFullYear();
+        let mm = tglHariIni.getMonth() + 1;
+        let dd = tglHariIni.getDate();
+        if (dd < 10) dd = '0' + dd;
+        if (mm < 10) mm = '0' + mm;
+        document.getElementById("tanggal").value = `${yyyy}-${mm}-${dd}`;
 
         const daftarProduk = [
             { nama: "SI AMERICANO", harga: 8000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 },
@@ -227,16 +231,9 @@
             { nama: "SI TEH MANIS", harga: 5000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 }
         ];
 
-        // Otomatis Atur Kolom Tanggal ke Hari Ini Secara Realtime
-        function setTanggalHariIniOtomatis() {
-            const hariIni = new Date();
-            const yyyy = hariIni.getFullYear();
-            let mm = hariIni.getMonth() + 1;
-            let dd = hariIni.getDate();
-            if (dd < 10) dd = '0' + dd;
-            if (mm < 10) mm = '0' + mm;
-            document.getElementById('tanggal').value = yyyy + '-' + mm + '-' + dd;
-        }
+        let rupiahSisaMinusGlobal = 0;
+        let totalCupSemuaTerjualGlobal = 0;
+        let fileGambarStrukTerakhirCache = null;
 
         function buatOpsiMaksimal(max, nilaiTerpilih) {
             let options = "";
@@ -246,7 +243,6 @@
             return options;
         }
 
-        // Render Dropdown Tabel Menu
         const tbody = document.getElementById("productRows");
         daftarProduk.forEach((prod, index) => {
             let maxDropdown = 20; 
@@ -328,13 +324,11 @@
                     if(document.getElementById(`tunai-${index}`)) document.getElementById(`tunai-${index}`).value = prod.tunai;
                     if(document.getElementById(`qris-${index}`)) document.getElementById(`qris-${index}`).value = prod.qris;
                 });
-            } else {
-                setTanggalHariIniOtomatis();
             }
         }
 
-        // Mempertahankan Warna Dropdown Selama Isinya Lebih Dari 0
         function updateWarnaDropdown(element) {
+            // Mempertahankan pewarnaan warna orange terang jika value dropdown di luar angka 0
             if (parseInt(element.value) > 0) {
                 element.classList.remove("text-white");
                 element.classList.add("text-[#f57c00]", "font-black");
@@ -344,14 +338,12 @@
             }
         }
 
-        let globalRupiahMinusStok = 0; // Variabel kontrol pengecekan kriteria popup
-
         function hitungOtomatis() {
             let totalCupSemua = 0;
             let akumulasiKomisi = 0;
             let nominalTunai = 0; 
             let nominalQris = 0;
-            totalRupiahMinusStok = 0;
+            let totalRupiahMinusStok = 0;
 
             daftarProduk.forEach((prod, index) => {
                 const sVal = parseInt(document.getElementById(`stok-${index}`).value) || 0;
@@ -381,7 +373,9 @@
                 }
             });
 
-            globalRupiahMinusStok = totalRupiahMinusStok;
+            rupiahSisaMinusGlobal = totalRupiahMinusStok;
+            totalCupSemuaTerjualGlobal = totalCupSemua;
+
             const pengeluaran = parseInt(document.getElementById("pengeluaran").value) || 0;
             const totalOmzetDilaporkan = nominalTunai + nominalQris;
             const totalIncome = totalOmzetDilaporkan - pengeluaran - totalRupiahMinusStok;
@@ -396,36 +390,51 @@
             simpanStateKeStorage();
         }
 
-        // Pengecekan Validasi Rider & PIC sebelum melangkah ke Halaman Selanjutnya
+        // Sinkronisasi inisialisasi warna dropdown saat halaman dimuat
+        const fungsiMuatLama = muatStateDariStorage;
+        muatStateDariStorage = function() {
+            if (typeof fungsiMuatLama === 'function') fungsiMuatLama();
+            document.querySelectorAll("#productRows select").forEach(select => {
+                updateWarnaDropdown(select);
+            });
+        }
+
+        muatStateDariStorage();
+        hitungOtomatis();
+
         function bukaPopupKonfirmasiSimpan() {
-            const driverValue = document.getElementById("driver").value;
-            const picValue = document.getElementById("picPenerima").value;
+            const driverVal = document.getElementById("driver").value;
+            const picVal = document.getElementById("picPenerima").value;
+            const errorLabel = document.getElementById("errorValidasiPilihan");
 
-            if (driverValue === "") {
-                alert("Gagal memproses! Kolom nama crew masih di pilihan -- Pilih Rider --");
+            // VALIDASI: Membatasi pergerakan ke halaman berikutnya jika input rider/pic kosong
+            if (driverVal === "" || picVal === "") {
+                errorLabel.classList.remove("hidden");
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                 return;
-            }
-            if (picValue === "") {
-                alert("Gagal memproses! Kolom PIC penerima masih di pilihan -- Pilih PIC --");
-                return;
-            }
-
-            const pBox = document.getElementById("popupSimpanBox");
-            const pTxt = document.getElementById("popupSimpanMessage");
-
-            // Reset kelas bawaan popup terlebih dahulu
-            pBox.classList.remove("popup-danger-blink", "border-red-500", "border-[#333333]");
-            pTxt.classList.remove("text-red-500", "text-white");
-
-            // Kriteria 1 & 2 Penyesuaian Pesan Otomatis berdasarkan status minus keuangan
-            if (globalRupiahMinusStok > 0) {
-                pTxt.innerText = "⚠️ Alert data ! Ada selisih data, apakah data sudah benar?";
-                pTxt.classList.add("text-red-500");
-                pBox.classList.add("popup-danger-blink", "border-red-500");
             } else {
-                pTxt.innerText = "Data benar tidak ada minus, lanjutkan";
-                pTxt.classList.add("text-white");
-                pBox.classList.add("border-[#333333]");
+                errorLabel.classList.add("hidden");
+            }
+
+            const boxPopup = document.getElementById("boxPopupSimpan");
+            const alertHeader = document.getElementById("alertHeaderPopup");
+            const teksPesan = document.getElementById("teksPesanPopupSimpan");
+
+            // KONDISIONAL POPUP SIMPAN BERDASARKAN STATUS MINUS LAPORAN STOK
+            if (rupiahSisaMinusGlobal === 0) {
+                // Kriteria 1: Tidak ada data minus
+                boxPopup.classList.remove("animasi-flash-minus", "border-red-500");
+                boxPopup.classList.add("border-emerald-500");
+                alertHeader.classList.add("hidden");
+                teksPesan.innerText = "Data benar tidak ada minus, lanjutkan";
+                teksPesan.className = "text-sm font-bold text-emerald-400";
+            } else {
+                // Kriteria 2: Terdeteksi selisih minus (Efek berkedip & Alert!)
+                boxPopup.classList.remove("border-emerald-500");
+                boxPopup.classList.add("animasi-flash-minus", "border-red-500");
+                alertHeader.classList.remove("hidden");
+                teksPesan.innerText = "Ada selisih data, apakah data sudah benar?";
+                teksPesan.className = "text-sm font-black text-red-400";
             }
 
             document.getElementById("popupSimpan").classList.replace("hidden", "flex");
@@ -527,37 +536,8 @@
             }
         }
 
-        // Langsung Kembali ke Halaman Input Tanpa Memunculkan Popup Apapun
+        // MODIFIKASI: Tombol input ulang langsung kembali ke halaman tanpa memicu popup konfirmasi
         function kembaliKeHalamanInputTanpaReset() {
-            document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
-            document.getElementById("topHeaderBanner").classList.replace("hidden", "block");
-            document.getElementById("mainFormContainer").classList.replace("hidden", "block");
-            document.getElementById("floatingButtonContainer").classList.replace("hidden", "block");
-            window.scrollTo({ top: 0, behavior: 'instant' });
-        }
-
-        // Reset Fleksibel: Mengembalikan Data Namun Angka Dropdown Stok Awal Tetap Dipertahankan
-        function eksekusiResetFormKembaliKeAwal() {
-            document.getElementById("pengeluaran").value = "0";
-            document.getElementById("minus").value = "Rp 0";
-            document.getElementById("driver").selectedIndex = 0;
-            document.getElementById("picPenerima").selectedIndex = 0;
-            
-            daftarProduk.forEach((_, index) => {
-                // Nilai stok-[index] sengaja dilewati / tidak diubah ke index 0 agar jumlah stok sebelumnya bertahan
-                document.getElementById(`bonus-${index}`).selectedIndex = 0;
-                document.getElementById(`sisa-${index}`).selectedIndex = 0;
-                document.getElementById(`tunai-${index}`).selectedIndex = 0;
-                document.getElementById(`qris-${index}`).selectedIndex = 0;
-            });
-            
-            document.querySelectorAll("#productRows select").forEach(select => {
-                updateWarnaDropdown(select);
-            });
-            
-            hitungOtomatis();
-            setTanggalHariIniOtomatis();
-
             document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
             document.getElementById("topHeaderBanner").classList.replace("hidden", "block");
             document.getElementById("mainFormContainer").classList.replace("hidden", "block");
@@ -577,19 +557,17 @@
             const ops = document.getElementById("recOps").innerText;
             const minus = document.getElementById("recMinus").innerText;
             const komisi = document.getElementById("recKomisi").innerText;
-            const volumeStr = document.getElementById("recVolume").innerText;
+            const volume = document.getElementById("recVolume").innerText;
             const omzet = document.getElementById("recOmzet").innerText;
 
-            // Ekstrak angka murni volume cup terjual untuk menentukan 3 kriteria motivasi footer
-            const angkaCupMurni = parseInt(volumeStr.replace(/[^0-9]/g, "")) || 0;
+            // EVALUASI DINAMIS TEKS MOTIVASI BERDASARKAN TOTAL PENJUALAN CUP
             let teksMotivasiFooter = "";
-
-            if (angkaCupMurni <= 30) {
-                teksMotivasiFooter = "Tetap semangat! Setiap tetes kopi yang terjual adalah langkah awal menuju kesuksesan yang lebih besar. Besok kita berjuang lebih keras lagi, jangan pernah menyerah! 💪✨";
-            } else if (angkaCupMurni >= 31 && angkaCupMurni <= 49) {
-                teksMotivasiFooter = "Alhamdulillah, pencapaian yang luar biasa hari ini! Sedikit lagi menyentuh target utama. Mari evaluasi rute penjualan agar besok bisa melesat lebih tinggi lagi! 🚀📈";
+            if (totalCupSemuaTerjualGlobal >= 0 && totalCupSemuaTerjualGlobal <= 30) {
+                teksMotivasiFooter = "Jangan patah semangat! Setiap langkah kecil hari ini adalah pondasi sukses besar di hari esok. Tetap konsisten, kuasai rute, dan besok kita jemput rezeki lebih maksimal lagi! Semangat!";
+            } else if (totalCupSemuaTerjualGlobal >= 31 && totalCupSemuaTerjualGlobal <= 49) {
+                teksMotivasiFooter = "Alhamdulillah, pencapaian yang luar biasa hari ini! Sedikit lagi menyentuh target puncak. Pertahankan ritme kerja keras ini dan terus tingkatkan kualitas pelayanan di jalanan!";
             } else {
-                teksMotivasiFooter = "🎉 Selamat! Target penjualan hari ini berhasil ditembus dengan sangat gemilang! Kerja kerasmu membuahkan hasil nyata, pertahankan konsistensi luar biasa ini dan jadilah yang terbaik! 🏆☕";
+                teksMotivasiFooter = "Selamat! Target penjualan hari ini berhasil ditembus dengan sangat sukses! Performa luar biasa yang wajib dipertahankan dan dijadikan standar baru. Masa depan cerah menanti Anda!";
             }
 
             html2canvas(document.getElementById("receiptPageContainer"), {
@@ -601,7 +579,7 @@
 
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                 const namaFileLaporan = `STRUK_${rider.replace(/\s+/g, '_')}_${tanggal}.png`;
-                const fileGambarObj = new File([blob], namaFileLaporan, { type: 'image/png' });
+                fileGambarStrukTerakhirCache = new File([blob], namaFileLaporan, { type: 'image/png' });
 
                 const teksWhatsApp = 
 `*LAPORAN SETORAN HARIAN SI FOUR AM* ☕
@@ -615,22 +593,20 @@
 📉 *Pengeluaran Ops:* ${ops}
 ⚠️ *Minus / Selisih:* ${minus}
 
-📊 *Total Penjualan:* ${volumeStr}
+📊 *Total Penjualan:* ${volume}
 💵 *Hak Komisi Rider:* ${komisi}
 🚀 *Omzet Bersih Pusat:* ${omzet}
 -----------------------------------------
-💡 *Pesan Motivasi:* 
 _${teksMotivasiFooter}_`;
 
-                if (navigator.canShare && navigator.canShare({ files: [fileGambarObj] })) {
+                if (navigator.canShare && navigator.canShare({ files: [fileGambarStrukTerakhirCache] })) {
                     try {
                         await navigator.share({
-                            files: [fileGambarObj],
+                            files: [fileGambarStrukTerakhirCache],
                             title: 'Laporan Finansial SI FOUR AM',
                             text: teksWhatsApp
                         });
-                        // Munculkan popup checklist sukses setelah dipindahkan ke WhatsApp
-                        tampilkanPopupChecklistSukses();
+                        bukaPopupReportSukses();
                     } catch (err) {
                         alihkanKeWhatsAppManual(canvas, namaFileLaporan, teksWhatsApp);
                     }
@@ -649,33 +625,48 @@ _${teksMotivasiFooter}_`;
             tautanUnduhVirtual.href = canvas.toDataURL("image/png");
             tautanUnduhVirtual.click();
 
-            tampilkanPopupChecklistSukses();
             const kirimUrlWhatsApp = `https://wa.me/6281283578212?text=${encodeURIComponent(teksWhatsApp)}`;
             window.open(kirimUrlWhatsApp, '_blank');
+            bukaPopupReportSukses();
         }
 
-        function tampilkanPopupChecklistSukses() {
-            document.getElementById("popupKirimSukses").classList.replace("hidden", "flex");
+        function bukaPopupReportSukses() {
+            document.getElementById("popupReportSuksesWA").classList.replace("hidden", "flex");
         }
 
-        // Fungsi Reset Ketika Menyentuh Di Mana Saja / Klik Tombol Kirim Kembali
-        function bukaPencetDimanaSajaMeresetWeb() {
-            document.getElementById("popupKirimSukses").classList.replace("flex", "hidden");
-            sessionStorage.removeItem("sifouram_pos_state");
-            eksekusiResetFormKembaliKeAwal();
-        }
-
-        // Interseptor sinkronisasi pemuatan warna saat web pertama kali di-load
-        let fungsiMuatLama = muatStateDariStorage;
-        muatStateDariStorage = function() {
-            if (typeof fungsiMuatLama === 'function') fungsiMuatLama();
+        // RESET DAN MEMPERTAHANKAN WARNA DROPDOWN SERTA DATA STOK AWAL
+        function pencetSembarangTempatUntukReset() {
+            document.getElementById("popupReportSuksesWA").classList.replace("flex", "hidden");
+            
+            // Mengosongkan data transaksi harian, kecuali data stok awal
+            document.getElementById("pengeluaran").value = "0";
+            document.getElementById("minus").value = "Rp 0";
+            document.getElementById("driver").selectedIndex = 0;
+            document.getElementById("picPenerima").selectedIndex = 0;
+            
+            // Loop reset mempertahankan nilai index stock awal, sisanya di-nol-kan
+            daftarProduk.forEach((_, index) => {
+                document.getElementById(`bonus-${index}`).selectedIndex = 0;
+                document.getElementById(`sisa-${index}`).selectedIndex = 0;
+                document.getElementById(`tunai-${index}`).selectedIndex = 0;
+                document.getElementById(`qris-${index}`).selectedIndex = 0;
+            });
+            
+            // Refresh pewarnaan dropdown agar tetap sinkron (orange jika > 0)
             document.querySelectorAll("#productRows select").forEach(select => {
                 updateWarnaDropdown(select);
             });
-        }
+            
+            hitungOtomatis();
+            sessionStorage.removeItem("sifouram_pos_state");
 
-        muatStateDariStorage();
-        hitungOtomatis();
+            // Kembali ke layar utama aplikasi
+            document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
+            document.getElementById("topHeaderBanner").classList.replace("hidden", "block");
+            document.getElementById("mainFormContainer").classList.replace("hidden", "block");
+            document.getElementById("floatingButtonContainer").classList.replace("hidden", "block");
+            window.scrollTo({ top: 0, behavior: 'instant' });
+        }
     </script>
 </body>
 </html>
