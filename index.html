@@ -209,6 +209,7 @@
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmN1YZn_hLnnf1spi_K_OVVt3MjV4fvEfbwqPkjqC1kcOxRXyGVqZQhDc1CaJpl7_E/exec";
         
+        // PENGATURAN OTOMATIS TANGGAL HARI INI SECARA REAL-TIME
         const tglHariIni = new Date();
         const yyyy = tglHariIni.getFullYear();
         let mm = tglHariIni.getMonth() + 1;
@@ -232,7 +233,7 @@
         let rupiahSisaMinusGlobal = 0;
         let totalCupSemuaTerjualGlobal = 0;
         let fileGambarStrukTerakhirCache = null;
-        let waktuRealtimeTerarsip = "";
+        let waktuRealtimeTerarsip = ""; // Variabel penampung waktu realtime
 
         function buatOpsiMaksimal(max, nilaiTerpilih) {
             let options = "";
@@ -388,7 +389,6 @@
             simpanStateKeStorage();
         }
 
-        // Fix Override muatStateDariStorage
         const fungsiMuatLama = muatStateDariStorage;
         muatStateDariStorage = function() {
             if (typeof fungsiMuatLama === 'function') fungsiMuatLama();
@@ -437,6 +437,7 @@
         function tutupPopupSimpan(lanjutKeStruk) {
             document.getElementById("popupSimpan").classList.replace("flex", "hidden");
             if (lanjutKeStruk) {
+                // Ambil Waktu Real-Time saat konfirmasi "Ya" ditekan
                 const skrg = new Date();
                 let jam = skrg.getHours();
                 let menit = skrg.getMinutes();
@@ -513,7 +514,7 @@
             document.getElementById("recDriver").innerText = payload.driver;
             document.getElementById("recPic").innerText = payload.pic_penerima;
             document.getElementById("recTanggal").innerText = payload.tanggal;
-            document.getElementById("recWaktu").innerText = waktuRealtimeTerarsip;
+            document.getElementById("recWaktu").innerText = waktuRealtimeTerarsip; // Cetak waktu di struk
             document.getElementById("recCash").innerText = document.getElementById("totalTunai").value;
             document.getElementById("recQris").innerText = document.getElementById("totalQris").value;
             document.getElementById("recOps").innerText = "Rp " + (parseInt(payload.pengeluaran) || 0).toLocaleString('id-ID');
@@ -549,12 +550,9 @@
             window.scrollTo({ top: 0, behavior: 'instant' });
         }
 
-        // ==========================================
-        // PERBAIKAN UTAMA: UNDUH DAN BAGIKAN LAPORAN
-        // ==========================================
         function unduhDanBagikanLaporan() {
             const areaTombolAksi = document.getElementById("receiptActionButtons");
-            areaTombolAksi.style.opacity = "0"; // Sembunyikan tombol saat screenshot diambil
+            areaTombolAksi.style.opacity = "0";
 
             const rider = document.getElementById("recDriver").innerText;
             const pic = document.getElementById("recPic").innerText;
@@ -567,8 +565,8 @@
             const volume = document.getElementById("recVolume").innerText;
             const omzet = document.getElementById("recOmzet").innerText;
 
-            // FIX: Menggunakan variabel 'volume' (bukan volumeStr) untuk ekstraksi angka murni cup
-            const angkaCupMurni = parseInt(volume.replace(/[^0-9]/g, "")) || 0;
+            // Ekstrak angka murni volume cup terjual untuk menentukan 3 kriteria motivasi footer
+            const angkaCupMurni = parseInt(volumeStr.replace(/[^0-9]/g, "")) || 0;
             let teksMotivasiFooter = "";
 
             if (angkaCupMurni <= 30) {
@@ -579,41 +577,65 @@
                 teksMotivasiFooter = "🎉 Selamat! Target penjualan hari ini berhasil ditembus dengan sangat gemilang! Kerja kerasmu membuahkan hasil nyata, pertahankan konsistensi luar biasa ini dan jadilah yang terbaik! 🏆☕";
             }
 
-            // Generate teks WhatsApp bersih
-            const teksWhatsApp = `*Report Setoran SI FOUR AM* ☕\n-----------------------------------------\n👤 *Nama Rider:* ${rider}\n👥 *PIC Penerima:* ${pic}\n📅 *Tanggal Laporan:* ${tanggal}\n🕒 *Waktu Transaksi:* ${waktuRealtimeTerarsip}\n\n💰 *Total Cash / Tunai:* ${cash}\n📱 *Total QRIS:* ${qris}\n📉 *Pengeluaran Ops:* ${ops}\n⚠️ *Minus / Selisih:* ${minus}\n\n📊 *Total Penjualan:* ${volume}\n💵 *Hak Komisi Rider:* ${komisi}\n🚀 *Omzet Bersih Pusat:* ${omzet}\n-----------------------------------------\n_${teksMotivasiFooter}_`;
-
-            // Mulai konversi halaman struk menjadi Gambar PNG menggunakan html2canvas
             html2canvas(document.getElementById("receiptPageContainer"), {
                 backgroundColor: "#111111",
                 scale: 2.5,
                 useCORS: true
-            }).then((canvas) => {
-                areaTombolAksi.style.opacity = "1"; // Munculkan kembali tombol aksi
+            }).then(async (canvas) => {
+                areaTombolAksi.style.opacity = "1";
 
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                 const namaFileLaporan = `STRUK_${rider.replace(/\s+/g, '_')}_${tanggal}.png`;
-                
-                // Alihkan langsung ke fungsi download + buka tautan chat WA otomatis
-                alihkanKeWhatsAppManual(canvas, namaFileLaporan, teksWhatsApp);
+                fileGambarStrukTerakhirCache = new File([blob], namaFileLaporan, { type: 'image/png' });
 
+                // Teks WhatsApp bersih tanpa judul kriteria & menyertakan Waktu Realtime
+                const teksWhatsApp = 
+`*Report Storan SI FOUR AM* ☕
+-----------------------------------------
+👤 *Nama Rier:* ${rider}
+👥 *PIC Penerima:* ${pic}
+📅 *Tanggal Laporan:* ${tanggal}
+🕒 *Waktu Transaksi:* ${waktuRealtimeTerarsip}
+
+💰 *Total Cash / Tunai:* ${cash}
+📱 *Total QRIS:* ${qris}
+📉 *Pengeluaran Ops:* ${ops}
+⚠️ *Minus / Selisih:* ${minus}
+
+📊 *Total Penjualan:* ${volume}
+💵 *Hak Komisi Rider:* ${komisi}
+🚀 *Omzet Bersih Pusat:* ${omzet}
+-----------------------------------------
+_${teksMotivasiFooter}_`;
+
+                if (navigator.canShare && navigator.canShare({ files: [fileGambarStrukTerakhirCache] })) {
+                    try {
+                        await navigator.share({
+                            files: [fileGambarStrukTerakhirCache],
+                            title: 'Laporan Finansial SI FOUR AM',
+                            text: teksWhatsApp
+                        });
+                        bukaPopupReportSukses();
+                    } catch (err) {
+                        alihkanKeWhatsAppManual(canvas, namaFileLaporan, teksWhatsApp);
+                    }
+                } else {
+                    alihkanKeWhatsAppManual(canvas, namaFileLaporan, teksWhatsApp);
+                }
             }).catch(err => {
                 console.error("Gagal membuat screenshot:", err);
                 areaTombolAksi.style.opacity = "1";
             });
         }
 
-        // Fungsi Otomatisasi Terintegrasi
         function alihkanKeWhatsAppManual(canvas, namaFile, teksWhatsApp) {
-            // 1. Download file gambar PNG struk secara otomatis ke device
             const tautanUnduhVirtual = document.createElement("a");
             tautanUnduhVirtual.download = namaFile;
             tautanUnduhVirtual.href = canvas.toDataURL("image/png");
             tautanUnduhVirtual.click();
 
-            // 2. Redirect otomatis ke aplikasi WhatsApp membawa pesan rekap detail data
             const kirimUrlWhatsApp = `https://wa.me/6281283578212?text=${encodeURIComponent(teksWhatsApp)}`;
             window.open(kirimUrlWhatsApp, '_blank');
-            
-            // 3. Tampilkan popup notifikasi sukses
             bukaPopupReportSukses();
         }
 
