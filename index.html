@@ -33,7 +33,7 @@
             <div class="grid grid-cols-12 gap-2">
                 <div class="col-span-5">
                     <label class="block text-[10px] font-medium text-gray-400 mb-1">Nama Crew / Driver</label>
-                    <select id="driver" onchange="simpanStateKeStorage()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] focus:border-[#f57c00] outline-none h-10">
+                    <select id="driver" onchange="resetWarnaValidasi(this); simpanStateKeStorage()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] focus:border-[#f57c00] outline-none h-10 transition-colors duration-200">
                         <option value="">-- Pilih Rider --</option>
                         <option value="ACHMAD DARMADI">ACHMAD DARMADI</option>
                         <option value="RICKY AKBAR">RICKY AKBAR</option>
@@ -45,7 +45,7 @@
                 </div>
                 <div class="col-span-4">
                     <label class="block text-[10px] font-medium text-gray-400 mb-1">PIC Penerima</label>
-                    <select id="picPenerima" onchange="simpanStateKeStorage()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] focus:border-[#f57c00] outline-none h-10">
+                    <select id="picPenerima" onchange="resetWarnaValidasi(this); simpanStateKeStorage()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] focus:border-[#f57c00] outline-none h-10 transition-colors duration-200">
                         <option value="">-- Pilih PIC --</option>
                         <option value="Muhammad Ishaq Alif Hanif">Muhammad Ishaq Alif Hanif</option>
                         <option value="Indri Devi Anjani">Indri Devi Anjani</option>
@@ -336,6 +336,13 @@
             }
         }
 
+        function resetWarnaValidasi(element) {
+            if (element.value !== "") {
+                element.classList.remove("border-red-500", "bg-red-950/20");
+                element.classList.add("border-[#444444]", "bg-[#2a2a2a]");
+            }
+        }
+
         function hitungOtomatis() {
             let totalCupSemua = 0;
             let akumulasiKomisi = 0;
@@ -388,7 +395,6 @@
             simpanStateKeStorage();
         }
 
-        // Fix Override muatStateDariStorage
         const fungsiMuatLama = muatStateDariStorage;
         muatStateDariStorage = function() {
             if (typeof fungsiMuatLama === 'function') fungsiMuatLama();
@@ -401,13 +407,25 @@
         hitungOtomatis();
 
         function bukaPopupKonfirmasiSimpan() {
-            const driverVal = document.getElementById("driver").value;
-            const picVal = document.getElementById("picPenerima").value;
+            const driverEl = document.getElementById("driver");
+            const picEl = document.getElementById("picPenerima");
             const errorLabel = document.getElementById("errorValidasiPilihan");
+            let adaError = false;
 
-            if (driverVal === "" || picVal === "") {
+            if (driverEl.value === "") {
+                driverEl.classList.remove("border-[#444444]", "bg-[#2a2a2a]");
+                driverEl.classList.add("border-red-500", "bg-red-950/20");
+                adaError = true;
+            }
+            if (picEl.value === "") {
+                picEl.classList.remove("border-[#444444]", "bg-[#2a2a2a]");
+                picEl.classList.add("border-red-500", "bg-red-950/20");
+                adaError = true;
+            }
+
+            if (adaError) {
                 errorLabel.classList.remove("hidden");
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 return;
             } else {
                 errorLabel.classList.add("hidden");
@@ -549,12 +567,9 @@
             window.scrollTo({ top: 0, behavior: 'instant' });
         }
 
-        // ==========================================
-        // PERBAIKAN UTAMA: UNDUH DAN BAGIKAN LAPORAN
-        // ==========================================
         function unduhDanBagikanLaporan() {
             const areaTombolAksi = document.getElementById("receiptActionButtons");
-            areaTombolAksi.style.opacity = "0"; // Sembunyikan tombol saat screenshot diambil
+            areaTombolAksi.style.opacity = "0";
 
             const rider = document.getElementById("recDriver").innerText;
             const pic = document.getElementById("recPic").innerText;
@@ -567,7 +582,6 @@
             const volume = document.getElementById("recVolume").innerText;
             const omzet = document.getElementById("recOmzet").innerText;
 
-            // FIX: Menggunakan variabel 'volume' (bukan volumeStr) untuk ekstraksi angka murni cup
             const angkaCupMurni = parseInt(volume.replace(/[^0-9]/g, "")) || 0;
             let teksMotivasiFooter = "";
 
@@ -579,41 +593,64 @@
                 teksMotivasiFooter = "🎉 Selamat! Target penjualan hari ini berhasil ditembus dengan sangat gemilang! Kerja kerasmu membuahkan hasil nyata, pertahankan konsistensi luar biasa ini dan jadilah yang terbaik! 🏆☕";
             }
 
-            // Generate teks WhatsApp bersih
-            const teksWhatsApp = `*Report Setoran SI FOUR AM* ☕\n-----------------------------------------\n👤 *Nama Rider:* ${rider}\n👥 *PIC Penerima:* ${pic}\n📅 *Tanggal Laporan:* ${tanggal}\n🕒 *Waktu Transaksi:* ${waktuRealtimeTerarsip}\n\n💰 *Total Cash / Tunai:* ${cash}\n📱 *Total QRIS:* ${qris}\n📉 *Pengeluaran Ops:* ${ops}\n⚠️ *Minus / Selisih:* ${minus}\n\n📊 *Total Penjualan:* ${volume}\n💵 *Hak Komisi Rider:* ${komisi}\n🚀 *Omzet Bersih Pusat:* ${omzet}\n-----------------------------------------\n_${teksMotivasiFooter}_`;
+            const teksWhatsApp = 
+`*Report Setoran SI FOUR AM* ☕
+-----------------------------------------
+👤 *Nama Rider:* ${rider}
+👥 *PIC Penerima:* ${pic}
+📅 *Tanggal Laporan:* ${tanggal}
+🕒 *Waktu Transaksi:* ${waktuRealtimeTerarsip}
 
-            // Mulai konversi halaman struk menjadi Gambar PNG menggunakan html2canvas
+💰 *Total Cash / Tunai:* ${cash}
+📱 *Total QRIS:* ${qris}
+📉 *Pengeluaran Ops:* ${ops}
+⚠️ *Minus / Selisih:* ${minus}
+
+📊 *Total Penjualan:* ${volume}
+💵 *Hak Komisi Rider:* ${komisi}
+🚀 *Omzet Bersih Pusat:* ${omzet}
+-----------------------------------------
+_${teksMotivasiFooter}_`;
+
             html2canvas(document.getElementById("receiptPageContainer"), {
                 backgroundColor: "#111111",
                 scale: 2.5,
                 useCORS: true
-            }).then((canvas) => {
-                areaTombolAksi.style.opacity = "1"; // Munculkan kembali tombol aksi
+            }).then(async (canvas) => {
+                areaTombolAksi.style.opacity = "1";
 
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                 const namaFileLaporan = `STRUK_${rider.replace(/\s+/g, '_')}_${tanggal}.png`;
-                
-                // Alihkan langsung ke fungsi download + buka tautan chat WA otomatis
-                alihkanKeWhatsAppManual(canvas, namaFileLaporan, teksWhatsApp);
+                const fileGambarStruk = new File([blob], namaFileLaporan, { type: 'image/png' });
 
+                if (navigator.canShare && navigator.canShare({ files: [fileGambarStruk] })) {
+                    try {
+                        await navigator.share({
+                            files: [fileGambarStruk],
+                            title: 'Laporan Finansial SI FOUR AM',
+                            text: teksWhatsApp
+                        });
+                        bukaPopupReportSukses();
+                    } catch (err) {
+                        alihkanKeWhatsAppManual(canvas, namaFileLaporan, teksWhatsApp);
+                    }
+                } else {
+                    alihkanKeWhatsAppManual(canvas, namaFileLaporan, teksWhatsApp);
+                }
             }).catch(err => {
                 console.error("Gagal membuat screenshot:", err);
                 areaTombolAksi.style.opacity = "1";
             });
         }
 
-        // Fungsi Otomatisasi Terintegrasi
         function alihkanKeWhatsAppManual(canvas, namaFile, teksWhatsApp) {
-            // 1. Download file gambar PNG struk secara otomatis ke device
             const tautanUnduhVirtual = document.createElement("a");
             tautanUnduhVirtual.download = namaFile;
             tautanUnduhVirtual.href = canvas.toDataURL("image/png");
             tautanUnduhVirtual.click();
 
-            // 2. Redirect otomatis ke aplikasi WhatsApp membawa pesan rekap detail data
             const kirimUrlWhatsApp = `https://wa.me/6281283578212?text=${encodeURIComponent(teksWhatsApp)}`;
             window.open(kirimUrlWhatsApp, '_blank');
-            
-            // 3. Tampilkan popup notifikasi sukses
             bukaPopupReportSukses();
         }
 
@@ -626,8 +663,13 @@
             
             document.getElementById("pengeluaran").value = "0";
             document.getElementById("minus").value = "Rp 0";
-            document.getElementById("driver").selectedIndex = 0;
-            document.getElementById("picPenerima").selectedIndex = 0;
+            
+            const driverEl = document.getElementById("driver");
+            const picEl = document.getElementById("picPenerima");
+            driverEl.selectedIndex = 0;
+            picEl.selectedIndex = 0;
+            driverEl.classList.set = "w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] focus:border-[#f57c00] outline-none h-10";
+            picEl.classList.set = "w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] focus:border-[#f57c00] outline-none h-10";
             
             daftarProduk.forEach((_, index) => {
                 document.getElementById(`bonus-${index}`).selectedIndex = 0;
