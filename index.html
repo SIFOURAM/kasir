@@ -586,16 +586,16 @@
             let teksMotivasiFooter = "";
 
             if (angkaCupMurni <= 30) {
-                teksMotivasiFooter = "Tetap semangat! Setiap tetes kopi yang terjual adalah langkah awal menuju kesuksesan yang lebih besar. Besok kita berjuang lebih keras lagi, jangan pernah menyerah! 💪✨";
+                teksMotivasiFooter = "Tetap semangat! Setiap produk yang terjual adalah langkah awal menuju kesuksesan yang lebih besar. Besok kita berjuang lebih keras lagi, jangan pernah menyerah! 💪✨";
             } else if (angkaCupMurni >= 31 && angkaCupMurni <= 49) {
                 teksMotivasiFooter = "Alhamdulillah, pencapaian yang luar biasa hari ini! Sedikit lagi menyentuh target utama. Mari evaluasi rute penjualan agar besok bisa melesat lebih tinggi lagi! 🚀📈";
             } else {
-                teksMotivasiFooter = "🎉 Selamat! Target penjualan hari ini berhasil ditembus dengan sangat gemilang! Kerja kerasmu membuahkan hasil nyata, pertahankan konsistensi luar biasa ini dan jadilah yang terbaik! 🏆☕";
+                teksMotivasiFooter = "🎉 Selamat! Target penjualan hari ini berhasil ditembus dengan sangat gemilang! Kerja kerasmu membuahkan hasil nyata, pertahankan konsistensi luar biasa ini dan jadilah yang terbaik! Jangan Mudah Puas Yaaa 🏆☕";
             }
 
             const teksWhatsApp = 
 `*Report Setoran SI FOUR AM* ☕
------------------------------------------
+--------------------------------------
 👤 *Nama Rider:* ${rider}
 👥 *PIC Penerima:* ${pic}
 📅 *Tanggal Laporan:* ${tanggal}
@@ -607,9 +607,9 @@
 ⚠️ *Minus / Selisih:* ${minus}
 
 📊 *Total Penjualan:* ${volume}
-💵 *Hak Komisi Rider:* ${komisi}
-🚀 *Omzet Bersih Pusat:* ${omzet}
------------------------------------------
+💵 *Komisi Rider:* ${komisi}
+🚀 *TOTAL OMZET:* ${omzet}
+--------------------------------------
 _${teksMotivasiFooter}_`;
 
             html2canvas(document.getElementById("receiptPageContainer"), {
