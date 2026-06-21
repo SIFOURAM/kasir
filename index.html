@@ -18,10 +18,19 @@
         .animasi-flash-minus { animation: kelapKelip 0.7s infinite border; }
         .highlight-green { animation: flashGreen 1s 2; border-color: #22c55e !important; }
         @keyframes flashGreen { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(34, 197, 94, 0.2); } }
+        
+        /* Class Warna Oren Otomatis */
+        .terpilih-oren {
+            border: 2px solid #f57c00 !important;
+            color: #f57c00 !important;
+            font-weight: 900 !important;
+            background-color: #1a1a1a !important;
+        }
     </style>
 </head>
 <body class="bg-[#111111] text-[#eeeeee] min-h-screen font-sans antialiased select-none pb-20">
 
+    <!-- BAGIAN INPUT -->
     <div id="topHeaderBanner" class="sticky top-0 z-50 bg-[#f57c00] text-[#111111] p-4 text-center shadow-md border-b-2 border-black">
         <h1 class="text-xl font-black tracking-widest">SI FOUR AM</h1>
         <p class="text-[10px] font-bold uppercase tracking-wider text-[#222222]">Official Mobile Report System</p>
@@ -33,7 +42,7 @@
             <div class="grid grid-cols-12 gap-2">
                 <div class="col-span-5">
                     <label class="block text-[10px] font-medium text-gray-400 mb-1">Nama Crew / Driver</label>
-                    <select id="driver" onchange="resetWarnaValidasi(this); simpanStateKeStorage(); muatHutangDriver();" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] focus:border-[#f57c00] outline-none h-10 transition-colors">
+                    <select id="driver" onchange="updateWarnaOren(this); resetWarnaValidasi(this); muatHutangDriver(); simpanState();" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] outline-none h-10 transition-colors">
                         <option value="">-- Pilih Rider --</option>
                         <option value="ACHMAD DARMADI">ACHMAD DARMADI</option>
                         <option value="RICKY AKBAR">RICKY AKBAR</option>
@@ -45,7 +54,7 @@
                 </div>
                 <div class="col-span-4">
                     <label class="block text-[10px] font-medium text-gray-400 mb-1">PIC Penerima</label>
-                    <select id="picPenerima" onchange="resetWarnaValidasi(this); simpanStateKeStorage()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] focus:border-[#f57c00] outline-none h-10 transition-colors">
+                    <select id="picPenerima" onchange="updateWarnaOren(this); resetWarnaValidasi(this); simpanState();" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] outline-none h-10 transition-colors">
                         <option value="">-- Pilih PIC --</option>
                         <option value="Muhammad Ishaq Alif Hanif">Muhammad Ishaq Alif Hanif</option>
                         <option value="Indri Devi Anjani">Indri Devi Anjani</option>
@@ -56,7 +65,7 @@
                 </div>
                 <div class="col-span-3">
                     <label class="block text-[10px] font-medium text-gray-400 mb-1">Tanggal</label>
-                    <input type="date" id="tanggal" onchange="simpanStateKeStorage()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-1.5 py-1 text-[10px] outline-none h-10">
+                    <input type="date" id="tanggal" onchange="simpanState()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-1.5 py-1 text-[10px] outline-none h-10">
                 </div>
             </div>
         </div>
@@ -99,7 +108,7 @@
                 </div>
                 <div>
                     <label class="block text-[11px] font-medium text-gray-400 mb-1">Bayar Hutang (Rp)</label>
-                    <input type="number" id="bayarHutang" value="0" oninput="hitungOtomatis()" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-sm focus:border-green-500 outline-none h-11 transition-all">
+                    <input type="number" id="bayarHutang" value="0" oninput="hitungOtomatis(); simpanState();" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg p-2.5 text-sm outline-none h-11 transition-all">
                 </div>
             </div>
 
@@ -128,6 +137,7 @@
         </div>
     </div>
 
+    <!-- TOMBOL SIMPAN -->
     <div id="floatingButtonContainer" class="fixed bottom-0 left-0 right-0 p-4 bg-[#111111]/90 backdrop-blur-md border-t border-[#222222] max-w-md mx-auto z-40">
         <p id="errorValidasiPilihan" class="text-center text-xs text-red-400 font-bold mb-2 hidden">⚠️ Silakan pilih Nama Rider & PIC Penerima!</p>
         <button type="button" onclick="bukaPopupKonfirmasiSimpan()" class="w-full bg-[#f57c00] hover:bg-[#e65100] active:scale-[0.98] text-[#111111] font-black py-3.5 px-4 rounded-xl uppercase tracking-wider text-sm transition-all shadow-lg">
@@ -135,6 +145,7 @@
         </button>
     </div>
 
+    <!-- POPUP PERINGATAN HUTANG -->
     <div id="popupHutangRider" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 px-4 hidden">
         <div class="bg-[#1e1e1e] border border-red-500 w-full max-w-xs rounded-2xl p-6 text-center space-y-4 shadow-2xl">
             <div class="w-14 h-14 bg-red-500/20 border-2 border-red-500 rounded-full flex items-center justify-center mx-auto">
@@ -150,10 +161,10 @@
         </div>
     </div>
 
+    <!-- POPUP KONFIRMASI SETORAN SEBELUM KIRIM -->
     <div id="popupSimpan" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 hidden">
         <div id="boxPopupSimpan" class="bg-[#1e1e1e] border border-emerald-500 w-full max-w-xs rounded-2xl p-5 space-y-4 shadow-xl">
             <h3 class="text-center text-sm font-black text-emerald-400 uppercase tracking-wider border-b border-gray-700 pb-2">Rincian Setoran</h3>
-            
             <div class="space-y-2 text-xs">
                 <div class="flex justify-between"><span class="text-gray-400">Total Tunai/Cash:</span><span id="popTotalTunai" class="font-bold text-white">Rp 0</span></div>
                 <div class="flex justify-between"><span class="text-gray-400">Total Komisi Rider:</span><span id="popTotalKomisi" class="font-bold text-amber-500">Rp 0</span></div>
@@ -163,7 +174,6 @@
                     <span id="popSetoranBersih" class="font-black text-[#f57c00] text-sm">Rp 0</span>
                 </div>
             </div>
-
             <p id="teksPesanPopupSimpan" class="text-center text-[10px] text-gray-400 pt-1">Apakah data di atas sudah benar?</p>
             <div class="grid grid-cols-2 gap-3 pt-2">
                 <button type="button" onclick="tutupPopupSimpan(false)" class="bg-[#2a2a2a] hover:bg-[#333333] text-gray-400 font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider">Tidak</button>
@@ -172,8 +182,22 @@
         </div>
     </div>
 
-    <div id="receiptPageContainer" class="w-full min-h-screen bg-[#111111] p-4 text-center hidden">
-        <div class="max-w-md mx-auto space-y-4 pb-10">
+    <!-- POPUP WA SUKSES & RESET -->
+    <div id="popupSuksesWA" class="fixed inset-0 z-[300] bg-black/90 hidden items-center justify-center p-4" onclick="pencetSembarangReset()">
+        <div class="bg-[#f57c00] rounded-2xl p-6 text-center shadow-xl w-full max-w-xs" onclick="event.stopPropagation()">
+            <div class="text-white text-6xl mb-3 drop-shadow-md">☑️</div>
+            <h2 class="text-[#111111] font-black text-lg mb-1 tracking-wide">REPORT DATA BERHASIL DIKIRIM</h2>
+            <p class="text-[#111111] font-medium text-xs mb-5">Bukti foto struk telah siap dibagikan ke WhatsApp.</p>
+            <button onclick="unduhDanBagikanLaporan()" class="bg-[#111111] hover:bg-[#222222] text-[#f57c00] font-black py-3 px-4 rounded-xl text-xs w-full mb-3 uppercase tracking-widest shadow-md transition-all active:scale-95">
+                KIRIM KEMBALI
+            </button>
+            <p class="text-[9px] text-[#111111] font-bold bg-white/30 py-1.5 rounded-full px-2 inline-block">👆 Ketuk di area luar kotak ini untuk mereset web</p>
+        </div>
+    </div>
+
+    <!-- BAGIAN HALAMAN RECEIPT / STRUK -->
+    <div id="receiptPageContainer" class="w-full min-h-screen bg-[#111111] p-4 text-center hidden pb-10">
+        <div class="max-w-md mx-auto space-y-4">
             <div class="text-center py-2 border-b-2 border-dashed border-[#333333]">
                 <h2 class="text-2xl font-black tracking-widest text-[#f57c00]">SI FOUR AM</h2>
                 <p class="text-[9px] uppercase tracking-widest text-gray-400">Official Mobile Receipt</p>
@@ -218,18 +242,11 @@
         </div>
     </div>
 
+    <!-- ===== JAVASCRIPT ===== -->
     <script>
-        // ==========================================
-        // TEMPELKAN URL DEPLOYMENT APPS SCRIPT ANDA DI SINI
-        // ==========================================
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzN1hbk77e3gsFCb3g-STheBp7TWJYUQFElbeT7k4CoQvrrLH3oPP8kJS66gxeSnXrp/exec";
 
-        const tglHariIni = new Date();
-        const yyyy = tglHariIni.getFullYear();
-        let mm = tglHariIni.getMonth() + 1;
-        let dd = tglHariIni.getDate();
-        document.getElementById("tanggal").value = `${yyyy}-${mm < 10 ? '0'+mm : mm}-${dd < 10 ? '0'+dd : dd}`;
-
+        // Konfigurasi Stok Awal Bawaan SI FOUR AM[cite: 4]
         const daftarProduk = [
             { nama: "SI AMERICANO", harga: 8000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 },
             { nama: "SI KOPSU AREN", harga: 9000, stok: 15, b: 0, sisa: 0, t: 0, q: 0 },
@@ -244,31 +261,104 @@
 
         let waktuRealtimeTerarsip = "";
         let globalSetoranBersih = 0;
+        let globalAngkaCupMurni = 0;
 
-        function buatOpsiMaksimal(max) {
-            let options = ""; for (let i = 0; i <= max; i++) options += `<option value="${i}">${i}</option>`; return options;
+        // FUNGSI WARNA OREN
+        function updateWarnaOren(el) {
+            if (el.value && el.value !== "0" && !el.value.startsWith("--")) {
+                el.classList.add("terpilih-oren");
+            } else {
+                el.classList.remove("terpilih-oren");
+            }
+        }
+        function resetWarnaValidasi(el) { if (el.value) el.classList.replace("border-red-500", "border-[#444444]"); }
+
+        // FUNGSI FORMAT TANGGAL CUSTOM (hari/bulan/tahun 2 digit)
+        function formatTanggalCustom(dateStr) {
+            if (!dateStr) return "";
+            const d = new Date(dateStr);
+            return `${d.getDate()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getFullYear()).slice(-2)}`;
         }
 
+        // INIT TANGGAL BARU
+        const today = new Date();
+        document.getElementById("tanggal").value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+        // Membuat opsi drop-down dengan penanda pilihan default (selected)
+        function buatOpsiMaksimal(max, selectedVal = 0) {
+            let options = ""; 
+            for (let i = 0; i <= max; i++) {
+                options += `<option value="${i}" ${i === selectedVal ? 'selected' : ''}>${i}</option>`;
+            } 
+            return options;
+        }
+
+        // GENERATE TABEL MENU BESERTA STOK BAWAAN OTOMATIS
         const tbody = document.getElementById("productRows");
         daftarProduk.forEach((prod, index) => {
             let maxDrop = prod.nama === "SI KOPSU AREN" ? 50 : 20;
             const tr = document.createElement("tr"); tr.className = "hover:bg-[#252525] border-b border-[#333]";
             tr.innerHTML = `
                 <td class="py-2 px-1 font-bold text-white text-[10px] leading-tight break-words">${prod.nama}</td>
-                <td class="py-2 text-center"><select id="stok-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(maxDrop)}</select></td>
-                <td class="py-2 text-center"><select id="bonus-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#666] p-1 text-center rounded text-white font-bold text-xs">${buatOpsiMaksimal(2)}</select></td>
-                <td class="py-2 text-center"><select id="sisa-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(maxDrop)}</select></td>
-                <td class="py-2 text-center"><select id="tunai-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(maxDrop)}</select></td>
-                <td class="py-2 text-center"><select id="qris-${index}" onchange="hitungOtomatis()" class="w-10 bg-[#2a2a2a] border border-[#444] p-1 text-center rounded text-white text-xs">${buatOpsiMaksimal(maxDrop)}</select></td>
+                <td class="py-2 text-center"><select id="stok-${index}" onchange="hitungOtomatis(); updateWarnaOren(this); simpanState();" class="w-10 bg-[#2a2a2a] border border-[#444] p-1 text-center rounded text-white text-xs transition-colors">${buatOpsiMaksimal(maxDrop, prod.stok)}</select></td>
+                <td class="py-2 text-center"><select id="bonus-${index}" onchange="hitungOtomatis(); updateWarnaOren(this); simpanState();" class="w-10 bg-[#2a2a2a] border border-[#666] p-1 text-center rounded text-white font-bold text-xs transition-colors">${buatOpsiMaksimal(2, 0)}</select></td>
+                <td class="py-2 text-center"><select id="sisa-${index}" onchange="hitungOtomatis(); updateWarnaOren(this); simpanState();" class="w-10 bg-[#2a2a2a] border border-[#444] p-1 text-center rounded text-white text-xs transition-colors">${buatOpsiMaksimal(maxDrop, 0)}</select></td>
+                <td class="py-2 text-center"><select id="tunai-${index}" onchange="hitungOtomatis(); updateWarnaOren(this); simpanState();" class="w-10 bg-[#2a2a2a] border border-[#444] p-1 text-center rounded text-white text-xs transition-colors">${buatOpsiMaksimal(maxDrop, 0)}</select></td>
+                <td class="py-2 text-center"><select id="qris-${index}" onchange="hitungOtomatis(); updateWarnaOren(this); simpanState();" class="w-10 bg-[#2a2a2a] border border-[#444] p-1 text-center rounded text-white text-xs transition-colors">${buatOpsiMaksimal(maxDrop, 0)}</select></td>
                 <td class="py-2 text-center bg-black font-black text-[#ffb74d] text-xs" id="totalcup-${index}">0</td>`;
             tbody.appendChild(tr);
         });
 
-        // ==== LOGIKA HUTANG POPUP MERAH ====
+        // Warnai kolom Stok Bawaan yang bernilai di atas 0 secara instan pasca-load
+        document.querySelectorAll('#productRows select').forEach(updateWarnaOren);
+
+        // PERSISTENSI STATE (ANTI HILANG REFRESH)
+        function simpanState(view = 'input') {
+            const st = {
+                view: view, driver: document.getElementById('driver').value, pic: document.getElementById('picPenerima').value,
+                tanggal: document.getElementById('tanggal').value, bayarHutang: document.getElementById('bayarHutang').value,
+                produk: daftarProduk.map((_, i) => ({
+                    s: document.getElementById(`stok-${i}`).value, b: document.getElementById(`bonus-${i}`).value,
+                    si: document.getElementById(`sisa-${i}`).value, t: document.getElementById(`tunai-${i}`).value, q: document.getElementById(`qris-${i}`).value
+                }))
+            };
+            localStorage.setItem('siFourState', JSON.stringify(st));
+        }
+
+        function muatState() {
+            const saved = localStorage.getItem('siFourState');
+            if (saved) {
+                const st = JSON.parse(saved);
+                document.getElementById('driver').value = st.driver;
+                document.getElementById('picPenerima').value = st.pic;
+                if(st.tanggal) document.getElementById('tanggal').value = st.tanggal;
+                document.getElementById('bayarHutang').value = st.bayarHutang;
+
+                st.produk.forEach((p, i) => {
+                    document.getElementById(`stok-${i}`).value = p.s; document.getElementById(`bonus-${i}`).value = p.b;
+                    document.getElementById(`sisa-${i}`).value = p.si; document.getElementById(`tunai-${i}`).value = p.t;
+                    document.getElementById(`qris-${i}`).value = p.q;
+                });
+
+                // Terapkan ulang skema pewarnaan visual oren
+                updateWarnaOren(document.getElementById('driver'));
+                updateWarnaOren(document.getElementById('picPenerima'));
+                document.querySelectorAll('#productRows select').forEach(updateWarnaOren);
+                hitungOtomatis();
+
+                if(st.view === 'struk') {
+                    bukaPopupKonfirmasiSimpan();
+                    document.getElementById('popupSimpan').classList.replace("flex", "hidden");
+                    prosesUIStrukSaja(); 
+                }
+            } else {
+                hitungOtomatis(); // Kalkulasi awal untuk stok default
+            }
+        }
+
         async function muatHutangDriver() {
             const driver = document.getElementById("driver").value;
             if(!driver) return;
-            
             document.getElementById("displayHutang").value = "Loading...";
             try {
                 const res = await fetch(`${SCRIPT_URL}?action=getHutang&driver=${encodeURIComponent(driver)}`);
@@ -279,10 +369,8 @@
                     document.getElementById("teksNominalHutangPopup").innerText = "Rp " + nominal.toLocaleString('id-ID');
                     document.getElementById("popupHutangRider").classList.replace("hidden", "flex");
                 }
-                hitungOtomatis();
-            } catch (e) {
-                document.getElementById("displayHutang").value = "Rp 0";
-            }
+                hitungOtomatis(); simpanState();
+            } catch (e) { document.getElementById("displayHutang").value = "Rp 0"; }
         }
 
         function bayarSekarang() {
@@ -294,31 +382,26 @@
             inputBayar.focus();
         }
         function bayarNanti() { document.getElementById("popupHutangRider").classList.replace("flex", "hidden"); }
-        function resetWarnaValidasi(el) { if (el.value) el.classList.replace("border-red-500", "border-[#444444]"); }
 
         function hitungOtomatis() {
             let totalCup = 0, komisi = 0, tunai = 0, qris = 0, minusRupiahStok = 0;
-
             daftarProduk.forEach((prod, idx) => {
                 const s = parseInt(document.getElementById(`stok-${idx}`).value) || 0;
                 const si = parseInt(document.getElementById(`sisa-${idx}`).value) || 0;
                 const t = parseInt(document.getElementById(`tunai-${idx}`).value) || 0;
                 const q = parseInt(document.getElementById(`qris-${idx}`).value) || 0;
                 
-                const terjual = t + q;
-                const wajibTerjual = s - si;
+                const terjual = t + q; const wajibTerjual = s - si;
                 if (terjual < wajibTerjual) minusRupiahStok += (wajibTerjual - terjual) * prod.harga;
 
                 document.getElementById(`totalcup-${idx}`).innerText = terjual;
-                tunai += t * prod.harga;
-                qris += q * prod.harga;
-                totalCup += terjual;
-                komisi += terjual * (prod.nama === "SI TEH MANIS" ? 1000 : 2000);
+                tunai += t * prod.harga; qris += q * prod.harga;
+                totalCup += terjual; komisi += terjual * (prod.nama === "SI TEH MANIS" ? 1000 : 2000);
             });
 
+            globalAngkaCupMurni = totalCup; 
             const hutangAwal = parseInt(document.getElementById("displayHutang").value.replace(/[^0-9]/g, "")) || 0;
             const bayar = parseInt(document.getElementById("bayarHutang").value) || 0;
-            
             const sisaHutang = hutangAwal - bayar;
             const minusTotal = minusRupiahStok + sisaHutang;
             const omzet = tunai + qris;
@@ -330,13 +413,10 @@
             document.getElementById("totalKomisiText").innerText = "Rp " + komisi.toLocaleString('id-ID');
             document.getElementById("totalIncomeText").innerText = "Rp " + omzet.toLocaleString('id-ID');
             document.getElementById("totalCupText").innerText = totalCup + " Cup";
-
-            simpanStateKeStorage();
         }
 
         function bukaPopupKonfirmasiSimpan() {
-            const d = document.getElementById("driver"), p = document.getElementById("picPenerima");
-            const err = document.getElementById("errorValidasiPilihan");
+            const d = document.getElementById("driver"), p = document.getElementById("picPenerima"), err = document.getElementById("errorValidasiPilihan");
             if (!d.value || !p.value) {
                 if(!d.value) d.classList.replace("border-[#444444]", "border-red-500");
                 if(!p.value) p.classList.replace("border-[#444444]", "border-red-500");
@@ -347,14 +427,12 @@
             const tunai = parseInt(document.getElementById("totalTunai").value.replace(/[^0-9]/g,"")) || 0;
             const komisi = parseInt(document.getElementById("totalKomisiText").innerText.replace(/[^0-9]/g,"")) || 0;
             const bayar = parseInt(document.getElementById("bayarHutang").value) || 0;
-            
-            globalSetoranBersih = tunai - komisi + bayar; // Tunai dikurangi hak komisi, ditambah uang bayar hutang fisik
+            globalSetoranBersih = tunai - komisi + bayar;
 
             document.getElementById("popTotalTunai").innerText = "Rp " + tunai.toLocaleString('id-ID');
             document.getElementById("popTotalKomisi").innerText = "- Rp " + komisi.toLocaleString('id-ID');
             document.getElementById("popBayarHutang").innerText = "+ Rp " + bayar.toLocaleString('id-ID');
             document.getElementById("popSetoranBersih").innerText = "Rp " + globalSetoranBersih.toLocaleString('id-ID');
-
             document.getElementById("popupSimpan").classList.replace("hidden", "flex");
         }
 
@@ -362,44 +440,26 @@
             document.getElementById("popupSimpan").classList.replace("flex", "hidden");
             if (lanjut) {
                 const now = new Date();
-                waktuRealtimeTerarsip = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')} WIB`;
-                prosesKirimDataKeSheets();
+                waktuRealtimeTerarsip = localStorage.getItem('siFourWaktu') || `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')} WIB`;
+                localStorage.setItem('siFourWaktu', waktuRealtimeTerarsip);
+                prosesKirimDataKeSheetsDanUI();
             }
         }
 
-        async function prosesKirimDataKeSheets() {
-            const payload = {
-                tanggal: document.getElementById("tanggal").value,
-                jam: waktuRealtimeTerarsip,
-                driver: document.getElementById("driver").value,
-                pic_penerima: document.getElementById("picPenerima").value,
-                total_cash: document.getElementById("totalTunai").value,
-                total_qris: document.getElementById("totalQris").value,
-                hutang_awal: document.getElementById("displayHutang").value,
-                bayar_hutang: document.getElementById("bayarHutang").value,
-                sisa_hutang: document.getElementById("sisaHutangText").innerText,
-                minus_tambah_hutang: document.getElementById("minusTotalText").innerText,
-                komisi_rider: document.getElementById("totalKomisiText").innerText,
-                total_volume: document.getElementById("totalCupText").innerText,
-                omzet_bersih: document.getElementById("totalIncomeText").innerText,
-                produk: []
-            };
-
+        function prosesUIStrukSaja() {
+            simpanState('struk'); 
+            const tglFormatted = formatTanggalCustom(document.getElementById("tanggal").value);
+            
             let listHtml = "";
             daftarProduk.forEach((prod, i) => {
                 const sVal = parseInt(document.getElementById(`stok-${i}`).value) || 0;
-                const bVal = parseInt(document.getElementById(`bonus-${i}`).value) || 0;
                 const siVal = parseInt(document.getElementById(`sisa-${i}`).value) || 0;
                 const tVal = parseInt(document.getElementById(`tunai-${i}`).value) || 0;
                 const qVal = parseInt(document.getElementById(`qris-${i}`).value) || 0;
                 const tot = tVal + qVal;
-
                 let sts = "Sesuai"; const selisih = tot + siVal - sVal;
                 if (selisih < 0) sts = `Minus ${selisih*-1} Cup`;
                 if (selisih > 0) sts = `+${selisih} Kelebihan`;
-
-                payload.produk.push({ nama_produk: prod.nama, stok_awal: sVal, bonus_claimed: bVal, sisa: siVal, terjual_tunai: tVal, terjual_qris: qVal, total_cup: tot, status: sts });
-
                 if (tot > 0 || sVal > 0) {
                     listHtml += `
                     <div class="py-2.5 flex flex-col items-center border-b border-[#222]">
@@ -410,59 +470,110 @@
                 }
             });
 
-            // Set UI Receipt
-            document.getElementById("recDriver").innerText = payload.driver;
-            document.getElementById("recPic").innerText = payload.pic_penerima;
-            document.getElementById("recTanggal").innerText = payload.tanggal;
-            document.getElementById("recWaktu").innerText = waktuRealtimeTerarsip;
-            document.getElementById("recCash").innerText = payload.total_cash;
-            document.getElementById("recQris").innerText = payload.total_qris;
-            document.getElementById("recHutang").innerText = payload.hutang_awal;
-            document.getElementById("recBayar").innerText = "Rp " + parseInt(payload.bayar_hutang).toLocaleString('id-ID');
-            document.getElementById("recSisa").innerText = payload.sisa_hutang;
-            document.getElementById("recMinus").innerText = payload.minus_tambah_hutang;
-            document.getElementById("recVolume").innerText = payload.total_volume;
-            document.getElementById("recKomisi").innerText = payload.komisi_rider;
+            document.getElementById("recDriver").innerText = document.getElementById("driver").value;
+            document.getElementById("recPic").innerText = document.getElementById("picPenerima").value;
+            document.getElementById("recTanggal").innerText = tglFormatted;
+            document.getElementById("recWaktu").innerText = localStorage.getItem('siFourWaktu') || waktuRealtimeTerarsip;
+            document.getElementById("recCash").innerText = document.getElementById("totalTunai").value;
+            document.getElementById("recQris").innerText = document.getElementById("totalQris").value;
+            document.getElementById("recHutang").innerText = document.getElementById("displayHutang").value;
+            document.getElementById("recBayar").innerText = "Rp " + parseInt(document.getElementById("bayarHutang").value || 0).toLocaleString('id-ID');
+            document.getElementById("recSisa").innerText = document.getElementById("sisaHutangText").innerText;
+            document.getElementById("recMinus").innerText = document.getElementById("minusTotalText").innerText;
+            document.getElementById("recVolume").innerText = document.getElementById("totalCupText").innerText;
+            document.getElementById("recKomisi").innerText = document.getElementById("totalKomisiText").innerText;
             document.getElementById("recSetoranBersih").innerText = "Rp " + globalSetoranBersih.toLocaleString('id-ID');
             document.getElementById("receiptProductList").innerHTML = listHtml;
 
-            // Switch Screen
             document.getElementById("topHeaderBanner").classList.add("hidden");
             document.getElementById("mainFormContainer").classList.add("hidden");
             document.getElementById("floatingButtonContainer").classList.add("hidden");
             document.getElementById("receiptPageContainer").classList.replace("hidden", "block");
             window.scrollTo(0, 0);
+        }
 
-            // Fast Background Sync
+        async function prosesKirimDataKeSheetsDanUI() {
+            prosesUIStrukSaja(); 
+            
+            const payload = {
+                tanggal: formatTanggalCustom(document.getElementById("tanggal").value), 
+                jam: waktuRealtimeTerarsip, driver: document.getElementById("driver").value, pic_penerima: document.getElementById("picPenerima").value,
+                total_cash: document.getElementById("totalTunai").value, total_qris: document.getElementById("totalQris").value,
+                hutang_awal: document.getElementById("displayHutang").value, bayar_hutang: document.getElementById("bayarHutang").value,
+                sisa_hutang: document.getElementById("sisaHutangText").innerText, minus_tambah_hutang: document.getElementById("minusTotalText").innerText,
+                komisi_rider: document.getElementById("totalKomisiText").innerText, total_volume: document.getElementById("totalCupText").innerText,
+                omzet_bersih: document.getElementById("totalIncomeText").innerText, produk: []
+            };
+
+            daftarProduk.forEach((prod, i) => {
+                const sVal = parseInt(document.getElementById(`stok-${i}`).value) || 0;
+                const bVal = parseInt(document.getElementById(`bonus-${i}`).value) || 0;
+                const siVal = parseInt(document.getElementById(`sisa-${i}`).value) || 0;
+                const tVal = parseInt(document.getElementById(`tunai-${i}`).value) || 0;
+                const qVal = parseInt(document.getElementById(`qris-${i}`).value) || 0;
+                const tot = tVal + qVal;
+                let sts = "Sesuai"; const selisih = tot + siVal - sVal;
+                if (selisih < 0) sts = `Minus ${selisih*-1} Cup`;
+                if (selisih > 0) sts = `+${selisih} Kelebihan`;
+                payload.produk.push({ nama_produk: prod.nama, stok_awal: sVal, bonus_claimed: bVal, sisa: siVal, terjual_tunai: tVal, terjual_qris: qVal, total_cup: tot, status: sts });
+            });
+
             fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) })
             .then(() => {
                 document.getElementById("statusSinkronisasiText").innerText = "✅ TERSIMPAN KE DATABASE PUSAT";
                 document.getElementById("statusSinkronisasiText").classList.replace("text-amber-500", "text-emerald-400");
                 document.getElementById("statusSinkronisasiText").classList.remove("animate-pulse");
-            }).catch(() => {
-                document.getElementById("statusSinkronisasiText").innerText = "⚠️ TERSIMPAN LOKAL (OFFLINE)";
-            });
+            }).catch(() => { document.getElementById("statusSinkronisasiText").innerText = "⚠️ TERSIMPAN LOKAL (OFFLINE)"; });
         }
 
         function unduhDanBagikanLaporan() {
             document.getElementById("receiptActionButtons").style.opacity = "0";
+            document.getElementById("popupSuksesWA").classList.replace("flex", "hidden"); 
+
             const rider = document.getElementById("recDriver").innerText;
             const tgl = document.getElementById("recTanggal").innerText;
-            const waText = `*Setoran SI FOUR AM*\n----------------------------------\n👤 *Rider:* ${rider}\n👥 *PIC:* ${document.getElementById("recPic").innerText}\n📅 *Tgl:* ${tgl} ${waktuRealtimeTerarsip}\n\n💰 *Total Tunai:* ${document.getElementById("recCash").innerText}\n📱 *Total QRIS:* ${document.getElementById("recQris").innerText}\n\n📝 *Hutang Awal:* ${document.getElementById("recHutang").innerText}\n💸 *Bayar Hutang:* ${document.getElementById("recBayar").innerText}\n📉 *Sisa Hutang:* ${document.getElementById("recSisa").innerText}\n⚠️ *Minus+Hutang Baru:* ${document.getElementById("recMinus").innerText}\n\n📊 *Total Cup:* ${document.getElementById("recVolume").innerText}\n💵 *Komisi Rider:* ${document.getElementById("recKomisi").innerText}\n\n🚀 *SETORAN TUNAI BERSIH:* Rp ${globalSetoranBersih.toLocaleString('id-ID')}\n----------------------------------\n_Terus semangat pejuang cuan!_ ☕🔥`;
+            
+            let teksMotivasi = "";
+            if (globalAngkaCupMurni <= 30) {
+                teksMotivasi = "Tetap semangat! Hari ini adalah awal yang baru. Setiap tetes keringatmu bernilai, mari hajar rute besok dengan energi penuh! 💪🔥";
+            } else if (globalAngkaCupMurni <= 49) {
+                teksMotivasi = "Alhamdulillah, pencapaian luar biasa hari ini! Sedikit lagi capai target maksimal, mari tingkatkan fokus dan gaspol besok! 🚀📈";
+            } else {
+                teksMotivasi = "🎉 Selamat! Target tembus dengan gemilang! Pertahankan performa luar biasa ini, kamu adalah ujung tombak terbaik kita! 🏆☕";
+            }
+
+            const waText = `*Setoran SI FOUR AM*\n----------------------------------\n👤 *Rider:* ${rider}\n👥 *PIC:* ${document.getElementById("recPic").innerText}\n📅 *Tgl:* ${tgl} ${waktuRealtimeTerarsip}\n\n💰 *Total Tunai:* ${document.getElementById("recCash").innerText}\n📱 *Total QRIS:* ${document.getElementById("recQris").innerText}\n\n📝 *Hutang Awal:* ${document.getElementById("recHutang").innerText}\n💸 *Bayar Hutang:* ${document.getElementById("recBayar").innerText}\n📉 *Sisa Hutang:* ${document.getElementById("recSisa").innerText}\n⚠️ *Minus+Hutang Baru:* ${document.getElementById("recMinus").innerText}\n\n📊 *Total Cup:* ${document.getElementById("recVolume").innerText}\n💵 *Komisi Rider:* ${document.getElementById("recKomisi").innerText}\n\n🚀 *SETORAN TUNAI BERSIH:* Rp ${globalSetoranBersih.toLocaleString('id-ID')}\n----------------------------------\n_${teksMotivasi}_`;
 
             html2canvas(document.getElementById("receiptPageContainer"), { backgroundColor: "#111111", scale: 2 }).then(async (canvas) => {
                 document.getElementById("receiptActionButtons").style.opacity = "1";
                 const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-                const file = new File([blob], `STRUK_${rider.replace(/\s+/g, '_')}_${tgl}.png`, { type: 'image/png' });
+                const file = new File([blob], `STRUK_${rider.replace(/\s+/g, '_')}_${tgl.replace(/\//g,'-')}.png`, { type: 'image/png' });
+                
+                document.getElementById("popupSuksesWA").classList.replace("hidden", "flex");
+
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     try { await navigator.share({ files: [file], title: 'Laporan SI FOUR AM', text: waText }); } 
                     catch(e) { window.open(`https://wa.me/6281283578212?text=${encodeURIComponent(waText)}`); }
                 } else { window.open(`https://wa.me/6281283578212?text=${encodeURIComponent(waText)}`); }
             });
         }
+
+        function pencetSembarangReset() {
+            localStorage.clear();
+            window.location.reload();
+        }
         
-        function kembaliKeHalamanInputTanpaReset() { window.location.reload(); }
-        function simpanStateKeStorage() {} function muatStateDariStorage() {}
+        function kembaliKeHalamanInputTanpaReset() { 
+            simpanState('input');
+            document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
+            document.getElementById("topHeaderBanner").classList.remove("hidden");
+            document.getElementById("mainFormContainer").classList.remove("hidden");
+            document.getElementById("floatingButtonContainer").classList.remove("hidden");
+            window.scrollTo(0, 0);
+        }
+
+        // INIT LOAD
+        muatState();
     </script>
 </body>
 </html>
