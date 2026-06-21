@@ -130,15 +130,14 @@
 
     <div id="receiptPageContainer" class="w-full min-h-screen bg-[#111111] p-4 text-center hidden">
         <div class="max-w-md mx-auto space-y-4">
-            
             <div class="text-center py-2 border-b-2 border-dashed border-[#333333]">
                 <h2 class="text-2xl font-black tracking-widest text-[#f57c00]">SI FOUR AM</h2>
                 <p class="text-[9px] uppercase tracking-widest text-gray-400">Official Mobile Receipt Proof</p>
             </div>
 
             <div class="bg-emerald-950/40 border border-emerald-500 p-3 rounded-xl text-center">
-                <p class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
-                    ✅ DATA BERHASIL DISINKRONISASI KE SERVER PUSAT
+                <p id="statusSinkronisasiText" class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+                    🔄 SEDANG MENYIMPAN DATA KE SERVER...
                 </p>
             </div>
 
@@ -151,8 +150,7 @@
 
             <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] space-y-2 text-center mx-auto">
                 <span class="text-[10px] uppercase font-black text-gray-400 block border-b border-[#333333] pb-1 mx-auto max-w-xs">Detail Varian Terjual & Status Stok</span>
-                <div id="receiptProductList" class="divide-y divide-[#2a2a2a] text-xs max-w-xs mx-auto flex flex-col items-center justify-center">
-                </div>
+                <div id="receiptProductList" class="divide-y divide-[#2a2a2a] text-xs max-w-xs mx-auto flex flex-col items-center justify-center"></div>
             </div>
 
             <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] space-y-2 text-xs text-left">
@@ -166,14 +164,13 @@
             </div>
 
             <div id="receiptActionButtons" class="space-y-3 pt-2 max-w-md mx-auto">
-                <button type="button" onclick="unduhDanBagikanLaporan()" class="w-full bg-[#f57c00] hover:bg-[#e65100] text-[#111111] font-black py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2">
-                    📥 Unduh Struk & Bagikan ke WhatsApp
+                <button id="btnShareWA" disabled type="button" onclick="unduhDanBagikanLaporan()" class="w-full bg-[#f57c00]/50 text-[#111111]/50 cursor-not-allowed font-black py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2">
+                    📥 Tunggu Sync Selesai...
                 </button>
                 <button type="button" onclick="kembaliKeHalamanInputTanpaReset()" class="w-full bg-[#2a2a2a] hover:bg-[#333333] border border-[#444444] text-gray-400 font-bold py-2 px-4 rounded-xl text-xs uppercase tracking-wider">
                     ← Input Ulang Data Laporan
                 </button>
             </div>
-
         </div>
     </div>
 
@@ -194,21 +191,24 @@
                 <span class="text-3xl text-emerald-400 font-black">✓</span>
             </div>
             <div class="space-y-1">
-                <h4 class="text-base font-black text-white tracking-wide">REPORT DATA BERHASIL DIKIRIM</h4>
-                <p class="text-[11px] text-gray-400">Berkas struk dan rekap teks laporan harian sukses diteruskan ke WhatsApp PIC Pusat.</p>
+                <h4 class="text-base font-black text-white tracking-wide">REPORT DATA SELESAI DIKIRIM</h4>
+                <p class="text-[11px] text-gray-400">Struk berhasil dibuat dan rekap keuangan siap diteruskan ke WhatsApp.</p>
             </div>
             <div class="pt-2">
-                <button type="button" onclick="unduhDanBagikanLaporan()" class="w-full bg-[#2a2a2a] border border-[#444444] text-[#ffb74d] hover:bg-[#333333] font-black py-3 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow">
-                    🔄 Kirim Kembali Laporan
+                <button type="button" onclick="unduhDanBagikanLaporan()" class="w-full bg-[#2a2a2a] border border-[#444444] text-[#ffb74d] hover:bg-[#333333] font-black py-3 px-4 rounded-xl text-xs uppercase tracking-wider">
+                    🔄 Kirim Ulang Laporan WA
                 </button>
             </div>
-            <p class="text-[9px] text-gray-500 font-medium pt-1">💡 Ketuk di mana saja pada layar untuk menutup & reset inputan kasir</p>
+            <p class="text-[9px] text-gray-500 font-medium pt-1">💡 Ketuk di mana saja pada layar untuk membersihkan & reset aplikasi kasir</p>
         </div>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmN1YZn_hLnnf1spi_K_OVVt3MjV4fvEfbwqPkjqC1kcOxRXyGVqZQhDc1CaJpl7_E/exec";
-        
+        // ==========================================
+        // TEMPELKAN URL DEPLOYMENT APPS SCRIPT ANDA DI SINI
+        // ==========================================
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxV8kqmM4jEl-pkfAoGwzM-uTUK6kI0Dhnpa10C7izvfm3a1CTQg1fYdmhVb3rQAkAKw/exec"; 
+
         const tglHariIni = new Date();
         const yyyy = tglHariIni.getFullYear();
         let mm = tglHariIni.getMonth() + 1;
@@ -231,7 +231,6 @@
 
         let rupiahSisaMinusGlobal = 0;
         let totalCupSemuaTerjualGlobal = 0;
-        let fileGambarStrukTerakhirCache = null;
         let waktuRealtimeTerarsip = "";
 
         function buatOpsiMaksimal(max, nilaiTerpilih) {
@@ -244,10 +243,7 @@
 
         const tbody = document.getElementById("productRows");
         daftarProduk.forEach((prod, index) => {
-            let maxDropdown = 20; 
-            if (prod.nama === "SI KOPSU AREN") {
-                maxDropdown = 50;
-            }
+            let maxDropdown = prod.nama === "SI KOPSU AREN" ? 50 : 20;
 
             const tr = document.createElement("tr");
             tr.className = "hover:bg-[#252525] transition-colors";
@@ -292,7 +288,6 @@
                 minus: document.getElementById("minus").value,
                 produk: []
             };
-
             daftarProduk.forEach((_, index) => {
                 state.produk.push({
                     stok: document.getElementById(`stok-${index}`).value,
@@ -302,7 +297,6 @@
                     qris: document.getElementById(`qris-${index}`).value,
                 });
             });
-
             sessionStorage.setItem("sifouram_pos_state", JSON.stringify(state));
         }
 
@@ -310,11 +304,11 @@
             const savedState = sessionStorage.getItem("sifouram_pos_state");
             if (savedState) {
                 const state = JSON.parse(savedState);
-                if(document.getElementById("driver")) document.getElementById("driver").value = state.driver;
-                if(document.getElementById("picPenerima")) document.getElementById("picPenerima").value = state.picPenerima;
-                if(document.getElementById("tanggal")) document.getElementById("tanggal").value = state.tanggal;
-                if(document.getElementById("pengeluaran")) document.getElementById("pengeluaran").value = state.pengeluaran;
-                if(document.getElementById("minus")) document.getElementById("minus").value = state.minus;
+                document.getElementById("driver").value = state.driver;
+                document.getElementById("picPenerima").value = state.picPenerima;
+                document.getElementById("tanggal").value = state.tanggal;
+                document.getElementById("pengeluaran").value = state.pengeluaran;
+                document.getElementById("minus").value = state.minus;
 
                 state.produk.forEach((prod, index) => {
                     if(document.getElementById(`stok-${index}`)) document.getElementById(`stok-${index}`).value = prod.stok;
@@ -328,11 +322,9 @@
 
         function updateWarnaDropdown(element) {
             if (parseInt(element.value) > 0) {
-                element.classList.remove("text-white");
                 element.classList.add("text-[#f57c00]", "font-black");
             } else {
                 element.classList.remove("text-[#f57c00]", "font-black");
-                element.classList.add("text-white");
             }
         }
 
@@ -344,16 +336,11 @@
         }
 
         function hitungOtomatis() {
-            let totalCupSemua = 0;
-            let akumulasiKomisi = 0;
-            let nominalTunai = 0; 
-            let nominalQris = 0;
-            let totalRupiahMinusStok = 0;
+            let totalCupSemua = 0, akumulasiKomisi = 0, nominalTunai = 0, nominalQris = 0, totalRupiahMinusStok = 0;
 
             daftarProduk.forEach((prod, index) => {
                 const sVal = parseInt(document.getElementById(`stok-${index}`).value) || 0;
                 const siVal = parseInt(document.getElementById(`sisa-${index}`).value) || 0;
-                
                 const tVal = parseInt(document.getElementById(`tunai-${index}`).value) || 0;
                 const qVal = parseInt(document.getElementById(`qris-${index}`).value) || 0;
 
@@ -361,29 +348,22 @@
                 const cupDilaporkanDriver = tVal + qVal;
 
                 if (cupDilaporkanDriver < cupSeharusnyaTerjual) {
-                    const selisihCupMinus = cupSeharusnyaTerjual - cupDilaporkanDriver;
-                    totalRupiahMinusStok += selisihCupMinus * prod.harga;
+                    totalRupiahMinusStok += (cupSeharusnyaTerjual - cupDilaporkanDriver) * prod.harga;
                 }
 
                 document.getElementById(`totalcup-${index}`).innerText = cupDilaporkanDriver;
-
                 nominalTunai += tVal * prod.harga;
                 nominalQris += qVal * prod.harga;
                 totalCupSemua += cupDilaporkanDriver;
 
-                if (prod.nama === "SI TEH MANIS") {
-                    akumulasiKomisi += cupDilaporkanDriver * 1000;
-                } else {
-                    akumulasiKomisi += cupDilaporkanDriver * 2000;
-                }
+                akumulasiKomisi += cupDilaporkanDriver * (prod.nama === "SI TEH MANIS" ? 1000 : 2000);
             });
 
             rupiahSisaMinusGlobal = totalRupiahMinusStok;
             totalCupSemuaTerjualGlobal = totalCupSemua;
 
             const pengeluaran = parseInt(document.getElementById("pengeluaran").value) || 0;
-            const totalOmzetDilaporkan = nominalTunai + nominalQris;
-            const totalIncome = totalOmzetDilaporkan - pengeluaran - totalRupiahMinusStok;
+            const totalIncome = (nominalTunai + nominalQris) - pengeluaran - totalRupiahMinusStok;
 
             document.getElementById("totalTunai").value = "Rp " + nominalTunai.toLocaleString('id-ID');
             document.getElementById("totalQris").value = "Rp " + nominalQris.toLocaleString('id-ID');
@@ -395,60 +375,37 @@
             simpanStateKeStorage();
         }
 
-        const fungsiMuatLama = muatStateDariStorage;
-        muatStateDariStorage = function() {
-            if (typeof fungsiMuatLama === 'function') fungsiMuatLama();
-            document.querySelectorAll("#productRows select").forEach(select => {
-                updateWarnaDropdown(select);
-            });
-        }
-
-        muatStateDariStorage();
-        hitungOtomatis();
-
         function bukaPopupKonfirmasiSimpan() {
             const driverEl = document.getElementById("driver");
             const picEl = document.getElementById("picPenerima");
             const errorLabel = document.getElementById("errorValidasiPilihan");
             let adaError = false;
 
-            if (driverEl.value === "") {
-                driverEl.classList.remove("border-[#444444]", "bg-[#2a2a2a]");
-                driverEl.classList.add("border-red-500", "bg-red-950/20");
-                adaError = true;
-            }
-            if (picEl.value === "") {
-                picEl.classList.remove("border-[#444444]", "bg-[#2a2a2a]");
-                picEl.classList.add("border-red-500", "bg-red-950/20");
-                adaError = true;
-            }
+            if (!driverEl.value) { driverEl.classList.add("border-red-500", "bg-red-950/20"); adaError = true; }
+            if (!picEl.value) { picEl.classList.add("border-red-500", "bg-red-950/20"); adaError = true; }
 
             if (adaError) {
                 errorLabel.classList.remove("hidden");
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 return;
-            } else {
-                errorLabel.classList.add("hidden");
             }
+            errorLabel.classList.add("hidden");
 
             const boxPopup = document.getElementById("boxPopupSimpan");
             const alertHeader = document.getElementById("alertHeaderPopup");
             const teksPesan = document.getElementById("teksPesanPopupSimpan");
 
             if (rupiahSisaMinusGlobal === 0) {
-                boxPopup.classList.remove("animasi-flash-minus", "border-red-500");
-                boxPopup.classList.add("border-emerald-500");
+                boxPopup.className = "bg-[#1e1e1e] border border-emerald-500 w-full max-w-xs rounded-2xl p-5 text-center space-y-4 shadow-xl";
                 alertHeader.classList.add("hidden");
-                teksPesan.innerText = "Data benar tidak ada minus, lanjutkan";
+                teksPesan.innerText = "Data benar tidak ada minus, lanjutkan?";
                 teksPesan.className = "text-sm font-bold text-emerald-400";
             } else {
-                boxPopup.classList.remove("border-emerald-500");
-                boxPopup.classList.add("animasi-flash-minus", "border-red-500");
+                boxPopup.className = "bg-[#1e1e1e] border border-red-500 animasi-flash-minus w-full max-w-xs rounded-2xl p-5 text-center space-y-4 shadow-xl";
                 alertHeader.classList.remove("hidden");
-                teksPesan.innerText = "Ada selisih data, apakah data sudah benar?";
+                teksPesan.innerText = "Ada selisih data stok (Minus), apakah data sudah benar?";
                 teksPesan.className = "text-sm font-black text-red-400";
             }
-
             document.getElementById("popupSimpan").classList.replace("hidden", "flex");
         }
 
@@ -456,14 +413,7 @@
             document.getElementById("popupSimpan").classList.replace("flex", "hidden");
             if (lanjutKeStruk) {
                 const skrg = new Date();
-                let jam = skrg.getHours();
-                let menit = skrg.getMinutes();
-                let detik = skrg.getSeconds();
-                if (jam < 10) jam = '0' + jam;
-                if (menit < 10) menit = '0' + menit;
-                if (detik < 10) detik = '0' + detik;
-                waktuRealtimeTerarsip = `${jam}:${menit}:${detik} WIB`;
-
+                waktuRealtimeTerarsip = `${String(skrg.getHours()).padStart(2,'0')}:${String(skrg.getMinutes()).padStart(2,'0')}:${String(skrg.getSeconds()).padStart(2,'0')} WIB`;
                 prosesKirimDataKeSheets();
             }
         }
@@ -474,13 +424,17 @@
                 waktu: waktuRealtimeTerarsip,
                 driver: document.getElementById("driver").value,
                 pic_penerima: document.getElementById("picPenerima").value,
+                total_cash: document.getElementById("totalTunai").value,
+                total_qris: document.getElementById("totalQris").value,
                 pengeluaran: document.getElementById("pengeluaran").value,
                 minus: document.getElementById("minus").value,
+                komisi_rider: document.getElementById("totalKomisiText").innerText,
+                total_volume: document.getElementById("totalCupText").innerText,
+                omzet_bersih: document.getElementById("totalIncomeText").innerText,
                 produk: []
             };
 
             let productHtmlList = "";
-
             daftarProduk.forEach((prod, index) => {
                 const sVal = parseInt(document.getElementById(`stok-${index}`).value) || 0;
                 const bVal = parseInt(document.getElementById(`bonus-${index}`).value) || 0;
@@ -490,72 +444,67 @@
                 const totVal = tVal + qVal;
 
                 payload.produk.push({
-                    nama_produk: prod.nama,
-                    stok_awal: sVal,
-                    bonus_claimed: bVal,
-                    sisa: siVal,
-                    terjual_tunai: tVal,
-                    terjual_qris: qVal,
-                    total_cup: totVal
+                    nama_produk: prod.nama, stok_awal: sVal, bonus_claimed: bVal, sisa: siVal, terjual_tunai: tVal, terjual_qris: qVal, total_cup: totVal
                 });
 
                 if (totVal > 0 || sVal > 0 || siVal > 0) {
                     const selisihStok = totVal + siVal - sVal;
-                    let warnaTeksDetail = "text-gray-400";
-                    let textSelisihLabel = "";
-
-                    if (selisihStok < 0) {
-                        warnaTeksDetail = "text-red-500 font-extrabold";
-                        textSelisihLabel = `(Minus ${selisihStok} Cup)`;
-                    } else if (selisihStok > 0) {
-                        warnaTeksDetail = "text-emerald-400 font-extrabold";
-                        textSelisihLabel = `(+${selisihStok} Cup Kelebihan)`;
-                    }
+                    let warnaTeksDetail = "text-gray-400", textSelisihLabel = "";
+                    if (selisihStok < 0) { warnaTeksDetail = "text-red-500 font-extrabold"; textSelisihLabel = `(Minus ${selisihStok} Cup)`; }
+                    else if (selisihStok > 0) { warnaTeksDetail = "text-emerald-400 font-extrabold"; textSelisihLabel = `(+${selisihStok} Cup)`; }
 
                     productHtmlList += `
                         <div class="py-2.5 flex flex-col items-center justify-center text-center w-full border-b border-[#222222]/60">
-                            <div>
-                                <span class="font-bold text-white text-[13px] tracking-wide block">${prod.nama}</span>
-                            </div>
-                            <div class="text-[11px] mt-0.5 ${warnaTeksDetail}">
-                                Stok: ${sVal} | Sisa: ${siVal} | Hasil: ${textSelisihLabel || 'Sesuai'}
-                            </div>
-                            <div class="mt-1 font-mono text-xs">
-                                <span class="text-[#ffb74d] font-bold">${totVal} Cup Terjual</span>
-                                <span class="text-[10px] text-gray-500">(${tVal} Tunai / ${qVal} QRIS)</span>
-                            </div>
+                            <span class="font-bold text-white text-[13px] tracking-wide block">${prod.nama}</span>
+                            <div class="text-[11px] mt-0.5 ${warnaTeksDetail}">Stok: ${sVal} | Sisa: ${siVal} | Hasil: ${textSelisihLabel || 'Sesuai'}</div>
+                            <div class="mt-1 font-mono text-xs"><span class="text-[#ffb74d] font-bold">${totVal} Cup Sold</span> <span class="text-gray-500">(${tVal}T / ${qVal}Q)</span></div>
                         </div>`;
                 }
             });
 
+            // Set Data Teks pada Struk
             document.getElementById("recDriver").innerText = payload.driver;
             document.getElementById("recPic").innerText = payload.pic_penerima;
             document.getElementById("recTanggal").innerText = payload.tanggal;
             document.getElementById("recWaktu").innerText = waktuRealtimeTerarsip;
-            document.getElementById("recCash").innerText = document.getElementById("totalTunai").value;
-            document.getElementById("recQris").innerText = document.getElementById("totalQris").value;
+            document.getElementById("recCash").innerText = payload.total_cash;
+            document.getElementById("recQris").innerText = payload.total_qris;
             document.getElementById("recOps").innerText = "Rp " + (parseInt(payload.pengeluaran) || 0).toLocaleString('id-ID');
-            document.getElementById("recMinus").innerText = document.getElementById("minus").value;
-            document.getElementById("recKomisi").innerText = document.getElementById("totalKomisiText").innerText;
-            document.getElementById("recVolume").innerText = document.getElementById("totalCupText").innerText;
-            document.getElementById("recOmzet").innerText = document.getElementById("totalIncomeText").innerText;
-            document.getElementById("receiptProductList").innerHTML = productHtmlList || `<div class="text-center py-4 text-gray-500">Tidak ada data stock & penjualan hari ini</div>`;
+            document.getElementById("recMinus").innerText = payload.minus;
+            document.getElementById("recKomisi").innerText = payload.komisi_rider;
+            document.getElementById("recVolume").innerText = payload.total_volume;
+            document.getElementById("recOmzet").innerText = payload.omzet_bersih;
+            document.getElementById("receiptProductList").innerHTML = productHtmlList || `<div class="text-center py-4 text-gray-500">Tidak ada data stock harian</div>`;
 
+            // Transisi Layar Form -> Struk
             document.getElementById("topHeaderBanner").classList.replace("block", "hidden");
             document.getElementById("mainFormContainer").classList.replace("block", "hidden");
             document.getElementById("floatingButtonContainer").classList.replace("block", "hidden");
             document.getElementById("receiptPageContainer").classList.replace("hidden", "block");
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
+            // Pengiriman Data ke Cloud dengan Penanganan CORS Cross-Origin GitHub
             try {
-                await fetch(SCRIPT_URL, {
+                const response = await fetch(SCRIPT_URL, {
                     method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
+                    mode: "cors",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify(payload)
                 });
+                const resData = await response.json();
+                if(resData.status === "success") {
+                    document.getElementById("statusSinkronisasiText").innerText = "✅ DATA BERHASIL DISINKRONISASI KE DATABASE PUSAT";
+                    const btnShare = document.getElementById("btnShareWA");
+                    btnShare.disabled = false;
+                    btnShare.className = "w-full bg-[#f57c00] hover:bg-[#e65100] text-[#111111] font-black py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2";
+                    btnShare.innerText = "📥 Unduh Struk & Bagikan ke WhatsApp";
+                }
             } catch (error) {
-                console.log("Koneksi cloud offline.");
+                document.getElementById("statusSinkronisasiText").innerText = "⚠️ SYSTEM OFFLINE: REKAP LOKAL BERHASIL DICATAT";
+                const btnShare = document.getElementById("btnShareWA");
+                btnShare.disabled = false;
+                btnShare.className = "w-full bg-[#f57c00] hover:bg-[#e65100] text-[#111111] font-black py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all";
+                btnShare.innerText = "📥 Buka File & Teruskan Via WhatsApp";
             }
         }
 
@@ -583,93 +532,37 @@
             const omzet = document.getElementById("recOmzet").innerText;
 
             const angkaCupMurni = parseInt(volume.replace(/[^0-9]/g, "")) || 0;
-            let teksMotivasiFooter = "";
+            let teksMotivasiFooter = angkaCupMurni <= 30 ? "Tetap semangat! Setiap tetes kopi terjual adalah langkah awal menuju sukses harian. Besok kita hajar rute baru! 💪✨" : (angkaCupMurni <= 49 ? "Alhamdulillah, pencapaian luar biasa hari ini! Sedikit lagi menyentuh target utama pusat! 🚀📈" : "🎉 Selamat! Target penjualan harian berhasil ditembus dengan sangat gemilang! Pertahankan omzet ini! 🏆☕");
 
-            if (angkaCupMurni <= 30) {
-                teksMotivasiFooter = "Tetap semangat! Setiap produk yang terjual adalah langkah awal menuju kesuksesan yang lebih besar. Besok kita berjuang lebih keras lagi, jangan pernah menyerah! 💪✨";
-            } else if (angkaCupMurni >= 31 && angkaCupMurni <= 49) {
-                teksMotivasiFooter = "Alhamdulillah, pencapaian yang luar biasa hari ini! Sedikit lagi menyentuh target utama. Mari evaluasi rute penjualan agar besok bisa melesat lebih tinggi lagi! 🚀📈";
-            } else {
-                teksMotivasiFooter = "🎉 Selamat! Target penjualan hari ini berhasil ditembus dengan sangat gemilang! Kerja kerasmu membuahkan hasil nyata, pertahankan konsistensi luar biasa ini dan jadilah yang terbaik! Jangan Mudah Puas Yaaa 🏆☕";
-            }
+            const teksWhatsApp = `*Report Setoran SI FOUR AM*\n-----------------------------------------\n👤 *Nama Rider:* ${rider}\n👥 *PIC Penerima:* ${pic}\n📅 *Tanggal Laporan:* ${tanggal}\n🕒 *Waktu Transaksi:* ${waktuRealtimeTerarsip}\n\n💰 *Total Cash / Tunai:* ${cash}\n📱 *Total QRIS:* ${qris}\n📉 *Pengeluaran Ops:* ${ops}\n⚠️ *Minus / Selisih:* ${minus}\n\n📊 *Total Penjualan:* ${volume}\n💵 *Hak Komisi Rider:* ${komisi}\n🚀 *Omzet Bersih Pusat:* ${omzet}\n-----------------------------------------\n_${teksMotivasiFooter}_`;
 
-            const teksWhatsApp = 
-`*Report Setoran SI FOUR AM* ☕
---------------------------------------
-👤 *Nama Rider:* ${rider}
-👥 *PIC Penerima:* ${pic}
-📅 *Tanggal Laporan:* ${tanggal}
-🕒 *Waktu Transaksi:* ${waktuRealtimeTerarsip}
-
-💰 *Total Cash / Tunai:* ${cash}
-📱 *Total QRIS:* ${qris}
-📉 *Pengeluaran Ops:* ${ops}
-⚠️ *Minus / Selisih:* ${minus}
-
-📊 *Total Penjualan:* ${volume}
-💵 *Komisi Rider:* ${komisi}
-🚀 *TOTAL OMZET:* ${omzet}
---------------------------------------
-_${teksMotivasiFooter}_`;
-
-            html2canvas(document.getElementById("receiptPageContainer"), {
-                backgroundColor: "#111111",
-                scale: 2.5,
-                useCORS: true
-            }).then(async (canvas) => {
+            html2canvas(document.getElementById("receiptPageContainer"), { backgroundColor: "#111111", scale: 2, useCORS: true }).then(async (canvas) => {
                 areaTombolAksi.style.opacity = "1";
-
-                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                const namaFileLaporan = `STRUK_${rider.replace(/\s+/g, '_')}_${tanggal}.png`;
-                const fileGambarStruk = new File([blob], namaFileLaporan, { type: 'image/png' });
+                const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+                const fileGambarStruk = new File([blob], `STRUK_${rider.replace(/\s+/g, '_')}_${tanggal}.png`, { type: 'image/png' });
 
                 if (navigator.canShare && navigator.canShare({ files: [fileGambarStruk] })) {
                     try {
-                        await navigator.share({
-                            files: [fileGambarStruk],
-                            title: 'Laporan Finansial SI FOUR AM',
-                            text: teksWhatsApp
-                        });
-                        bukaPopupReportSukses();
-                    } catch (err) {
-                        alihkanKeWhatsAppManual(canvas, namaFileLaporan, teksWhatsApp);
-                    }
-                } else {
-                    alihkanKeWhatsAppManual(canvas, namaFileLaporan, teksWhatsApp);
-                }
-            }).catch(err => {
-                console.error("Gagal membuat screenshot:", err);
-                areaTombolAksi.style.opacity = "1";
-            });
+                        await navigator.share({ files: [fileGambarStruk], title: 'Laporan Finansial SI FOUR AM', text: teksWhatsApp });
+                        document.getElementById("popupReportSuksesWA").classList.replace("hidden", "flex");
+                    } catch (err) { alihkanKeWhatsAppManual(canvas, fileGambarStruk.name, teksWhatsApp); }
+                } else { alihkanKeWhatsAppManual(canvas, fileGambarStruk.name, teksWhatsApp); }
+            }).catch(() => { areaTombolAksi.style.opacity = "1"; });
         }
 
         function alihkanKeWhatsAppManual(canvas, namaFile, teksWhatsApp) {
-            const tautanUnduhVirtual = document.createElement("a");
-            tautanUnduhVirtual.download = namaFile;
-            tautanUnduhVirtual.href = canvas.toDataURL("image/png");
-            tautanUnduhVirtual.click();
-
-            const kirimUrlWhatsApp = `https://wa.me/6281283578212?text=${encodeURIComponent(teksWhatsApp)}`;
-            window.open(kirimUrlWhatsApp, '_blank');
-            bukaPopupReportSukses();
-        }
-
-        function bukaPopupReportSukses() {
+            const a = document.createElement("a"); a.download = namaFile; a.href = canvas.toDataURL("image/png"); a.click();
+            window.open(`https://wa.me/6281283578212?text=${encodeURIComponent(teksWhatsApp)}`, '_blank');
             document.getElementById("popupReportSuksesWA").classList.replace("hidden", "flex");
         }
 
         function pencetSembarangTempatUntukReset() {
             document.getElementById("popupReportSuksesWA").classList.replace("flex", "hidden");
-            
             document.getElementById("pengeluaran").value = "0";
             document.getElementById("minus").value = "Rp 0";
             
-            const driverEl = document.getElementById("driver");
-            const picEl = document.getElementById("picPenerima");
-            driverEl.selectedIndex = 0;
-            picEl.selectedIndex = 0;
-            driverEl.classList.set = "w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] focus:border-[#f57c00] outline-none h-10";
-            picEl.classList.set = "w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] focus:border-[#f57c00] outline-none h-10";
+            document.getElementById("driver").selectedIndex = 0;
+            document.getElementById("picPenerima").selectedIndex = 0;
             
             daftarProduk.forEach((_, index) => {
                 document.getElementById(`bonus-${index}`).selectedIndex = 0;
@@ -678,12 +571,16 @@ _${teksMotivasiFooter}_`;
                 document.getElementById(`qris-${index}`).selectedIndex = 0;
             });
             
-            document.querySelectorAll("#productRows select").forEach(select => {
-                updateWarnaDropdown(select);
-            });
+            document.querySelectorAll("#productRows select").forEach(select => { updateWarnaDropdown(select); select.className = "w-10 bg-[#2a2a2a] border border-[#444444] p-1 text-center rounded text-white text-xs"; });
             
             hitungOtomatis();
             sessionStorage.removeItem("sifouram_pos_state");
+            document.getElementById("statusSinkronisasiText").innerText = "🔄 SEDANG MENYIMPAN DATA KE SERVER...";
+            
+            const btnShare = document.getElementById("btnShareWA");
+            btnShare.disabled = true;
+            btnShare.className = "w-full bg-[#f57c00]/50 text-[#111111]/50 cursor-not-allowed font-black py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2";
+            btnShare.innerText = "📥 Tunggu Sync Selesai...";
 
             document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
             document.getElementById("topHeaderBanner").classList.replace("hidden", "block");
@@ -691,6 +588,10 @@ _${teksMotivasiFooter}_`;
             document.getElementById("floatingButtonContainer").classList.replace("hidden", "block");
             window.scrollTo({ top: 0, behavior: 'instant' });
         }
+
+        muatStateDariStorage();
+        hitungOtomatis();
+        document.querySelectorAll("#productRows select").forEach(select => updateWarnaDropdown(select));
     </script>
 </body>
 </html>
