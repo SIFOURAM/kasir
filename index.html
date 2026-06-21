@@ -418,96 +418,100 @@
             }
         }
 
-        async function prosesKirimDataKeSheets() {
-            const payload = {
-                tanggal: document.getElementById("tanggal").value,
-                waktu: waktuRealtimeTerarsip,
-                driver: document.getElementById("driver").value,
-                pic_penerima: document.getElementById("picPenerima").value,
-                total_cash: document.getElementById("totalTunai").value,
-                total_qris: document.getElementById("totalQris").value,
-                pengeluaran: document.getElementById("pengeluaran").value,
-                minus: document.getElementById("minus").value,
-                komisi_rider: document.getElementById("totalKomisiText").innerText,
-                total_volume: document.getElementById("totalCupText").innerText,
-                omzet_bersih: document.getElementById("totalIncomeText").innerText,
-                produk: []
-            };
+async function prosesKirimDataKeSheets() {
+    const payload = {
+        tanggal: document.getElementById("tanggal").value,
+        waktu: waktuRealtimeTerarsip,
+        driver: document.getElementById("driver").value,
+        pic_penerima: document.getElementById("picPenerima").value,
+        total_cash: document.getElementById("totalTunai").value,
+        total_qris: document.getElementById("totalQris").value,
+        pengeluaran: document.getElementById("pengeluaran").value,
+        minus: document.getElementById("minus").value,
+        komisi_rider: document.getElementById("totalKomisiText").innerText,
+        total_volume: document.getElementById("totalCupText").innerText,
+        omzet_bersih: document.getElementById("totalIncomeText").innerText,
+        produk: []
+    };
 
-            let productHtmlList = "";
-            daftarProduk.forEach((prod, index) => {
-                const sVal = parseInt(document.getElementById(`stok-${index}`).value) || 0;
-                const bVal = parseInt(document.getElementById(`bonus-${index}`).value) || 0;
-                const siVal = parseInt(document.getElementById(`sisa-${index}`).value) || 0;
-                const tVal = parseInt(document.getElementById(`tunai-${index}`).value) || 0;
-                const qVal = parseInt(document.getElementById(`qris-${index}`).value) || 0;
-                const totVal = tVal + qVal;
+    let productHtmlList = "";
+    daftarProduk.forEach((prod, index) => {
+        const sVal = parseInt(document.getElementById(`stok-${index}`).value) || 0;
+        const bVal = parseInt(document.getElementById(`bonus-${index}`).value) || 0;
+        const siVal = parseInt(document.getElementById(`sisa-${index}`).value) || 0;
+        const tVal = parseInt(document.getElementById(`tunai-${index}`).value) || 0;
+        const qVal = parseInt(document.getElementById(`qris-${index}`).value) || 0;
+        const totVal = tVal + qVal;
 
-                payload.produk.push({
-                    nama_produk: prod.nama, stok_awal: sVal, bonus_claimed: bVal, sisa: siVal, terjual_tunai: tVal, terjual_qris: qVal, total_cup: totVal
-                });
+        payload.produk.push({
+            nama_produk: prod.nama, 
+            stok_awal: sVal, 
+            bonus_claimed: bVal, // Sesuai dengan pembacaan backend Apps Script
+            sisa: siVal, 
+            terjual_tunai: tVal, 
+            terjual_qris: qVal, 
+            total_cup: totVal
+        });
 
-                if (totVal > 0 || sVal > 0 || siVal > 0) {
-                    const selisihStok = totVal + siVal - sVal;
-                    let warnaTeksDetail = "text-gray-400", textSelisihLabel = "";
-                    if (selisihStok < 0) { warnaTeksDetail = "text-red-500 font-extrabold"; textSelisihLabel = `(Minus ${selisihStok} Cup)`; }
-                    else if (selisihStok > 0) { warnaTeksDetail = "text-emerald-400 font-extrabold"; textSelisihLabel = `(+${selisihStok} Cup)`; }
+        if (totVal > 0 || sVal > 0 || siVal > 0) {
+            const selisihStok = totVal + siVal - sVal;
+            let warnaTeksDetail = "text-gray-400", textSelisihLabel = "";
+            if (selisihStok < 0) { warnaTeksDetail = "text-red-500 font-extrabold"; textSelisihLabel = `(Minus ${selisihStok} Cup)`; }
+            else if (selisihStok > 0) { warnaTeksDetail = "text-emerald-400 font-extrabold"; textSelisihLabel = `(+${selisihStok} Cup)`; }
 
-                    productHtmlList += `
-                        <div class="py-2.5 flex flex-col items-center justify-center text-center w-full border-b border-[#222222]/60">
-                            <span class="font-bold text-white text-[13px] tracking-wide block">${prod.nama}</span>
-                            <div class="text-[11px] mt-0.5 ${warnaTeksDetail}">Stok: ${sVal} | Sisa: ${siVal} | Hasil: ${textSelisihLabel || 'Sesuai'}</div>
-                            <div class="mt-1 font-mono text-xs"><span class="text-[#ffb74d] font-bold">${totVal} Cup Sold</span> <span class="text-gray-500">(${tVal}T / ${qVal}Q)</span></div>
-                        </div>`;
-                }
-            });
-
-            // Set Data Teks pada Struk
-            document.getElementById("recDriver").innerText = payload.driver;
-            document.getElementById("recPic").innerText = payload.pic_penerima;
-            document.getElementById("recTanggal").innerText = payload.tanggal;
-            document.getElementById("recWaktu").innerText = waktuRealtimeTerarsip;
-            document.getElementById("recCash").innerText = payload.total_cash;
-            document.getElementById("recQris").innerText = payload.total_qris;
-            document.getElementById("recOps").innerText = "Rp " + (parseInt(payload.pengeluaran) || 0).toLocaleString('id-ID');
-            document.getElementById("recMinus").innerText = payload.minus;
-            document.getElementById("recKomisi").innerText = payload.komisi_rider;
-            document.getElementById("recVolume").innerText = payload.total_volume;
-            document.getElementById("recOmzet").innerText = payload.omzet_bersih;
-            document.getElementById("receiptProductList").innerHTML = productHtmlList || `<div class="text-center py-4 text-gray-500">Tidak ada data stock harian</div>`;
-
-            // Transisi Layar Form -> Struk
-            document.getElementById("topHeaderBanner").classList.replace("block", "hidden");
-            document.getElementById("mainFormContainer").classList.replace("block", "hidden");
-            document.getElementById("floatingButtonContainer").classList.replace("block", "hidden");
-            document.getElementById("receiptPageContainer").classList.replace("hidden", "block");
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            // Pengiriman Data ke Cloud dengan Penanganan CORS Cross-Origin GitHub
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: "POST",
-                    mode: "cors",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify(payload)
-                });
-                const resData = await response.json();
-                if(resData.status === "success") {
-                    document.getElementById("statusSinkronisasiText").innerText = "✅ DATA BERHASIL DISINKRONISASI KE DATABASE PUSAT";
-                    const btnShare = document.getElementById("btnShareWA");
-                    btnShare.disabled = false;
-                    btnShare.className = "w-full bg-[#f57c00] hover:bg-[#e65100] text-[#111111] font-black py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2";
-                    btnShare.innerText = "📥 Unduh Struk & Bagikan ke WhatsApp";
-                }
-            } catch (error) {
-                document.getElementById("statusSinkronisasiText").innerText = "⚠️ SYSTEM OFFLINE: REKAP LOKAL BERHASIL DICATAT";
-                const btnShare = document.getElementById("btnShareWA");
-                btnShare.disabled = false;
-                btnShare.className = "w-full bg-[#f57c00] hover:bg-[#e65100] text-[#111111] font-black py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all";
-                btnShare.innerText = "📥 Buka File & Teruskan Via WhatsApp";
-            }
+            productHtmlList += `
+                <div class="py-2.5 flex flex-col items-center justify-center text-center w-full border-b border-[#222222]/60">
+                    <span class="font-bold text-white text-[13px] tracking-wide block">${prod.nama}</span>
+                    <div class="text-[11px] mt-0.5 ${warnaTeksDetail}">Stok: ${sVal} | Sisa: ${siVal} | Hasil: ${textSelisihLabel || 'Sesuai'}</div>
+                    <div class="mt-1 font-mono text-xs"><span class="text-[#ffb74d] font-bold">${totVal} Cup Sold</span> <span class="text-gray-500">(${tVal}T / ${qVal}Q)</span></div>
+                </div>`;
         }
+    });
 
+    // Menampilkan ke struk lokal layar HP
+    document.getElementById("recDriver").innerText = payload.driver;
+    document.getElementById("recPic").innerText = payload.pic_penerima;
+    document.getElementById("recTanggal").innerText = payload.tanggal;
+    document.getElementById("recWaktu").innerText = waktuRealtimeTerarsip;
+    document.getElementById("recCash").innerText = payload.total_cash;
+    document.getElementById("recQris").innerText = payload.total_qris;
+    document.getElementById("recOps").innerText = "Rp " + (parseInt(payload.pengeluaran) || 0).toLocaleString('id-ID');
+    document.getElementById("recMinus").innerText = payload.minus;
+    document.getElementById("recKomisi").innerText = payload.komisi_rider;
+    document.getElementById("recVolume").innerText = payload.total_volume;
+    document.getElementById("recOmzet").innerText = payload.omzet_bersih;
+    document.getElementById("receiptProductList").innerHTML = productHtmlList || `<div class="text-center py-4 text-gray-500">Tidak ada data stock harian</div>`;
+
+    document.getElementById("topHeaderBanner").classList.replace("block", "hidden");
+    document.getElementById("mainFormContainer").classList.replace("block", "hidden");
+    document.getElementById("floatingButtonContainer").classList.replace("block", "hidden");
+    document.getElementById("receiptPageContainer").classList.replace("hidden", "block");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Pengiriman data Cross-Origin ke Google Apps Script
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            mode: "cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+        });
+        const resData = await response.json();
+        if(resData.status === "success") {
+            document.getElementById("statusSinkronisasiText").innerText = "✅ DATA BERHASIL DISINKRONISASI KE DATABASE PUSAT";
+            const btnShare = document.getElementById("btnShareWA");
+            btnShare.disabled = false;
+            btnShare.className = "w-full bg-[#f57c00] hover:bg-[#e65100] text-[#111111] font-black py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2";
+            btnShare.innerText = "📥 Unduh Struk & Bagikan ke WhatsApp";
+        }
+    } catch (error) {
+        document.getElementById("statusSinkronisasiText").innerText = "⚠️ SYSTEM OFFLINE: REKAP LOKAL BERHASIL DICATAT";
+        const btnShare = document.getElementById("btnShareWA");
+        btnShare.disabled = false;
+        btnShare.className = "w-full bg-[#f57c00] hover:bg-[#e65100] text-[#111111] font-black py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all";
+        btnShare.innerText = "📥 Buka File & Teruskan Via WhatsApp";
+    }
+}
         function kembaliKeHalamanInputTanpaReset() {
             document.getElementById("receiptPageContainer").classList.replace("block", "hidden");
             document.getElementById("topHeaderBanner").classList.replace("hidden", "block");
