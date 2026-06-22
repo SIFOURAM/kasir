@@ -384,47 +384,74 @@
             } catch (e) { document.getElementById("displayHutang").value = "Rp 0"; }
         }
 
-        async function autoFillStock(driverName) {
-            if (!driverName) return;
-            try {
-                const response = await fetch(`${SCRIPT_URL}?action=getAllData`);
-                const data = await response.json();
-                
-                const history = data.detail.filter(item => item.driver === driverName);
-                if (history.length > 0) {
-                    // Cari tanggal transaksi paling terakhir
-                    const latestDate = history.reduce((max, obj) => (obj.tanggal > max.tanggal) ? obj : max).tanggal;
-                    const latestStocks = history.filter(item => item.tanggal === latestDate);
+// FUNGSI UNTUK MERESET FORM AGAR DATA RIDER LAMA HILANG
+function resetForm() {
+    daftarProduk.forEach((_, i) => {
+        document.getElementById(`stok-${i}`).value = 0;
+        document.getElementById(`bonus-${i}`).value = 0;
+        document.getElementById(`sisa-${i}`).value = 0;
+        document.getElementById(`tunai-${i}`).value = 0;
+        document.getElementById(`qris-${i}`).value = 0;
+        document.getElementById(`totalcup-${i}`).innerText = 0;
+    });
+    // Menghapus efek visual terpilih
+    document.querySelectorAll('select').forEach(el => el.classList.remove('terpilih-oren'));
+    hitungOtomatis();
+}
 
-                    latestStocks.forEach(item => {
-                        const idx = daftarProduk.findIndex(p => p.nama.toUpperCase() === item.produk.toUpperCase());
-                        if (idx !== -1) {
-                            if (item.status === "STOK_AWAL_BARU") {
-                                // Jika ada rekaman stok baru hari ini
-                                document.getElementById(`stok-${idx}`).value = item.stok_awal;
-                                document.getElementById(`bonus-${idx}`).value = item.bonus;
-                            } else {
-                                // Jika belum ambil stok pagi, ambil Sisa kemarin
-                                document.getElementById(`stok-${idx}`).value = item.sisa;
-                                document.getElementById(`bonus-${idx}`).value = 0;
-                            }
-                            updateWarnaOren(document.getElementById(`stok-${idx}`));
-                            updateWarnaOren(document.getElementById(`bonus-${idx}`));
-                        }
-                    });
-                    hitungOtomatis();
-                    simpanState();
+// FUNGSI AUTO FILL YANG DISEMPURNAKAN
+async function autoFillStock(driverName) {
+    if (!driverName) {
+        resetForm();
+        return;
+    }
 
-                    const notifInfo = document.createElement('div');
-                    notifInfo.className = "fixed top-5 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs px-4 py-2 rounded-full shadow-lg z-[999] font-bold";
-                    notifInfo.innerText = `Data Stok ${driverName} Berhasil Diisi Otomatis!`;
-                    document.body.appendChild(notifInfo);
-                    setTimeout(() => notifInfo.remove(), 2500);
-                }
-            } catch (error) {
-                console.error("Gagal sinkronisasi otomatis histori stok:", error);
-            }
+    // 1. Reset form dulu agar bersih
+    resetForm();
+
+    // 2. Fetch data dari server
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=getAllData`);
+        const data = await response.json();
+        
+        // 3. Ambil data hutang
+        const hutangData = data.hutang_list.find(h => h.driver === driverName);
+        if(hutangData) {
+            document.getElementById("displayHutang").value = "Rp " + hutangData.nominal.toLocaleString('id-ID');
         }
+
+        // 4. Filter histori khusus driver yang dipilih
+        const history = data.detail.filter(item => item.driver === driverName);
+        
+        if (history.length > 0) {
+            // Urutkan berdasarkan tanggal (paling baru di atas)
+            history.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+            const latestDate = history[0].tanggal;
+            const latestStocks = history.filter(item => item.tanggal === latestDate);
+
+            latestStocks.forEach(item => {
+                const idx = daftarProduk.findIndex(p => p.nama.toUpperCase() === item.produk.toUpperCase());
+                if (idx !== -1) {
+                    // Logika: Jika ada status "STOK_AWAL_BARU", ambil stok & bonus tersebut.
+                    // Jika tidak (hanya data penjualan), ambil Sisa dari hari terakhir.
+                    if (item.status === "STOK_AWAL_BARU") {
+                        document.getElementById(`stok-${idx}`).value = item.stok_awal;
+                        document.getElementById(`bonus-${idx}`).value = item.bonus;
+                    } else {
+                        document.getElementById(`stok-${idx}`).value = item.sisa;
+                        document.getElementById(`bonus-${idx}`).value = 0; 
+                    }
+                    // Beri penanda warna
+                    updateWarnaOren(document.getElementById(`stok-${idx}`));
+                    updateWarnaOren(document.getElementById(`bonus-${idx}`));
+                }
+            });
+            hitungOtomatis();
+        }
+    } catch (error) {
+        console.error("Gagal Auto-fill:", error);
+    }
+}
 
         function bayarSekarang() {
             document.getElementById("popupHutangRider").classList.replace("flex", "hidden");
