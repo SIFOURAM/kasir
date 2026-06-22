@@ -19,7 +19,6 @@
         .highlight-green { animation: flashGreen 1s 2; border-color: #22c55e !important; }
         @keyframes flashGreen { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(34, 197, 94, 0.2); } }
         
-        /* Class Warna Oren Otomatis */
         .terpilih-oren {
             border: 2px solid #f57c00 !important;
             color: #f57c00 !important;
@@ -30,7 +29,6 @@
 </head>
 <body class="bg-[#111111] text-[#eeeeee] min-h-screen font-sans antialiased select-none pb-20">
 
-    <!-- BAGIAN INPUT -->
     <div id="topHeaderBanner" class="sticky top-0 z-50 bg-[#f57c00] text-[#111111] p-4 text-center shadow-md border-b-2 border-black">
         <h1 class="text-xl font-black tracking-widest">SI FOUR AM</h1>
         <p class="text-[10px] font-bold uppercase tracking-wider text-[#222222]">Official Mobile Report System</p>
@@ -42,7 +40,7 @@
             <div class="grid grid-cols-12 gap-2">
                 <div class="col-span-5">
                     <label class="block text-[10px] font-medium text-gray-400 mb-1">Nama Crew / Driver</label>
-                    <select id="driver" onchange="updateWarnaOren(this); resetWarnaValidasi(this); muatHutangDriver(); simpanState();" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] outline-none h-10 transition-colors">
+                    <select id="driver" onchange="updateWarnaOren(this); resetWarnaValidasi(this); muatHutangDriver(); simpanState(); autoFillStock(this.value);" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] outline-none h-10 transition-colors">
                         <option value="">-- Pilih Rider --</option>
                         <option value="ACHMAD DARMADI">ACHMAD DARMADI</option>
                         <option value="RICKY AKBAR">RICKY AKBAR</option>
@@ -56,10 +54,10 @@
                     <label class="block text-[10px] font-medium text-gray-400 mb-1">PIC Penerima</label>
                     <select id="picPenerima" onchange="updateWarnaOren(this); resetWarnaValidasi(this); simpanState();" class="w-full bg-[#2a2a2a] border border-[#444444] text-white rounded-lg px-2 py-1 text-[11px] outline-none h-10 transition-colors">
                         <option value="">-- Pilih PIC --</option>
-                        <option value="Muhammad Ishaq Alif Hanif">Muhammad Ishaq Alif Hanif</option>
-                        <option value="Indri Devi Anjani">Indri Devi Anjani</option>
-                        <option value="Rissa Alfiani Putri">Rissa Alfiani Putri</option>
-                        <option value="Muhammad Zulfikar">Muhammad Zulfikar</option>
+                        <option value="Muhammad Ishaq Alif Hanif">M. Ishaq Alif H.</option>
+                        <option value="Indri Devi Anjani">Indri Devi A.</option>
+                        <option value="Rissa Alfiani Putri">Rissa Alfiani P.</option>
+                        <option value="Muhammad Zulfikar">M. Zulfikar</option>
                         <option value="Sandita">Sandita</option>
                     </select>
                 </div>
@@ -137,15 +135,18 @@
         </div>
     </div>
 
-    <!-- TOMBOL SIMPAN -->
     <div id="floatingButtonContainer" class="fixed bottom-0 left-0 right-0 p-4 bg-[#111111]/90 backdrop-blur-md border-t border-[#222222] max-w-md mx-auto z-40">
-        <p id="errorValidasiPilihan" class="text-center text-xs text-red-400 font-bold mb-2 hidden">⚠️ Silakan pilih Nama Rider & PIC Penerima!</p>
-        <button type="button" onclick="bukaPopupKonfirmasiSimpan()" class="w-full bg-[#f57c00] hover:bg-[#e65100] active:scale-[0.98] text-[#111111] font-black py-3.5 px-4 rounded-xl uppercase tracking-wider text-sm transition-all shadow-lg">
-            Simpan & Sinkronisasi Data
-        </button>
+        <p id="errorValidasiPilihan" class="text-center text-[11px] text-red-500 font-bold mb-2 hidden">⚠️ Silakan pilih Nama Rider & PIC Penerima!</p>
+        <div class="grid grid-cols-12 gap-2">
+            <button type="button" onclick="bukaPopupStock()" class="col-span-4 bg-[#2a2a2a] border border-[#444444] hover:bg-[#333333] active:scale-[0.98] text-gray-300 font-black py-3.5 rounded-xl uppercase tracking-wider text-[10px] transition-all shadow-lg flex justify-center items-center gap-1">
+                ➕ Stock
+            </button>
+            <button type="button" onclick="bukaPopupKonfirmasiSimpan()" class="col-span-8 bg-[#f57c00] hover:bg-[#e65100] active:scale-[0.98] text-[#111111] font-black py-3.5 rounded-xl uppercase tracking-wider text-[11px] transition-all shadow-lg">
+                Simpan & Sinkronisasi
+            </button>
+        </div>
     </div>
 
-    <!-- POPUP PERINGATAN HUTANG -->
     <div id="popupHutangRider" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 px-4 hidden">
         <div class="bg-[#1e1e1e] border border-red-500 w-full max-w-xs rounded-2xl p-6 text-center space-y-4 shadow-2xl">
             <div class="w-14 h-14 bg-red-500/20 border-2 border-red-500 rounded-full flex items-center justify-center mx-auto">
@@ -161,7 +162,6 @@
         </div>
     </div>
 
-    <!-- POPUP KONFIRMASI SETORAN SEBELUM KIRIM -->
     <div id="popupSimpan" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 hidden">
         <div id="boxPopupSimpan" class="bg-[#1e1e1e] border border-emerald-500 w-full max-w-xs rounded-2xl p-5 space-y-4 shadow-xl">
             <h3 class="text-center text-sm font-black text-emerald-400 uppercase tracking-wider border-b border-gray-700 pb-2">Rincian Setoran</h3>
@@ -174,7 +174,6 @@
                     <span id="popSetoranBersih" class="font-black text-[#f57c00] text-sm">Rp 0</span>
                 </div>
             </div>
-            <p id="teksPesanPopupSimpan" class="text-center text-[10px] text-gray-400 pt-1">Apakah data di atas sudah benar?</p>
             <div class="grid grid-cols-2 gap-3 pt-2">
                 <button type="button" onclick="tutupPopupSimpan(false)" class="bg-[#2a2a2a] hover:bg-[#333333] text-gray-400 font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider">Tidak</button>
                 <button type="button" onclick="tutupPopupSimpan(true)" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider">Lanjutkan</button>
@@ -182,11 +181,25 @@
         </div>
     </div>
 
-    <!-- POPUP WA SUKSES & RESET -->
+    <div id="popupKonfirmasiStock" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 hidden">
+        <div class="bg-[#1e1e1e] border border-amber-500 w-full max-w-xs rounded-2xl p-5 space-y-4 shadow-xl">
+            <h3 class="text-center text-xs font-black text-amber-500 uppercase tracking-wider border-b border-gray-700 pb-2">⚠️ KONFIRMASI STOCK</h3>
+            <p class="text-center text-gray-300 text-xs">Apakah data kolom <b>Stock</b> & <b>Bonus</b> yang Anda masukkan sudah benar untuk disimpan ke Database & WhatsApp?</p>
+            <div class="flex flex-col gap-2 pt-2">
+                <button type="button" id="btnKirimStockDb" onclick="kirimDataStock()" class="w-full bg-amber-600 hover:bg-amber-500 text-[#111111] font-black py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all">
+                    ✅ YA, KIRIM & SINKRON
+                </button>
+                <button type="button" onclick="tutupPopupStock()" class="w-full bg-[#2a2a2a] hover:bg-[#333333] text-gray-400 font-bold py-2 rounded-xl text-xs uppercase tracking-wider">
+                    🔄 REVISI KEMBALI
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="popupSuksesWA" class="fixed inset-0 z-[300] bg-black/90 hidden items-center justify-center p-4" onclick="pencetSembarangReset()">
         <div class="bg-[#f57c00] rounded-2xl p-6 text-center shadow-xl w-full max-w-xs" onclick="event.stopPropagation()">
             <div class="text-white text-6xl mb-3 drop-shadow-md">☑️</div>
-            <h2 class="text-[#111111] font-black text-lg mb-1 tracking-wide">REPORT DATA BERHASIL DIKIRIM</h2>
+            <h2 class="text-[#111111] font-black text-lg mb-1 tracking-wide">REPORT BERHASIL DIKIRIM</h2>
             <p class="text-[#111111] font-medium text-xs mb-5">Bukti foto struk telah siap dibagikan ke WhatsApp.</p>
             <button onclick="unduhDanBagikanLaporan()" class="bg-[#111111] hover:bg-[#222222] text-[#f57c00] font-black py-3 px-4 rounded-xl text-xs w-full mb-3 uppercase tracking-widest shadow-md transition-all active:scale-95">
                 KIRIM KEMBALI
@@ -195,26 +208,34 @@
         </div>
     </div>
 
-    <!-- BAGIAN HALAMAN RECEIPT / STRUK -->
+    <div id="popupSuksesStock" class="fixed inset-0 z-[300] bg-black/95 hidden items-center justify-center p-4" onclick="pencetSembarangReset()">
+        <div class="bg-[#1e1e1e] border-2 border-emerald-500 rounded-2xl p-6 text-center shadow-xl w-full max-w-xs" onclick="event.stopPropagation()">
+            <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2 text-2xl font-bold">✓</div>
+            <h2 class="text-emerald-400 font-black text-[13px] mb-1 tracking-wide">STOCK BERHASIL TERKIRIM</h2>
+            <p class="text-gray-300 font-medium text-[10px] mb-5">Data stok berhasil terkirim di WhatsApp dan di Database.</p>
+            <button onclick="bagikanPesanStock()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-4 rounded-xl text-[11px] w-full mb-3 uppercase tracking-widest shadow-md transition-all active:scale-95">
+                KIRIM ULANG WHATSAPP
+            </button>
+            <p class="text-[9px] text-gray-500 font-bold bg-black/50 py-1.5 rounded-full px-2 inline-block border border-[#333]">👆 Pencet dimana saja untuk me reset data</p>
+        </div>
+    </div>
+
     <div id="receiptPageContainer" class="w-full min-h-screen bg-[#111111] p-4 text-center hidden pb-10">
         <div class="max-w-md mx-auto space-y-4">
             <div class="text-center py-2 border-b-2 border-dashed border-[#333333]">
                 <h2 class="text-2xl font-black tracking-widest text-[#f57c00]">SI FOUR AM</h2>
                 <p class="text-[9px] uppercase tracking-widest text-gray-400">Official Mobile Receipt</p>
             </div>
-
             <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] space-y-1 text-xs text-left">
                 <div class="flex justify-between"><span class="text-gray-400">Nama Rider / Crew:</span> <span id="recDriver" class="font-bold text-white"></span></div>
                 <div class="flex justify-between border-t border-[#2a2a2a] pt-1"><span class="text-gray-400">PIC Penerima Setoran:</span> <span id="recPic" class="font-bold text-[#f57c00]"></span></div>
                 <div class="flex justify-between border-t border-[#2a2a2a] pt-1"><span class="text-gray-400">Tanggal Laporan:</span> <span id="recTanggal" class="font-bold text-white"></span></div>
                 <div class="flex justify-between border-t border-[#2a2a2a] pt-1"><span class="text-gray-400">Waktu Transaksi:</span> <span id="recWaktu" class="font-bold text-amber-500"></span></div>
             </div>
-
             <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] space-y-2 text-center mx-auto">
                 <span class="text-[10px] uppercase font-black text-gray-400 block border-b border-[#333333] pb-1 mx-auto max-w-xs">Detail Varian Terjual & Status Stok</span>
                 <div id="receiptProductList" class="divide-y divide-[#2a2a2a] text-xs max-w-xs mx-auto flex flex-col items-center justify-center"></div>
             </div>
-
             <div class="bg-[#1e1e1e] p-4 rounded-xl border border-[#333333] space-y-2 text-xs text-left">
                 <div class="flex justify-between"><span class="text-gray-400">Total Cash (Tunai):</span> <span id="recCash" class="font-bold text-white"></span></div>
                 <div class="flex justify-between"><span class="text-gray-400">Total QRIS:</span> <span id="recQris" class="font-bold text-green-400"></span></div>
@@ -229,9 +250,7 @@
             </div>
 
             <div id="receiptActionButtons" class="space-y-3 pt-2 max-w-md mx-auto">
-                <p id="statusSinkronisasiText" class="text-[10px] font-bold text-amber-500 uppercase tracking-wider animate-pulse">
-                    🔄 SINKRONISASI KE DATABASE...
-                </p>
+                <p id="statusSinkronisasiText" class="text-[10px] font-bold text-amber-500 uppercase tracking-wider animate-pulse">🔄 SINKRONISASI KE DATABASE...</p>
                 <button id="btnShareWA" type="button" onclick="unduhDanBagikanLaporan()" class="w-full bg-[#f57c00] hover:bg-[#e65100] text-[#111111] font-black py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2">
                     📥 Bagikan Struk ke WhatsApp
                 </button>
@@ -242,11 +261,10 @@
         </div>
     </div>
 
-    <!-- ===== JAVASCRIPT ===== -->
     <script>
+        // MASUKKAN URL DEPLOYMENT ANDA DI SINI !!!
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzN1hbk77e3gsFCb3g-STheBp7TWJYUQFElbeT7k4CoQvrrLH3oPP8kJS66gxeSnXrp/exec";
 
-        // Konfigurasi Stok Awal Bawaan SI FOUR AM[cite: 4]
         const daftarProduk = [
             { nama: "SI AMERICANO", harga: 8000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 },
             { nama: "SI KOPSU AREN", harga: 9000, stok: 15, b: 0, sisa: 0, t: 0, q: 0 },
@@ -263,7 +281,6 @@
         let globalSetoranBersih = 0;
         let globalAngkaCupMurni = 0;
 
-        // FUNGSI WARNA OREN
         function updateWarnaOren(el) {
             if (el.value && el.value !== "0" && !el.value.startsWith("--")) {
                 el.classList.add("terpilih-oren");
@@ -273,18 +290,15 @@
         }
         function resetWarnaValidasi(el) { if (el.value) el.classList.replace("border-red-500", "border-[#444444]"); }
 
-        // FUNGSI FORMAT TANGGAL CUSTOM (hari/bulan/tahun 2 digit)
         function formatTanggalCustom(dateStr) {
             if (!dateStr) return "";
             const d = new Date(dateStr);
             return `${d.getDate()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getFullYear()).slice(-2)}`;
         }
 
-        // INIT TANGGAL BARU
         const today = new Date();
         document.getElementById("tanggal").value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
-        // Membuat opsi drop-down dengan penanda pilihan default (selected)
         function buatOpsiMaksimal(max, selectedVal = 0) {
             let options = ""; 
             for (let i = 0; i <= max; i++) {
@@ -293,7 +307,6 @@
             return options;
         }
 
-        // GENERATE TABEL MENU BESERTA STOK BAWAAN OTOMATIS
         const tbody = document.getElementById("productRows");
         daftarProduk.forEach((prod, index) => {
             let maxDrop = prod.nama === "SI KOPSU AREN" ? 50 : 20;
@@ -309,10 +322,8 @@
             tbody.appendChild(tr);
         });
 
-        // Warnai kolom Stok Bawaan yang bernilai di atas 0 secara instan pasca-load
         document.querySelectorAll('#productRows select').forEach(updateWarnaOren);
 
-        // PERSISTENSI STATE (ANTI HILANG REFRESH)
         function simpanState(view = 'input') {
             const st = {
                 view: view, driver: document.getElementById('driver').value, pic: document.getElementById('picPenerima').value,
@@ -340,7 +351,6 @@
                     document.getElementById(`qris-${i}`).value = p.q;
                 });
 
-                // Terapkan ulang skema pewarnaan visual oren
                 updateWarnaOren(document.getElementById('driver'));
                 updateWarnaOren(document.getElementById('picPenerima'));
                 document.querySelectorAll('#productRows select').forEach(updateWarnaOren);
@@ -352,10 +362,11 @@
                     prosesUIStrukSaja(); 
                 }
             } else {
-                hitungOtomatis(); // Kalkulasi awal untuk stok default
+                hitungOtomatis(); 
             }
         }
 
+        // ================= FITUR AUTO FILL DATA DARI DATABASE ================= //
         async function muatHutangDriver() {
             const driver = document.getElementById("driver").value;
             if(!driver) return;
@@ -371,6 +382,48 @@
                 }
                 hitungOtomatis(); simpanState();
             } catch (e) { document.getElementById("displayHutang").value = "Rp 0"; }
+        }
+
+        async function autoFillStock(driverName) {
+            if (!driverName) return;
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getAllData`);
+                const data = await response.json();
+                
+                const history = data.detail.filter(item => item.driver === driverName);
+                if (history.length > 0) {
+                    // Cari tanggal transaksi paling terakhir
+                    const latestDate = history.reduce((max, obj) => (obj.tanggal > max.tanggal) ? obj : max).tanggal;
+                    const latestStocks = history.filter(item => item.tanggal === latestDate);
+
+                    latestStocks.forEach(item => {
+                        const idx = daftarProduk.findIndex(p => p.nama.toUpperCase() === item.produk.toUpperCase());
+                        if (idx !== -1) {
+                            if (item.status === "STOK_AWAL_BARU") {
+                                // Jika ada rekaman stok baru hari ini
+                                document.getElementById(`stok-${idx}`).value = item.stok_awal;
+                                document.getElementById(`bonus-${idx}`).value = item.bonus;
+                            } else {
+                                // Jika belum ambil stok pagi, ambil Sisa kemarin
+                                document.getElementById(`stok-${idx}`).value = item.sisa;
+                                document.getElementById(`bonus-${idx}`).value = 0;
+                            }
+                            updateWarnaOren(document.getElementById(`stok-${idx}`));
+                            updateWarnaOren(document.getElementById(`bonus-${idx}`));
+                        }
+                    });
+                    hitungOtomatis();
+                    simpanState();
+
+                    const notifInfo = document.createElement('div');
+                    notifInfo.className = "fixed top-5 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs px-4 py-2 rounded-full shadow-lg z-[999] font-bold";
+                    notifInfo.innerText = `Data Stok ${driverName} Berhasil Diisi Otomatis!`;
+                    document.body.appendChild(notifInfo);
+                    setTimeout(() => notifInfo.remove(), 2500);
+                }
+            } catch (error) {
+                console.error("Gagal sinkronisasi otomatis histori stok:", error);
+            }
         }
 
         function bayarSekarang() {
@@ -415,14 +468,101 @@
             document.getElementById("totalCupText").innerText = totalCup + " Cup";
         }
 
-        function bukaPopupKonfirmasiSimpan() {
-            const d = document.getElementById("driver"), p = document.getElementById("picPenerima"), err = document.getElementById("errorValidasiPilihan");
+        // ================= FITUR TAMBAHKAN STOCK ================= //
+        function validasiDasarInput() {
+            const d = document.getElementById("driver");
+            const p = document.getElementById("picPenerima");
+            const err = document.getElementById("errorValidasiPilihan");
+            
             if (!d.value || !p.value) {
                 if(!d.value) d.classList.replace("border-[#444444]", "border-red-500");
                 if(!p.value) p.classList.replace("border-[#444444]", "border-red-500");
-                err.classList.remove("hidden"); window.scrollTo(0,0); return;
+                err.classList.remove("hidden"); 
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return false;
             }
             err.classList.add("hidden");
+            return true;
+        }
+
+        function bukaPopupStock() {
+            if(validasiDasarInput()) {
+                document.getElementById("popupKonfirmasiStock").classList.replace("hidden", "flex");
+            }
+        }
+        function tutupPopupStock() {
+            document.getElementById("popupKonfirmasiStock").classList.replace("flex", "hidden");
+        }
+
+        function bagikanPesanStock() {
+            const driver = document.getElementById("driver").options[document.getElementById("driver").selectedIndex].text;
+            const pic = document.getElementById("picPenerima").options[document.getElementById("picPenerima").selectedIndex].text;
+            const tanggalInput = document.getElementById("tanggal").value;
+            
+            const now = new Date();
+            const jamFormat = String(now.getHours()).padStart(2, '0') + '.' + String(now.getMinutes()).padStart(2, '0');
+            
+            let msgStock = `LAPORAN STOCK SI FOUR AM\n--------------------------------------\n`;
+            msgStock += `👤 Nama Crew: ${driver}\n👥 PIC: ${pic}\n📅 Tanggal Laporan: ${tanggalInput} (${jamFormat} WIB)\n--------------------------------------\n\nDETAIL STOCK:\n`;
+
+            let totalS = 0, totalB = 0;
+            daftarProduk.forEach((prod, i) => {
+                const s = parseInt(document.getElementById(`stok-${i}`).value) || 0;
+                const b = parseInt(document.getElementById(`bonus-${i}`).value) || 0;
+                msgStock += `- ${prod.nama}: ${s}+${b} = ${s + b}\n`;
+                totalS += s;
+                totalB += b;
+            });
+
+            msgStock += `\n--------------------------------------\n📊 TOTAL KESELURUHAN:\n* Stock Utama: ${totalS} Cup\n* Total Bonus: ${totalB} Cup\n* GRAND TOTAL: ${totalS + totalB} Cup\n--------------------------------------\n\n`;
+            msgStock += `🔥 Semangat jualan untuk hari ini, tetap konsisten dan kejar target! Semoga habis semua! Tetap safety di jalan! 🚀☕`;
+
+            window.open(`https://wa.me/?text=${encodeURIComponent(msgStock)}`, '_blank');
+        }
+
+        async function kirimDataStock() {
+            const btnDB = document.getElementById("btnKirimStockDb");
+            btnDB.innerText = "MENYIMPAN...";
+            btnDB.disabled = true;
+
+            const payload = {
+                action: 'addStock',
+                tanggal: document.getElementById("tanggal").value,
+                driver: document.getElementById("driver").value,
+                pic: document.getElementById("picPenerima").value,
+                produk: daftarProduk.map((prod, i) => ({
+                    nama_produk: prod.nama,
+                    stok: parseInt(document.getElementById(`stok-${i}`).value) || 0,
+                    bonus: parseInt(document.getElementById(`bonus-${i}`).value) || 0
+                }))
+            };
+
+            try {
+                // WAJIB MENGGUNAKAN text/plain AGAR GOOGLE APPS SCRIPT BISA MEMBACANYA TANPA ERROR CORS
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {
+                console.error("Gagal save db stock", err);
+            }
+
+            bagikanPesanStock();
+
+            btnDB.innerText = "✅ YA, KIRIM & SINKRON";
+            btnDB.disabled = false;
+            
+            document.getElementById("popupKonfirmasiStock").classList.replace("flex", "hidden");
+            setTimeout(() => {
+                document.getElementById("popupSuksesStock").classList.replace("hidden", "flex");
+            }, 500);
+        }
+
+        // ================= FITUR SIMPAN KASIR UTAMA ================= //
+        function bukaPopupKonfirmasiSimpan() {
+            if(!validasiDasarInput()) return;
 
             const tunai = parseInt(document.getElementById("totalTunai").value.replace(/[^0-9]/g,"")) || 0;
             const komisi = parseInt(document.getElementById("totalKomisiText").innerText.replace(/[^0-9]/g,"")) || 0;
@@ -553,8 +693,8 @@
 
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     try { await navigator.share({ files: [file], title: 'Laporan SI FOUR AM', text: waText }); } 
-                    catch(e) { window.open(`https://wa.me/6281283578212?text=${encodeURIComponent(waText)}`); }
-                } else { window.open(`https://wa.me/6281283578212?text=${encodeURIComponent(waText)}`); }
+                    catch(e) { window.open(`https://wa.me/?text=${encodeURIComponent(waText)}`); }
+                } else { window.open(`https://wa.me/?text=${encodeURIComponent(waText)}`); }
             });
         }
 
@@ -572,7 +712,6 @@
             window.scrollTo(0, 0);
         }
 
-        // INIT LOAD
         muatState();
     </script>
 </body>
