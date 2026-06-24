@@ -6,10 +6,6 @@
     <title>SI FOUR AM - Mobile Kasir</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#111111">
     <style>
         @keyframes kelapKelip {
             0%, 100% { background-color: rgba(30, 30, 30, 1); border-color: #ef4444; }
@@ -262,8 +258,10 @@
     </div>
 
     <script>
-        // MASUKKAN URL DEPLOYMENT ANDA DI SINI !!!
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzN1hbk77e3gsFCb3g-STheBp7TWJYUQFElbeT7k4CoQvrrLH3oPP8kJS66gxeSnXrp/exec";
+        // ==========================================================
+        // WAJIB GANTI URL DI BAWAH DENGAN URL DEPLOYMENT APPS SCRIPT
+        // ==========================================================
+        const SCRIPT_URL = "URL_WEB_APP_ANDA_DISINI";
 
         const daftarProduk = [
             { nama: "SI AMERICANO", harga: 8000, stok: 5, b: 0, sisa: 0, t: 0, q: 0 },
@@ -282,11 +280,8 @@
         let globalAngkaCupMurni = 0;
 
         function updateWarnaOren(el) {
-            if (el.value && el.value !== "0" && !el.value.startsWith("--")) {
-                el.classList.add("terpilih-oren");
-            } else {
-                el.classList.remove("terpilih-oren");
-            }
+            if (el.value && el.value !== "0" && !el.value.startsWith("--")) el.classList.add("terpilih-oren");
+            else el.classList.remove("terpilih-oren");
         }
         function resetWarnaValidasi(el) { if (el.value) el.classList.replace("border-red-500", "border-[#444444]"); }
 
@@ -301,9 +296,7 @@
 
         function buatOpsiMaksimal(max, selectedVal = 0) {
             let options = ""; 
-            for (let i = 0; i <= max; i++) {
-                options += `<option value="${i}" ${i === selectedVal ? 'selected' : ''}>${i}</option>`;
-            } 
+            for (let i = 0; i <= max; i++) options += `<option value="${i}" ${i === selectedVal ? 'selected' : ''}>${i}</option>`;
             return options;
         }
 
@@ -347,111 +340,82 @@
 
                 st.produk.forEach((p, i) => {
                     document.getElementById(`stok-${i}`).value = p.s; document.getElementById(`bonus-${i}`).value = p.b;
-                    document.getElementById(`sisa-${i}`).value = p.si; document.getElementById(`tunai-${i}`).value = p.t;
-                    document.getElementById(`qris-${i}`).value = p.q;
+                    document.getElementById(`sisa-${i}`).value = p.si; document.getElementById(`tunai-${i}`).value = p.t; document.getElementById(`qris-${i}`).value = p.q;
                 });
-
-                updateWarnaOren(document.getElementById('driver'));
-                updateWarnaOren(document.getElementById('picPenerima'));
+                updateWarnaOren(document.getElementById('driver')); updateWarnaOren(document.getElementById('picPenerima'));
                 document.querySelectorAll('#productRows select').forEach(updateWarnaOren);
                 hitungOtomatis();
-
                 if(st.view === 'struk') {
                     bukaPopupKonfirmasiSimpan();
                     document.getElementById('popupSimpan').classList.replace("flex", "hidden");
                     prosesUIStrukSaja(); 
                 }
-            } else {
-                hitungOtomatis(); 
-            }
+            } else hitungOtomatis(); 
         }
 
-        // ================= FITUR AUTO FILL DATA DARI DATABASE ================= //
+        // FUNGSI RESET & AUTO-FILL KETIKA RIDER DIGANTI
+        function resetForm() {
+            daftarProduk.forEach((_, i) => {
+                document.getElementById(`stok-${i}`).value = 0; document.getElementById(`bonus-${i}`).value = 0;
+                document.getElementById(`sisa-${i}`).value = 0; document.getElementById(`tunai-${i}`).value = 0;
+                document.getElementById(`qris-${i}`).value = 0; document.getElementById(`totalcup-${i}`).innerText = 0;
+            });
+            document.querySelectorAll('select').forEach(el => el.classList.remove('terpilih-oren'));
+            hitungOtomatis();
+        }
+
         async function muatHutangDriver() {
-            const driver = document.getElementById("driver").value;
-            if(!driver) return;
+            const driverName = document.getElementById("driver").value;
+            if(!driverName) return;
             document.getElementById("displayHutang").value = "Loading...";
             try {
-                const res = await fetch(`${SCRIPT_URL}?action=getHutang&driver=${encodeURIComponent(driver)}`);
+                const res = await fetch(`${SCRIPT_URL}?action=getHutang&driver=${encodeURIComponent(driverName)}`);
                 const nominal = parseInt(await res.text()) || 0;
                 document.getElementById("displayHutang").value = "Rp " + nominal.toLocaleString('id-ID');
-                
                 if (nominal > 499) {
                     document.getElementById("teksNominalHutangPopup").innerText = "Rp " + nominal.toLocaleString('id-ID');
                     document.getElementById("popupHutangRider").classList.replace("hidden", "flex");
                 }
-                hitungOtomatis(); simpanState();
             } catch (e) { document.getElementById("displayHutang").value = "Rp 0"; }
         }
 
-// FUNGSI UNTUK MERESET FORM AGAR DATA RIDER LAMA HILANG
-function resetForm() {
-    daftarProduk.forEach((_, i) => {
-        document.getElementById(`stok-${i}`).value = 0;
-        document.getElementById(`bonus-${i}`).value = 0;
-        document.getElementById(`sisa-${i}`).value = 0;
-        document.getElementById(`tunai-${i}`).value = 0;
-        document.getElementById(`qris-${i}`).value = 0;
-        document.getElementById(`totalcup-${i}`).innerText = 0;
-    });
-    // Menghapus efek visual terpilih
-    document.querySelectorAll('select').forEach(el => el.classList.remove('terpilih-oren'));
-    hitungOtomatis();
-}
+        async function autoFillStock(driverName) {
+            if (!driverName) { resetForm(); return; }
+            resetForm();
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getAllData`);
+                const data = await response.json();
+                
+                const history = data.detail.filter(item => item.driver === driverName);
+                if (history.length > 0) {
+                    history.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+                    const latestDate = history[0].tanggal;
+                    const latestStocks = history.filter(item => item.tanggal === latestDate);
 
-// FUNGSI AUTO FILL YANG DISEMPURNAKAN
-async function autoFillStock(driverName) {
-    if (!driverName) {
-        resetForm();
-        return;
-    }
+                    latestStocks.forEach(item => {
+                        const idx = daftarProduk.findIndex(p => p.nama.toUpperCase() === item.produk.toUpperCase());
+                        if (idx !== -1) {
+                            if (item.status === "STOK_AWAL_BARU") {
+                                document.getElementById(`stok-${idx}`).value = item.stok_awal;
+                                document.getElementById(`bonus-${idx}`).value = item.bonus;
+                            } else {
+                                document.getElementById(`stok-${idx}`).value = item.sisa;
+                                document.getElementById(`bonus-${idx}`).value = 0;
+                            }
+                            updateWarnaOren(document.getElementById(`stok-${idx}`));
+                            updateWarnaOren(document.getElementById(`bonus-${idx}`));
+                        }
+                    });
+                    hitungOtomatis(); simpanState();
 
-    // 1. Reset form dulu agar bersih
-    resetForm();
-
-    // 2. Fetch data dari server
-    try {
-        const response = await fetch(`${SCRIPT_URL}?action=getAllData`);
-        const data = await response.json();
-        
-        // 3. Ambil data hutang
-        const hutangData = data.hutang_list.find(h => h.driver === driverName);
-        if(hutangData) {
-            document.getElementById("displayHutang").value = "Rp " + hutangData.nominal.toLocaleString('id-ID');
-        }
-
-        // 4. Filter histori khusus driver yang dipilih
-        const history = data.detail.filter(item => item.driver === driverName);
-        
-        if (history.length > 0) {
-            // Urutkan berdasarkan tanggal (paling baru di atas)
-            history.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
-            const latestDate = history[0].tanggal;
-            const latestStocks = history.filter(item => item.tanggal === latestDate);
-
-            latestStocks.forEach(item => {
-                const idx = daftarProduk.findIndex(p => p.nama.toUpperCase() === item.produk.toUpperCase());
-                if (idx !== -1) {
-                    // Logika: Jika ada status "STOK_AWAL_BARU", ambil stok & bonus tersebut.
-                    // Jika tidak (hanya data penjualan), ambil Sisa dari hari terakhir.
-                    if (item.status === "STOK_AWAL_BARU") {
-                        document.getElementById(`stok-${idx}`).value = item.stok_awal;
-                        document.getElementById(`bonus-${idx}`).value = item.bonus;
-                    } else {
-                        document.getElementById(`stok-${idx}`).value = item.sisa;
-                        document.getElementById(`bonus-${idx}`).value = 0; 
-                    }
-                    // Beri penanda warna
-                    updateWarnaOren(document.getElementById(`stok-${idx}`));
-                    updateWarnaOren(document.getElementById(`bonus-${idx}`));
+                    const notifInfo = document.createElement('div');
+                    notifInfo.className = "fixed top-5 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs px-4 py-2 rounded-full shadow-lg z-[999] font-bold";
+                    notifInfo.innerText = `Data Stok ${driverName} Berhasil Diisi Otomatis!`;
+                    document.body.appendChild(notifInfo);
+                    setTimeout(() => notifInfo.remove(), 2500);
                 }
-            });
-            hitungOtomatis();
+            } catch (error) { console.error("Gagal sinkronisasi histori:", error); }
         }
-    } catch (error) {
-        console.error("Gagal Auto-fill:", error);
-    }
-}
 
         function bayarSekarang() {
             document.getElementById("popupHutangRider").classList.replace("flex", "hidden");
@@ -495,62 +459,43 @@ async function autoFillStock(driverName) {
             document.getElementById("totalCupText").innerText = totalCup + " Cup";
         }
 
-        // ================= FITUR TAMBAHKAN STOCK ================= //
+        // ================= FITUR TAMBAH STOCK =================
         function validasiDasarInput() {
-            const d = document.getElementById("driver");
-            const p = document.getElementById("picPenerima");
+            const d = document.getElementById("driver"); const p = document.getElementById("picPenerima");
             const err = document.getElementById("errorValidasiPilihan");
-            
             if (!d.value || !p.value) {
                 if(!d.value) d.classList.replace("border-[#444444]", "border-red-500");
                 if(!p.value) p.classList.replace("border-[#444444]", "border-red-500");
-                err.classList.remove("hidden"); 
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                return false;
+                err.classList.remove("hidden"); window.scrollTo({ top: 0, behavior: 'smooth' }); return false;
             }
-            err.classList.add("hidden");
-            return true;
+            err.classList.add("hidden"); return true;
         }
 
-        function bukaPopupStock() {
-            if(validasiDasarInput()) {
-                document.getElementById("popupKonfirmasiStock").classList.replace("hidden", "flex");
-            }
-        }
-        function tutupPopupStock() {
-            document.getElementById("popupKonfirmasiStock").classList.replace("flex", "hidden");
-        }
+        function bukaPopupStock() { if(validasiDasarInput()) document.getElementById("popupKonfirmasiStock").classList.replace("hidden", "flex"); }
+        function tutupPopupStock() { document.getElementById("popupKonfirmasiStock").classList.replace("flex", "hidden"); }
 
         function bagikanPesanStock() {
             const driver = document.getElementById("driver").options[document.getElementById("driver").selectedIndex].text;
             const pic = document.getElementById("picPenerima").options[document.getElementById("picPenerima").selectedIndex].text;
             const tanggalInput = document.getElementById("tanggal").value;
-            
             const now = new Date();
             const jamFormat = String(now.getHours()).padStart(2, '0') + '.' + String(now.getMinutes()).padStart(2, '0');
             
-            let msgStock = `LAPORAN STOCK SI FOUR AM\n--------------------------------------\n`;
-            msgStock += `👤 Nama Crew: ${driver}\n👥 PIC: ${pic}\n📅 Tanggal Laporan: ${tanggalInput} (${jamFormat} WIB)\n--------------------------------------\n\nDETAIL STOCK:\n`;
-
+            let msgStock = `LAPORAN STOCK SI FOUR AM\n--------------------------------------\n👤 Nama Crew: ${driver}\n👥 PIC: ${pic}\n📅 Tanggal Laporan: ${tanggalInput} (${jamFormat} WIB)\n--------------------------------------\n\nDETAIL STOCK:\n`;
             let totalS = 0, totalB = 0;
             daftarProduk.forEach((prod, i) => {
                 const s = parseInt(document.getElementById(`stok-${i}`).value) || 0;
                 const b = parseInt(document.getElementById(`bonus-${i}`).value) || 0;
                 msgStock += `- ${prod.nama}: ${s}+${b} = ${s + b}\n`;
-                totalS += s;
-                totalB += b;
+                totalS += s; totalB += b;
             });
-
-            msgStock += `\n--------------------------------------\n📊 TOTAL KESELURUHAN:\n* Stock Utama: ${totalS} Cup\n* Total Bonus: ${totalB} Cup\n* GRAND TOTAL: ${totalS + totalB} Cup\n--------------------------------------\n\n`;
-            msgStock += `🔥 Semangat jualan untuk hari ini, tetap konsisten dan kejar target! Semoga habis semua! Tetap safety di jalan! 🚀☕`;
-
+            msgStock += `\n--------------------------------------\n📊 TOTAL KESELURUHAN:\n* Stock Utama: ${totalS} Cup\n* Total Bonus: ${totalB} Cup\n* GRAND TOTAL: ${totalS + totalB} Cup\n--------------------------------------\n\n🔥 Semangat jualan untuk hari ini, tetap konsisten dan kejar target! Semoga habis semua! Tetap safety di jalan! 🚀☕`;
             window.open(`https://wa.me/?text=${encodeURIComponent(msgStock)}`, '_blank');
         }
 
         async function kirimDataStock() {
             const btnDB = document.getElementById("btnKirimStockDb");
-            btnDB.innerText = "MENYIMPAN...";
-            btnDB.disabled = true;
+            btnDB.innerText = "MENYIMPAN..."; btnDB.disabled = true;
 
             const payload = {
                 action: 'addStock',
@@ -565,32 +510,21 @@ async function autoFillStock(driverName) {
             };
 
             try {
-                // WAJIB MENGGUNAKAN text/plain AGAR GOOGLE APPS SCRIPT BISA MEMBACANYA TANPA ERROR CORS
                 await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain' },
+                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(payload)
                 });
-            } catch (err) {
-                console.error("Gagal save db stock", err);
-            }
+            } catch (err) { console.error("Gagal save db stock", err); }
 
             bagikanPesanStock();
-
-            btnDB.innerText = "✅ YA, KIRIM & SINKRON";
-            btnDB.disabled = false;
-            
+            btnDB.innerText = "✅ YA, KIRIM & SINKRON"; btnDB.disabled = false;
             document.getElementById("popupKonfirmasiStock").classList.replace("flex", "hidden");
-            setTimeout(() => {
-                document.getElementById("popupSuksesStock").classList.replace("hidden", "flex");
-            }, 500);
+            setTimeout(() => { document.getElementById("popupSuksesStock").classList.replace("hidden", "flex"); }, 500);
         }
 
-        // ================= FITUR SIMPAN KASIR UTAMA ================= //
+        // ================= FITUR SIMPAN KASIR =================
         function bukaPopupKonfirmasiSimpan() {
             if(!validasiDasarInput()) return;
-
             const tunai = parseInt(document.getElementById("totalTunai").value.replace(/[^0-9]/g,"")) || 0;
             const komisi = parseInt(document.getElementById("totalKomisiText").innerText.replace(/[^0-9]/g,"")) || 0;
             const bayar = parseInt(document.getElementById("bayarHutang").value) || 0;
@@ -616,7 +550,6 @@ async function autoFillStock(driverName) {
         function prosesUIStrukSaja() {
             simpanState('struk'); 
             const tglFormatted = formatTanggalCustom(document.getElementById("tanggal").value);
-            
             let listHtml = "";
             daftarProduk.forEach((prod, i) => {
                 const sVal = parseInt(document.getElementById(`stok-${i}`).value) || 0;
@@ -661,7 +594,6 @@ async function autoFillStock(driverName) {
 
         async function prosesKirimDataKeSheetsDanUI() {
             prosesUIStrukSaja(); 
-            
             const payload = {
                 tanggal: formatTanggalCustom(document.getElementById("tanggal").value), 
                 jam: waktuRealtimeTerarsip, driver: document.getElementById("driver").value, pic_penerima: document.getElementById("picPenerima").value,
@@ -696,18 +628,13 @@ async function autoFillStock(driverName) {
         function unduhDanBagikanLaporan() {
             document.getElementById("receiptActionButtons").style.opacity = "0";
             document.getElementById("popupSuksesWA").classList.replace("flex", "hidden"); 
-
             const rider = document.getElementById("recDriver").innerText;
             const tgl = document.getElementById("recTanggal").innerText;
             
             let teksMotivasi = "";
-            if (globalAngkaCupMurni <= 30) {
-                teksMotivasi = "Tetap semangat! Hari ini adalah awal yang baru. Setiap tetes keringatmu bernilai, mari hajar rute besok dengan energi penuh! 💪🔥";
-            } else if (globalAngkaCupMurni <= 49) {
-                teksMotivasi = "Alhamdulillah, pencapaian luar biasa hari ini! Sedikit lagi capai target maksimal, mari tingkatkan fokus dan gaspol besok! 🚀📈";
-            } else {
-                teksMotivasi = "🎉 Selamat! Target tembus dengan gemilang! Pertahankan performa luar biasa ini, kamu adalah ujung tombak terbaik kita! 🏆☕";
-            }
+            if (globalAngkaCupMurni <= 30) teksMotivasi = "Tetap semangat! Hari ini adalah awal yang baru. Setiap tetes keringatmu bernilai, mari hajar rute besok dengan energi penuh! 💪🔥";
+            else if (globalAngkaCupMurni <= 49) teksMotivasi = "Alhamdulillah, pencapaian luar biasa hari ini! Sedikit lagi capai target maksimal, mari tingkatkan fokus dan gaspol besok! 🚀📈";
+            else teksMotivasi = "🎉 Selamat! Target tembus dengan gemilang! Pertahankan performa luar biasa ini, kamu adalah ujung tombak terbaik kita! 🏆☕";
 
             const waText = `*Setoran SI FOUR AM*\n----------------------------------\n👤 *Rider:* ${rider}\n👥 *PIC:* ${document.getElementById("recPic").innerText}\n📅 *Tgl:* ${tgl} ${waktuRealtimeTerarsip}\n\n💰 *Total Tunai:* ${document.getElementById("recCash").innerText}\n📱 *Total QRIS:* ${document.getElementById("recQris").innerText}\n\n📝 *Hutang Awal:* ${document.getElementById("recHutang").innerText}\n💸 *Bayar Hutang:* ${document.getElementById("recBayar").innerText}\n📉 *Sisa Hutang:* ${document.getElementById("recSisa").innerText}\n⚠️ *Minus+Hutang Baru:* ${document.getElementById("recMinus").innerText}\n\n📊 *Total Cup:* ${document.getElementById("recVolume").innerText}\n💵 *Komisi Rider:* ${document.getElementById("recKomisi").innerText}\n\n🚀 *SETORAN TUNAI BERSIH:* Rp ${globalSetoranBersih.toLocaleString('id-ID')}\n----------------------------------\n_${teksMotivasi}_`;
 
@@ -717,7 +644,6 @@ async function autoFillStock(driverName) {
                 const file = new File([blob], `STRUK_${rider.replace(/\s+/g, '_')}_${tgl.replace(/\//g,'-')}.png`, { type: 'image/png' });
                 
                 document.getElementById("popupSuksesWA").classList.replace("hidden", "flex");
-
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     try { await navigator.share({ files: [file], title: 'Laporan SI FOUR AM', text: waText }); } 
                     catch(e) { window.open(`https://wa.me/?text=${encodeURIComponent(waText)}`); }
@@ -725,10 +651,7 @@ async function autoFillStock(driverName) {
             });
         }
 
-        function pencetSembarangReset() {
-            localStorage.clear();
-            window.location.reload();
-        }
+        function pencetSembarangReset() { localStorage.clear(); window.location.reload(); }
         
         function kembaliKeHalamanInputTanpaReset() { 
             simpanState('input');
