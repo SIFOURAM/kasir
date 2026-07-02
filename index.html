@@ -69,10 +69,17 @@
                 <div class="bg-[#111111] p-2 rounded-lg border border-[#fcf6ba]"><span class="text-[10px] uppercase font-bold text-gray-400 block">Total Cash</span><input type="text" id="totalTunai" readonly class="bg-transparent text-sm font-black text-[#f57c00] outline-none w-full mt-0.5" value="Rp 0"></div>
                 <div class="bg-[#111111] p-2 rounded-lg border border-[#fcf6ba]"><span class="text-[10px] uppercase font-bold text-gray-400 block">Total QRIS</span><input type="text" id="totalQris" readonly class="bg-transparent text-sm font-black text-green-400 outline-none w-full mt-0.5" value="Rp 0"></div>
             </div>
+            
             <div class="grid grid-cols-2 gap-3">
-                <div><label class="block text-[10px] font-medium text-gray-400 mb-1">Total Hutang</label><input type="text" id="displayHutang" readonly value="Rp 0" class="w-full bg-[#111111] border border-red-500 text-red-400 rounded-lg p-2 text-xs font-bold outline-none cursor-not-allowed"></div>
+                <div><label class="block text-[10px] font-medium text-gray-400 mb-1">Pengeluaran (Rp)</label><input type="number" id="pengeluaran" value="0" oninput="hitungOtomatis(); simpanState();" class="w-full bg-[#111111] border border-[#fcf6ba] text-white rounded-lg p-2 text-xs outline-none focus:border-[#f57c00] transition-colors"></div>
+                <div><label class="block text-[10px] font-medium text-gray-400 mb-1">Keterangan Pengeluaran</label><input type="text" id="ketPengeluaran" placeholder="Ket..." oninput="simpanState();" class="w-full bg-[#111111] border border-[#fcf6ba] text-white rounded-lg p-2 text-xs outline-none focus:border-[#f57c00] transition-colors"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div><label class="block text-[10px] font-medium text-gray-400 mb-1">Hutang Awal Database</label><input type="text" id="displayHutang" readonly value="Rp 0" class="w-full bg-[#111111] border border-red-500 text-red-400 rounded-lg p-2 text-xs font-bold outline-none cursor-not-allowed"></div>
                 <div><label class="block text-[10px] font-medium text-gray-400 mb-1">Bayar Hutang (Rp)</label><input type="number" id="bayarHutang" value="0" oninput="hitungOtomatis(); simpanState();" class="w-full bg-[#111111] border border-[#fcf6ba] text-white rounded-lg p-2 text-xs outline-none focus:border-[#f57c00] transition-colors"></div>
             </div>
+
             <div class="bg-[#111111] p-3 rounded-xl border border-[#fcf6ba] space-y-2">
                 <div class="flex justify-between items-center"><span class="text-[10px] font-bold text-gray-400">Sisa Hutang:</span><span id="sisaHutangText" class="text-xs font-black text-[#f57c00]">Rp 0</span></div>
                 <div class="flex justify-between items-center border-t border-[#333333] pt-2"><span class="text-[10px] font-bold text-gray-400">Minus Tambah Hutang:</span><span id="minusTotalText" class="text-xs font-black text-red-500">Rp 0</span></div>
@@ -85,7 +92,7 @@
     </div>
 
     <div id="floatingButtonContainer" class="fixed bottom-0 left-0 right-0 p-4 bg-[#111111]/95 backdrop-blur max-w-md mx-auto z-40" style="border-top: 1px solid #bf953f;">
-        <p id="errorValidasiPilihan" class="text-center text-[10px] text-red-500 font-bold mb-2 hidden">⚠️ Lengkapi Rider Dulu!</p>
+        <p id="errorValidasiPilihan" class="text-center text-[10px] text-red-500 font-bold mb-2 hidden">⚠️ Lengkapi Rider & PIC!</p>
         <div class="grid grid-cols-12 gap-2">
             <button type="button" onclick="bukaPopupStock()" class="col-span-4 bg-[#1e1e1e] border border-[#fcf6ba] text-[#fcf6ba] font-black py-3 rounded-xl uppercase text-[10px] shadow-lg">➕ Stock</button>
             <button type="button" onclick="bukaPopupKonfirmasiSimpan()" class="col-span-8 bg-gradient-to-r from-[#bf953f] to-[#fbf5b7] text-[#111111] font-black py-3 rounded-xl uppercase text-[11px] shadow-lg">Simpan & Sinkronisasi</button>
@@ -126,13 +133,20 @@
         <div class="border-gradient-gold-thick w-full max-w-xs rounded-2xl p-5 space-y-3 shadow-xl bg-[#1e1e1e]">
             <h3 class="text-center text-sm font-black text-[#fcf6ba] uppercase tracking-wider border-b border-gray-700 pb-2">Apakah Data Sudah Benar?</h3>
             <div class="space-y-2 text-xs">
-                <div class="flex justify-between"><span class="text-gray-400">Total Tunai/Cash:</span><span id="popTotalTunai" class="font-bold text-white">Rp 0</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Total Cash:</span><span id="popTotalTunai" class="font-bold text-white">Rp 0</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Total QRIS:</span><span id="popTotalQris" class="font-bold text-green-400">Rp 0</span></div>
+                
+                <div class="flex justify-between hidden" id="rowPopHutangAwal"><span class="text-gray-400">Hutang Awal:</span><span id="popHutangAwal" class="font-bold text-red-400">Rp 0</span></div>
+                <div class="flex justify-between hidden" id="rowPopMinusHutang"><span class="text-gray-400">Minus+Hutang Baru:</span><span id="popMinusHutang" class="font-bold text-red-400">Rp 0</span></div>
                 <div class="flex justify-between hidden" id="rowPopBayarHutang"><span class="text-gray-400">Bayar Hutang:</span><span id="popBayarHutang" class="font-bold text-emerald-400">Rp 0</span></div>
-                <div class="flex justify-between hidden" id="rowPopMinusHutang"><span class="text-gray-400">Minus+Hutang:</span><span id="popMinusHutang" class="font-bold text-red-400">Rp 0</span></div>
-                <div class="flex justify-between"><span class="text-gray-400">Total Komisi Rider:</span><span id="popTotalKomisi" class="font-bold text-amber-500">Rp 0</span></div>
-                <div class="flex justify-between"><span class="text-gray-400">Total Terjual (Cup):</span><span id="popTotalTerjual" class="font-bold text-white">0</span></div>
-                <div class="flex justify-between hidden" id="rowPopWastage"><span class="text-gray-400">Total Wastage:</span><span id="popTotalWastage" class="font-bold text-red-400">0</span></div>
-                <div class="flex justify-between border-t border-gray-700 pt-2"><span class="text-gray-300 font-bold">TUNAI BERSIH DITERIMA:</span><span id="popSetoranBersih" class="font-black text-[#f57c00] text-sm">Rp 0</span></div>
+                <div class="flex justify-between hidden" id="rowPopSisaHutang"><span class="text-gray-400">Sisa Hutang:</span><span id="popSisaHutang" class="font-bold text-orange-400">Rp 0</span></div>
+                <div class="flex justify-between hidden" id="rowPopWastage"><span class="text-gray-400">Total Wastage:</span><span id="popTotalWastage" class="font-bold text-red-400">0 Cup</span></div>
+                <div class="flex justify-between hidden" id="rowPopPengeluaran"><span class="text-gray-400">Pengeluaran:</span><span id="popPengeluaran" class="font-bold text-red-400">Rp 0</span></div>
+
+                <div class="flex justify-between border-t border-gray-700 pt-2"><span class="text-gray-400">Total Terjual:</span><span id="popTotalTerjual" class="font-bold text-white">0 Cup</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Komisi Rider:</span><span id="popTotalKomisi" class="font-bold text-amber-500">Rp 0</span></div>
+                
+                <div class="flex justify-between border-t border-gray-700 pt-2"><span class="text-gray-300 font-bold">SETOR TUNAI BERSIH:</span><span id="popSetoranBersih" class="font-black text-[#f57c00] text-sm">Rp 0</span></div>
             </div>
             <div class="grid grid-cols-2 gap-2 pt-2">
                 <button type="button" onclick="document.getElementById('popupSimpan').classList.replace('flex','hidden')" class="bg-[#2a2a2a] border border-[#444] text-gray-400 font-bold py-2.5 rounded-xl text-xs uppercase hover:bg-[#333]">Revisi</button>
@@ -163,9 +177,11 @@
                 <div class="flex justify-between"><span class="text-gray-400">Total Cash:</span> <span id="recCash" class="font-bold text-white"></span></div>
                 <div class="flex justify-between"><span class="text-gray-400">Total QRIS:</span> <span id="recQris" class="font-bold text-green-400"></span></div>
                 <div class="flex justify-between border-t border-[#333333] pt-1.5"><span class="text-gray-400">Hutang Awal:</span> <span id="recHutang" class="font-bold text-red-400"></span></div>
-                <div class="flex justify-between"><span class="text-gray-400">Bayar Hutang:</span> <span id="recBayar" class="font-bold text-emerald-400"></span></div>
-                <div class="flex justify-between"><span class="text-gray-400">Sisa Hutang:</span> <span id="recSisa" class="font-bold text-[#f57c00]"></span></div>
                 <div class="flex justify-between"><span class="text-gray-400">Minus + Hutang Baru:</span> <span id="recMinus" class="font-bold text-red-500"></span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Bayar Hutang:</span> <span id="recBayar" class="font-bold text-emerald-400"></span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Sisa Hutang Akhir:</span> <span id="recSisa" class="font-bold text-[#f57c00]"></span></div>
+                <div class="flex justify-between border-t border-[#333333] pt-1.5"><span class="text-gray-400">Pengeluaran:</span> <span id="recPengeluaran" class="font-bold text-red-400"></span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Ket Pengeluaran:</span> <span id="recKetPengeluaran" class="font-bold text-gray-300"></span></div>
                 <div class="flex justify-between border-t border-[#333333] pt-1.5 font-bold"><span class="text-gray-300">Total Terjual:</span> <span id="recVolume" class="text-white"></span></div>
                 <div class="flex justify-between"><span class="text-gray-300">Total Wastage:</span> <span id="recWastage" class="text-red-400"></span></div>
                 <div class="flex justify-between border-t border-[#333333] pt-1.5 font-bold"><span class="text-gray-300">Komisi Rider:</span> <span id="recKomisi" class="text-amber-500"></span></div>
@@ -212,26 +228,17 @@
         // ANTI INSPECT AMAN
         document.addEventListener('contextmenu', event => event.preventDefault());
         document.onkeydown = function(e) { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && e.keyCode == 85)) return false; };
-        
-        // INTERCEPT REFRESH (Peringatan saat me-refresh browser jika belum klik reset)
-        window.addEventListener('beforeunload', function (e) {
-            // Hanya aktifkan peringatan jika tidak berada di mode receipt
-            if (localStorage.getItem('siFourView') !== 'struk') {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        });
 
         // WAJIB GANTI URL DEPLOYMENT APPS SCRIPT DI SINI!
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzPYR4M0J8EugEaKE03gGHYOY0Y3CZja7hoWyVSBcVv_LUjjiCy64hDnhAZ4TMDpHny/exec";
 
         // PASSWORDS PIC
         const picPasswords = {
-            "Muhammad Ishaq Alif Hanif": "090926",
-            "Indri Devi Anjani": "vivianjani2006",
-            "Rissa Alfiani Putri": "0926",
+            "Muhammad Ishaq Alif Hanif": "alif123",
+            "Indri Devi Anjani": "devi123",
+            "Rissa Alfiani Putri": "rissa123",
             "Muhammad Zulfikar": "jkt234",
-            "Sandita": "san22"
+            "Sandita": "nai19"
         };
 
         const daftarProduk = [ { nama: "SI AMERICANO", harga: 8000, stok: 5 }, { nama: "SI KOPSU AREN", harga: 9000, stok: 15 }, { nama: "SI CREAMY LATTE", harga: 12000, stok: 5 }, { nama: "SI VANILLA LATTE", harga: 12000, stok: 5 }, { nama: "SI SALTED CARAMEL", harga: 12000, stok: 5 }, { nama: "SI BUTTERSCOTCH", harga: 12000, stok: 5 }, { nama: "SI CHOCOLATE", harga: 12000, stok: 5 }, { nama: "SI MATCHA", harga: 12000, stok: 5 }, { nama: "SI TEH MANIS", harga: 5000, stok: 5 } ];
@@ -243,18 +250,17 @@
         function resetWarnaValidasi(el) { if (el.value) el.classList.remove("border-red-500"); }
         function formatTanggalCustom(dateStr) { if (!dateStr) return ""; const d = new Date(dateStr); return `${d.getDate()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getFullYear()).slice(-2)}`; }
         
-        // PENGATURAN AWAL SAAT BUKA LINK
+        // PENGATURAN AWAL SAAT BUKA LINK (Fix Refresh kembali ke input)
         window.onload = function() {
+            // Selalu paksa hapus state Struk jika ter-refresh, kembalikan ke input murni
+            localStorage.removeItem('siFourView'); 
+            
             document.getElementById("tanggal").value = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2,'0')}-${String(new Date().getDate()).padStart(2,'0')}`;
             renderTabelVarian();
             
-            // Resume Form jika ada cache (cegah data hilang saat tak sengaja refresh)
             const savedState = localStorage.getItem('siFourState');
             if(savedState) {
                 muatState();
-                document.getElementById('topHeaderBanner').classList.remove('hidden');
-                document.getElementById('mainFormContainer').classList.remove('hidden');
-                document.getElementById('floatingButtonContainer').classList.remove('hidden');
             }
         }
 
@@ -319,7 +325,7 @@
         function applyBundle(type, payment, newBundleQty, newDrinks) { let stateKey = `b${type}_${payment}`; let oldDrinks = bundleData[stateKey].drinks; for (let idx in oldDrinks) { let sel = document.getElementById(`tunai-${idx}`); if(payment==='qris') sel = document.getElementById(`qris-${idx}`); setSelectValue(sel, (parseInt(sel.value) || 0) - oldDrinks[idx]); } for (let idx in newDrinks) { let sel = document.getElementById(`tunai-${idx}`); if(payment==='qris') sel = document.getElementById(`qris-${idx}`); setSelectValue(sel, (parseInt(sel.value) || 0) + newDrinks[idx]); } bundleData[stateKey].qty = newBundleQty; bundleData[stateKey].drinks = newDrinks; document.getElementById('totalcup-b1').innerText = bundleData.b1_tunai.qty + bundleData.b1_qris.qty; document.getElementById('totalcup-b2').innerText = bundleData.b2_tunai.qty + bundleData.b2_qris.qty; simpanState(); hitungOtomatis(); }
 
         // ============================================
-        // LOGIKA PERHITUNGAN UTAMA (CASH, QRIS, KOMISI, WASTAGE, HUTANG)
+        // LOGIKA PERHITUNGAN UTAMA (CASH, QRIS, KOMISI, WASTAGE, PENGELUARAN, HUTANG)
         // ============================================
         function hitungOtomatis() {
             let totCup = 0, komisi = 0, tunai = 0, qris = 0, minusRp = 0, totWstg = 0;
@@ -330,7 +336,7 @@
                 const evalTot = si + t + q + w - s; 
                 const terjual = t + q;
                 
-                if (evalTot < 0) minusRp += Math.abs(evalTot) * p.harga; // Minus baru terjadi jika evalTot negatif (wastage melindungi dari minus)
+                if (evalTot < 0) minusRp += Math.abs(evalTot) * p.harga; // Minus baru terjadi jika evalTot negatif
                 
                 const dTot = document.getElementById(`totalcup-${i}`); dTot.innerText = evalTot;
                 if(evalTot < 0) { dTot.classList.add("text-red-500", "animasi-flash-minus"); } else { dTot.classList.remove("text-red-500", "animasi-flash-minus"); }
@@ -347,14 +353,19 @@
             
             const hAwal = parseInt(document.getElementById("displayHutang").value.replace(/[^0-9]/g, ""))||0; 
             const bayar = parseInt(document.getElementById("bayarHutang").value)||0; 
-            const sHutang = hAwal - bayar; 
-            const minTot = minusRp + sHutang; 
+            const pengeluaran = parseInt(document.getElementById("pengeluaran").value)||0;
+            
+            // RUMUS HUTANG BARU: Total Hutang Awal + Minus Tambah Hutang - Bayar Hutang
+            const sHutang = hAwal + minusRp - bayar; 
             const omz = tunai + qris;
+            
+            // RUMUS SETORAN BERSIH: Total Tunai - Komisi - Pengeluaran + Bayar Hutang
+            globalSetoranBersih = tunai - komisi - pengeluaran + bayar;
             
             document.getElementById("totalTunai").value = "Rp " + tunai.toLocaleString('id-ID'); 
             document.getElementById("totalQris").value = "Rp " + qris.toLocaleString('id-ID'); 
             document.getElementById("sisaHutangText").innerText = "Rp " + sHutang.toLocaleString('id-ID'); 
-            document.getElementById("minusTotalText").innerText = "Rp " + minTot.toLocaleString('id-ID'); 
+            document.getElementById("minusTotalText").innerText = "Rp " + minusRp.toLocaleString('id-ID'); 
             document.getElementById("totalKomisiText").innerText = "Rp " + komisi.toLocaleString('id-ID'); 
             document.getElementById("totalIncomeText").innerText = "Rp " + omz.toLocaleString('id-ID'); 
             document.getElementById("totalCupText").innerText = totCup + " Cup"; 
@@ -406,6 +417,8 @@
                 pic: document.getElementById('picPenerima').value,
                 tanggal: document.getElementById('tanggal').value, 
                 bayarHutang: document.getElementById('bayarHutang').value, 
+                pengeluaran: document.getElementById('pengeluaran').value,
+                ketPengeluaran: document.getElementById('ketPengeluaran').value,
                 bundleData: bundleData, 
                 produk: daftarProduk.map((_, i) => ({ 
                     s: document.getElementById(`stok-${i}`).value, b: document.getElementById(`bonus-${i}`).value, 
@@ -424,6 +437,8 @@
                 document.getElementById('picPenerima').value = st.pic; 
                 if(st.tanggal) document.getElementById('tanggal').value = st.tanggal; 
                 document.getElementById('bayarHutang').value = st.bayarHutang;
+                if(st.pengeluaran) document.getElementById('pengeluaran').value = st.pengeluaran;
+                if(st.ketPengeluaran) document.getElementById('ketPengeluaran').value = st.ketPengeluaran;
                 
                 st.produk.forEach((p, i) => { 
                     document.getElementById(`stok-${i}`).value = p.s; document.getElementById(`bonus-${i}`).value = p.b; 
@@ -443,41 +458,42 @@
                 updateWarnaOren(document.getElementById('driver')); 
                 document.querySelectorAll('#productRows select').forEach(updateWarnaOren); 
                 hitungOtomatis();
-
-                // Cek apakah halaman berada dalam state menampilkan Struk
-                if(localStorage.getItem('siFourView') === 'struk') {
-                    renderStrukUI(); // Langsung render struk, lewati konfirmasi (supaya gak repot reload)
-                }
             } 
         }
 
+        function validasiDasarInput() { const d = document.getElementById("driver"); const p = document.getElementById("picPenerima"); const err = document.getElementById("errorValidasiPilihan"); if (!d.value || !p.value) { if(!d.value) d.classList.add("border-red-500"); if(!p.value) p.classList.add("border-red-500"); err.classList.remove("hidden"); window.scrollTo({ top: 0, behavior: 'smooth' }); return false; } err.classList.add("hidden"); return true; }
+        
         // ============================================
         // ALUR POPUP KONFIRMASI (APAKAH DATA SUDAH BENAR)
         // ============================================
-        function validasiDasarInput() { const d = document.getElementById("driver"); const p = document.getElementById("picPenerima"); const err = document.getElementById("errorValidasiPilihan"); if (!d.value || !p.value) { if(!d.value) d.classList.add("border-red-500"); if(!p.value) p.classList.add("border-red-500"); err.classList.remove("hidden"); window.scrollTo({ top: 0, behavior: 'smooth' }); return false; } err.classList.add("hidden"); return true; }
-        
         function bukaPopupKonfirmasiSimpan() {
             if(!validasiDasarInput()) return;
             
             const tun = parseInt(document.getElementById("totalTunai").value.replace(/[^0-9]/g,""))||0; 
+            const qris = parseInt(document.getElementById("totalQris").value.replace(/[^0-9]/g,""))||0; 
             const kom = parseInt(document.getElementById("totalKomisiText").innerText.replace(/[^0-9]/g,""))||0; 
             const byr = parseInt(document.getElementById("bayarHutang").value)||0; 
+            const hAwal = parseInt(document.getElementById("displayHutang").value.replace(/[^0-9]/g,""))||0; 
             const minStr = document.getElementById("minusTotalText").innerText;
             const minRp = parseInt(minStr.replace(/[^0-9]/g,""))||0;
+            const sHutang = parseInt(document.getElementById("sisaHutangText").innerText.replace(/[^0-9]/g,""))||0;
             const terjual = parseInt(document.getElementById("totalCupText").innerText.replace(/[^0-9]/g,""))||0;
             const wstg = parseInt(document.getElementById("totalWastageText").innerText.replace(/[^0-9]/g,""))||0;
-            
-            globalSetoranBersih = tun - kom + byr;
+            const pengeluaran = parseInt(document.getElementById("pengeluaran").value)||0;
 
             document.getElementById("popTotalTunai").innerText = "Rp " + tun.toLocaleString('id-ID'); 
-            document.getElementById("popTotalKomisi").innerText = "- Rp " + kom.toLocaleString('id-ID'); 
+            document.getElementById("popTotalQris").innerText = "Rp " + qris.toLocaleString('id-ID'); 
             document.getElementById("popTotalTerjual").innerText = terjual + " Cup";
+            document.getElementById("popTotalKomisi").innerText = "- Rp " + kom.toLocaleString('id-ID'); 
             document.getElementById("popSetoranBersih").innerText = "Rp " + globalSetoranBersih.toLocaleString('id-ID'); 
 
-            // Logic display Hide/Show Row
-            if(byr > 0) { document.getElementById("rowPopBayarHutang").classList.replace("hidden", "flex"); document.getElementById("popBayarHutang").innerText = "+ Rp " + byr.toLocaleString('id-ID'); } else { document.getElementById("rowPopBayarHutang").classList.replace("flex", "hidden"); }
-            if(minRp > 0) { document.getElementById("rowPopMinusHutang").classList.replace("hidden", "flex"); document.getElementById("popMinusHutang").innerText = (minStr.includes("-")?"-":"") + "Rp " + minRp.toLocaleString('id-ID'); } else { document.getElementById("rowPopMinusHutang").classList.replace("flex", "hidden"); }
+            // Logic display Hide/Show Row Sesuai Permintaan (Muncul jika ada tambahan/lebih dari 0)
+            if(hAwal > 0) { document.getElementById("rowPopHutangAwal").classList.replace("hidden", "flex"); document.getElementById("popHutangAwal").innerText = "Rp " + hAwal.toLocaleString('id-ID'); } else { document.getElementById("rowPopHutangAwal").classList.replace("flex", "hidden"); }
+            if(minRp > 0) { document.getElementById("rowPopMinusHutang").classList.replace("hidden", "flex"); document.getElementById("popMinusHutang").innerText = "+ Rp " + minRp.toLocaleString('id-ID'); } else { document.getElementById("rowPopMinusHutang").classList.replace("flex", "hidden"); }
+            if(byr > 0) { document.getElementById("rowPopBayarHutang").classList.replace("hidden", "flex"); document.getElementById("popBayarHutang").innerText = "- Rp " + byr.toLocaleString('id-ID'); } else { document.getElementById("rowPopBayarHutang").classList.replace("flex", "hidden"); }
+            if(sHutang > 0) { document.getElementById("rowPopSisaHutang").classList.replace("hidden", "flex"); document.getElementById("popSisaHutang").innerText = "Rp " + sHutang.toLocaleString('id-ID'); } else { document.getElementById("rowPopSisaHutang").classList.replace("flex", "hidden"); }
             if(wstg > 0) { document.getElementById("rowPopWastage").classList.replace("hidden", "flex"); document.getElementById("popTotalWastage").innerText = wstg + " Cup"; } else { document.getElementById("rowPopWastage").classList.replace("flex", "hidden"); }
+            if(pengeluaran > 0) { document.getElementById("rowPopPengeluaran").classList.replace("hidden", "flex"); document.getElementById("popPengeluaran").innerText = "- Rp " + pengeluaran.toLocaleString('id-ID'); } else { document.getElementById("rowPopPengeluaran").classList.replace("flex", "hidden"); }
 
             document.getElementById("popupSimpan").classList.replace("hidden", "flex");
         }
@@ -491,7 +507,6 @@
             
             waktuRealtimeTerarsip = new Date().toLocaleTimeString('id-ID'); 
             localStorage.setItem('siFourWaktu', waktuRealtimeTerarsip);
-            localStorage.setItem('siFourView', 'struk'); // Tandai bahwa saat ini ada di tampilan struk
             simpanState(); 
             
             // 1. Tampilkan UI Struk
@@ -502,14 +517,19 @@
             document.getElementById("statusSinkronisasiText").classList.replace("text-emerald-400", "text-amber-500");
             document.getElementById("statusSinkronisasiText").classList.add("animate-pulse");
 
-            const minusRpOnly = parseFloat(document.getElementById("minusTotalText").innerText.replace(/[^0-9]/g,"")) - parseFloat(document.getElementById("sisaHutangText").innerText.replace(/[^0-9]/g,""));
+            const minusRpOnly = parseFloat(document.getElementById("minusTotalText").innerText.replace(/[^0-9]/g,""));
+            const sisaHutangReal = parseFloat(document.getElementById("sisaHutangText").innerText.replace(/[^0-9]/g,""));
+            
             const pld = { 
-                action: "saveKasir", // Nama request action untuk Apps Script
+                action: "saveKasir", 
                 tanggal: document.getElementById("tanggal").value, jam: waktuRealtimeTerarsip, driver: document.getElementById("driver").value, pic_penerima: document.getElementById("picPenerima").value, 
                 total_cash: document.getElementById("totalTunai").value, total_qris: document.getElementById("totalQris").value, hutang_awal: document.getElementById("displayHutang").value, 
-                bayar_hutang: document.getElementById("bayarHutang").value, sisa_hutang: document.getElementById("sisaHutangText").innerText, 
+                bayar_hutang: document.getElementById("bayarHutang").value, sisa_hutang: sisaHutangReal, 
                 minus: Math.abs(minusRpOnly), tambah_hutang: document.getElementById("minusTotalText").innerText,
-                komisi_rider: document.getElementById("totalKomisiText").innerText, total_volume: document.getElementById("totalCupText").innerText, omzet_bersih: document.getElementById("totalIncomeText").innerText, produk: [] 
+                komisi_rider: document.getElementById("totalKomisiText").innerText, total_volume: document.getElementById("totalCupText").innerText, omzet_bersih: document.getElementById("totalIncomeText").innerText,
+                pengeluaran: document.getElementById("pengeluaran").value || 0,
+                ket_pengeluaran: document.getElementById("ketPengeluaran").value || "",
+                produk: [] 
             };
             
             daftarProduk.forEach((p, i) => { const sVal = parseInt(document.getElementById(`stok-${i}`).value)||0; const bVal = parseInt(document.getElementById(`bonus-${i}`).value)||0; const siVal = parseInt(document.getElementById(`sisa-${i}`).value)||0; const tVal = parseInt(document.getElementById(`tunai-${i}`).value)||0; const qVal = parseInt(document.getElementById(`qris-${i}`).value)||0; const wVal = parseInt(document.getElementById(`wastage-${i}`).value)||0; const tot = tVal + qVal; const evalTot = siVal + tVal + qVal + wVal - sVal; let sts = "Sesuai"; if (evalTot < 0) sts = `Minus ${Math.abs(evalTot)} Cup`; else if (evalTot > 0) sts = `+${evalTot} Kelebihan`; pld.produk.push({ nama_produk: p.nama, stok_awal: sVal, bonus_claimed: bVal, sisa: siVal, terjual_tunai: tVal, terjual_qris: qVal, total_cup: tot, wastage: wVal, status: sts }); });
@@ -527,7 +547,6 @@
             });
         }
 
-        // Logic mempopulasikan HTML Struk
         function renderStrukUI() {
             const tglFormatted = formatTanggalCustom(document.getElementById("tanggal").value); let lH = "";
             daftarProduk.forEach((p, i) => {
@@ -544,13 +563,26 @@
             waktuRealtimeTerarsip = localStorage.getItem('siFourWaktu') || new Date().toLocaleTimeString('id-ID'); 
             document.getElementById("recTanggal").innerText = tglFormatted + " " + waktuRealtimeTerarsip; 
             
-            document.getElementById("recCash").innerText = document.getElementById("totalTunai").value; document.getElementById("recQris").innerText = document.getElementById("totalQris").value; document.getElementById("recHutang").innerText = document.getElementById("displayHutang").value; document.getElementById("recBayar").innerText = "Rp " + parseInt(document.getElementById("bayarHutang").value || 0).toLocaleString('id-ID'); document.getElementById("recSisa").innerText = document.getElementById("sisaHutangText").innerText; document.getElementById("recMinus").innerText = document.getElementById("minusTotalText").innerText; document.getElementById("recVolume").innerText = document.getElementById("totalCupText").innerText; document.getElementById("recWastage").innerText = document.getElementById("totalWastageText").innerText; document.getElementById("recKomisi").innerText = document.getElementById("totalKomisiText").innerText; 
+            document.getElementById("recCash").innerText = document.getElementById("totalTunai").value; 
+            document.getElementById("recQris").innerText = document.getElementById("totalQris").value; 
+            document.getElementById("recHutang").innerText = document.getElementById("displayHutang").value; 
+            document.getElementById("recMinus").innerText = document.getElementById("minusTotalText").innerText; 
+            document.getElementById("recBayar").innerText = "Rp " + parseInt(document.getElementById("bayarHutang").value || 0).toLocaleString('id-ID'); 
+            document.getElementById("recSisa").innerText = document.getElementById("sisaHutangText").innerText; 
+            
+            const pRp = parseInt(document.getElementById("pengeluaran").value)||0;
+            document.getElementById("recPengeluaran").innerText = "Rp " + pRp.toLocaleString('id-ID'); 
+            document.getElementById("recKetPengeluaran").innerText = document.getElementById("ketPengeluaran").value || "-"; 
+            
+            document.getElementById("recVolume").innerText = document.getElementById("totalCupText").innerText; 
+            document.getElementById("recWastage").innerText = document.getElementById("totalWastageText").innerText; 
+            document.getElementById("recKomisi").innerText = document.getElementById("totalKomisiText").innerText; 
             
             // Hitung Bersih Ulang buat jaga jaga
             const tun = parseInt(document.getElementById("totalTunai").value.replace(/[^0-9]/g,""))||0; 
             const kom = parseInt(document.getElementById("totalKomisiText").innerText.replace(/[^0-9]/g,""))||0; 
             const byr = parseInt(document.getElementById("bayarHutang").value)||0;
-            globalSetoranBersih = tun - kom + byr;
+            globalSetoranBersih = tun - kom - pRp + byr;
             document.getElementById("recSetoranBersih").innerText = "Rp " + globalSetoranBersih.toLocaleString('id-ID'); 
             
             document.getElementById("receiptProductList").innerHTML = lH;
@@ -562,18 +594,16 @@
             window.scrollTo(0, 0);
         }
 
-        // ============================================
-        // FUNGSI SHARE KE WHATSAPP
-        // ============================================
         function unduhDanBagikanLaporan() {
             document.getElementById("receiptActionButtons").style.opacity = "0"; 
             document.getElementById("popupSuksesWA").classList.replace("flex", "hidden"); 
             
             const rider = document.getElementById("recDriver").innerText; 
             const tgl = document.getElementById("recTanggal").innerText;
-            const wa = `*Setoran SI FOUR AM*\n----------------------------------\n👤 *Rider:* ${rider}\n👥 *PIC:* ${document.getElementById("recPic").innerText}\n📅 *Waktu:* ${tgl}\n\n💰 *Total Tunai:* ${document.getElementById("recCash").innerText}\n📱 *Total QRIS:* ${document.getElementById("recQris").innerText}\n\n📉 *Sisa Hutang:* ${document.getElementById("recSisa").innerText}\n⚠️ *Hutang Baru:* ${document.getElementById("recMinus").innerText}\n\n📊 *Total Terjual:* ${document.getElementById("recVolume").innerText}\n🗑️ *Total Wastage:* ${document.getElementById("recWastage").innerText}\n💵 *Komisi Rider:* ${document.getElementById("recKomisi").innerText}\n🚀 *SETORAN TUNAI BERSIH:* Rp ${globalSetoranBersih.toLocaleString('id-ID')}\n----------------------------------`;
+            const pRp = parseInt(document.getElementById("pengeluaran").value)||0;
             
-            // Render to Image & Share
+            const wa = `*Setoran SI FOUR AM*\n----------------------------------\n👤 *Rider:* ${rider}\n👥 *PIC:* ${document.getElementById("recPic").innerText}\n📅 *Waktu:* ${tgl}\n\n💰 *Total Tunai:* ${document.getElementById("recCash").innerText}\n📱 *Total QRIS:* ${document.getElementById("recQris").innerText}\n\n📉 *Sisa Hutang:* ${document.getElementById("recSisa").innerText}\n⚠️ *Hutang Baru:* ${document.getElementById("recMinus").innerText}\n\n📊 *Total Terjual:* ${document.getElementById("recVolume").innerText}\n🗑️ *Total Wastage:* ${document.getElementById("recWastage").innerText}\n💵 *Komisi Rider:* ${document.getElementById("recKomisi").innerText}\n❌ *Pengeluaran:* Rp ${pRp.toLocaleString('id-ID')} (${document.getElementById("ketPengeluaran").value || "-"})\n\n🚀 *SETORAN TUNAI BERSIH:* Rp ${globalSetoranBersih.toLocaleString('id-ID')}\n----------------------------------`;
+            
             html2canvas(document.getElementById("receiptPageContainer"), { backgroundColor: "#111111", scale: 2 }).then(async (canvas) => {
                 document.getElementById("receiptActionButtons").style.opacity = "1"; 
                 const blob = await new Promise(r => canvas.toBlob(r, 'image/png')); 
@@ -589,9 +619,7 @@
             });
         }
 
-        // Reset Total untuk Kembali Ke Form Awal / Pengisian Baru
         function pencetSembarangReset() { 
-            // Cek konfirmasi sebelum mereset (Pencegahan salah klik)
             if(confirm("Buka Form Laporan Baru?\nSeluruh input di halaman ini akan di-reset.")) {
                 localStorage.removeItem('siFourState');
                 localStorage.removeItem('siFourWaktu');
